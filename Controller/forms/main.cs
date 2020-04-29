@@ -4,9 +4,9 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using SC_Controller.classes;
+using Blizzard_Controller.classes;
 
-namespace SC_Controller
+namespace Blizzard_Controller
 {
     public partial class mainform : Form
     {
@@ -63,6 +63,8 @@ namespace SC_Controller
                 else
                 {
                     Debug.WriteLine("Controls.Controller is now null.");
+                    gameStatus = "Not Running";
+                    sc2ProcColor = Color.DarkRed;
                 }
 
                 if (!controls.gameProcStatus.Equals("Not Running")) {

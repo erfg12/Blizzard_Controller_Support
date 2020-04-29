@@ -6,7 +6,7 @@ using System;
 using System.Drawing;
 using WindowsInput;
 
-namespace SC_Controller.classes
+namespace Blizzard_Controller.classes
 {
     class controls
     {
@@ -56,7 +56,7 @@ namespace SC_Controller.classes
                 }
                 else if (Process.GetProcessesByName(SC1ProcName).Length > 0)
                 {
-                    pname = Process.GetProcessesByName(SC2ProcName);
+                    pname = Process.GetProcessesByName(SC1ProcName);
                     gameProcStatus = "StarCraft: Remastered";
                 }
                 else if (Process.GetProcessesByName(WC3ProcName).Length > 0)

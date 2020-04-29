@@ -1,4 +1,4 @@
-﻿namespace SC_Controller
+﻿namespace Blizzard_Controller
 {
     partial class mainform
     {
