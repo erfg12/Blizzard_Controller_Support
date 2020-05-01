@@ -58,4 +58,4 @@ Use A, X, Y, B and Back to select command grid columns.
 The in-game overlay will help guide you to which command button you want to press.
 
 ## Demo Video
-https://youtu.be/hAG7PTFH78k
+https://www.youtube.com/watch?v=yYyOBewhT2Q
