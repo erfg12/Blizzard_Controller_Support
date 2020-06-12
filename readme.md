@@ -34,7 +34,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 
 - All games must use a Windowed fullscreen mode for the overlay to show. Please use 1920 x 1080 game display for the overlay to fit properly.
 
-- If you want to use Steam to stream to your game, add SC_Controller.exe as a game to Steam. After launching SC_Controller, click the button "Start Battle.net".
+- If you want to use [Steam](https://store.steampowered.com/streaming/) to stream to your game, add SC_Controller.exe as a game to Steam. After launching SC_Controller, click the button "Start Battle.net". Otherwise I recommend using [Rainway](https://rainway.com/), [Parsec](https://parsecgaming.com/) or [Moonlight](https://moonlight-stream.org/) for ease of use.
 
 - Battle.net must have you logged in and be running in the background prior to SC_Controller launching, or else you'll get a "Required application data not found" error message.
 
