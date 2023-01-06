@@ -53,6 +53,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 - B Button: Select non-busy soldiers (F2)
 - Right Trigger: Middle mouse click for cursor drag
 - RB, LB, LT: Modifier triggers for bottom right command grid
+- Directional Pad: Move camera around
 
 Use RB, LB and LT to select command grid rows.
 Use A, X, Y, B and Back to select command grid columns.
