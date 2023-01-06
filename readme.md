@@ -44,6 +44,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 
 ## Xbox Controller Controls
 - Left Joystick: Move cursor
+- Left Joystick Press: Shift Key (queue work)
 - Right Joystick: Camera zoom
 - A Button: Left mouse click
 - X Button: Right mouse click
