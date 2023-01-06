@@ -5,6 +5,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 - [.NET Framework 4.7.2](http://go.microsoft.com/fwlink/?linkid=863265)
 - Windows 7, 8, 10 or 11
 - StarCraft / StarCraft 2 / WarCraft III
+- Xbox controller _(You can use other controllers, but you'll need [x360ce](https://www.x360ce.com/))_
 - NOTE: This does work for WarCraft III Classic and Original StarCraft, but they have to be on the latest patch.
 
 ## StarCraft 2 Game Settings
