@@ -113,10 +113,14 @@ namespace Overlay.NET.Demo.Directx {
 		/// <param name="x">The x-coordinate upper-left corner of the image.</param>
 		/// <param name="y">The y-coordinate upper-left corner of the image.</param>
 		/// <param name="opacity">A value indicating the opacity of the image. (alpha)</param>
-		public void DrawImage(SharpDX.Direct2D1.Bitmap image, float x, float y, float opacity = 1.0f)
+		public void DrawImage(SharpDX.Direct2D1.Bitmap image, float x, float y, float width = 0, float height = 0, float opacity = 1.0f)
         {
             float destRight = x + image.PixelSize.Width;
+            if (width != 0)
+                destRight = x + width;
             float destBottom = y + image.PixelSize.Height;
+            if (height != 0)
+                destBottom = y + height;
 
             Direct2DRenderer._device.DrawBitmap(
                 image,
@@ -173,6 +177,8 @@ namespace Overlay.NET.Demo.Directx {
             double wM = 1920.0 / OverlayWindow.Width;
             double hM = 1080.0 / OverlayWindow.Height;
 
+            //Debug.WriteLine($"PrimaryScreenWidth:{System.Windows.SystemParameters.PrimaryScreenWidth} PrimaryScreenHeight:{System.Windows.SystemParameters.PrimaryScreenHeight}");
+
             var controllers = new[] { new Controller(UserIndex.One), new Controller(UserIndex.Two), new Controller(UserIndex.Three), new Controller(UserIndex.Four) };
 
             if (controllers != null && controllers.Length > 0)
@@ -220,90 +226,92 @@ namespace Overlay.NET.Demo.Directx {
                         {
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 380, OverlayWindow.Height - 230, 350, 68, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(230 / hM), Convert.ToInt32(350 / wM), Convert.ToInt32(68 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) != 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 380, OverlayWindow.Height - 160, 350, 68, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(160 / hM), Convert.ToInt32(350 / wM), Convert.ToInt32(68 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 255 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 380, OverlayWindow.Height - 94, 350, 68, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(94 / hM), Convert.ToInt32(350 / wM), Convert.ToInt32(68 / hM), 2, _green);
                             }
                         }
                         else if (GenerateOverlayWindow.SC1Proc != null)
                         {
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 306, OverlayWindow.Height - 280, 290, 85, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(306 / wM), OverlayWindow.Height - Convert.ToInt32(280 / hM), Convert.ToInt32(290 / wM), Convert.ToInt32(85 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) != 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 306, OverlayWindow.Height - 190, 290, 85, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(306 / wM), OverlayWindow.Height - Convert.ToInt32(190 / hM), Convert.ToInt32(290 / wM), Convert.ToInt32(85 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 255 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 306, OverlayWindow.Height - 100, 290, 85, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(306 / wM), OverlayWindow.Height - Convert.ToInt32(100 / hM), Convert.ToInt32(290 / wM), Convert.ToInt32(85 / hM), 2, _green);
                             }
                         }
                         else if (GenerateOverlayWindow.WC3Proc != null)
                         {
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 570, OverlayWindow.Height - 240, 305, 75, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(240 / hM), Convert.ToInt32(305 / wM), Convert.ToInt32(75 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) != 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 570, OverlayWindow.Height - 163, 305, 75, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(163 / hM), Convert.ToInt32(305 / wM), Convert.ToInt32(75 / hM), 2, _green);
                             }
                             if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) == 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 255 && state.Gamepad.RightTrigger == 0)
                             {
-                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - 570, OverlayWindow.Height - 85, 305, 75, 2, _green);
+                                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(85 / hM), Convert.ToInt32(305 / wM), Convert.ToInt32(75 / hM), 2, _green);
                             }
                         }
                     }
                 }
             }
 
+            float transparency = 0.6f;
+
             if (GenerateOverlayWindow.SC2Proc != null)
             {
-                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(230 / hM), Convert.ToInt32(350 / wM), Convert.ToInt32(205 / hM), 2, _redBrush);
+                //OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(230 / hM), Convert.ToInt32(350 / wM), Convert.ToInt32(205 / hM), 2, _redBrush);
 
-                DrawImage(aBtnImg, OverlayWindow.Width - 380, OverlayWindow.Height - 300);
-                DrawImage(bBtnImg, OverlayWindow.Width - 170, OverlayWindow.Height - 300);
-                DrawImage(xBtnImg, OverlayWindow.Width - 310, OverlayWindow.Height - 300);
-                DrawImage(yBtnImg, OverlayWindow.Width - 240, OverlayWindow.Height - 300);
-                DrawImage(backBtnImg, OverlayWindow.Width - 100, OverlayWindow.Height - 300);
+                DrawImage(aBtnImg, OverlayWindow.Width - Convert.ToInt32(380 / wM), OverlayWindow.Height - Convert.ToInt32(300 / hM), Convert.ToSingle(aBtnImg.PixelSize.Width / wM), Convert.ToSingle(aBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(bBtnImg, OverlayWindow.Width - Convert.ToInt32(170 / wM), OverlayWindow.Height - Convert.ToInt32(300 / hM), Convert.ToSingle(bBtnImg.PixelSize.Width / wM), Convert.ToSingle(bBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(xBtnImg, OverlayWindow.Width - Convert.ToInt32(310 / wM), OverlayWindow.Height - Convert.ToInt32(300 / hM), Convert.ToSingle(xBtnImg.PixelSize.Width / wM), Convert.ToSingle(xBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(yBtnImg, OverlayWindow.Width - Convert.ToInt32(240 / wM), OverlayWindow.Height - Convert.ToInt32(300 / hM), Convert.ToSingle(yBtnImg.PixelSize.Width / wM), Convert.ToSingle(yBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(backBtnImg, OverlayWindow.Width - Convert.ToInt32(100 / wM), OverlayWindow.Height - Convert.ToInt32(300 / hM), Convert.ToSingle(backBtnImg.PixelSize.Width / wM), Convert.ToSingle(backBtnImg.PixelSize.Height / hM), transparency);
 
-                DrawImage(lBtnImg, OverlayWindow.Width - 480, OverlayWindow.Height - 150);
-                DrawImage(rBtnImg, OverlayWindow.Width - 480, OverlayWindow.Height - 220);
-                DrawImage(ltBtnImg, OverlayWindow.Width - 450, OverlayWindow.Height - 100);
+                DrawImage(lBtnImg, OverlayWindow.Width - Convert.ToInt32(480 / wM), OverlayWindow.Height - Convert.ToInt32(150 / hM), Convert.ToSingle(lBtnImg.PixelSize.Width / wM), Convert.ToSingle(lBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(rBtnImg, OverlayWindow.Width - Convert.ToInt32(480 / wM), OverlayWindow.Height - Convert.ToInt32(220 / hM), Convert.ToSingle(rBtnImg.PixelSize.Width / wM), Convert.ToSingle(rBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(ltBtnImg, OverlayWindow.Width - Convert.ToInt32(450 / wM), OverlayWindow.Height - Convert.ToInt32(100 / hM), Convert.ToSingle(ltBtnImg.PixelSize.Width / wM), Convert.ToSingle(ltBtnImg.PixelSize.Height / hM), transparency);
             }
             else if (GenerateOverlayWindow.SC1Proc != null)
             {
-                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(306 / wM), OverlayWindow.Height - Convert.ToInt32(275 / hM), Convert.ToInt32(290 / wM), Convert.ToInt32(260 / hM), 2, _redBrush);
+                //OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(306 / wM), OverlayWindow.Height - Convert.ToInt32(275 / hM), Convert.ToInt32(290 / wM), Convert.ToInt32(260 / hM), 2, _redBrush);
 
-                DrawImage(aBtnImg, OverlayWindow.Width - 305, OverlayWindow.Height - 350);
-                DrawImage(bBtnImg, OverlayWindow.Width - 200, OverlayWindow.Height - 350);
+                DrawImage(aBtnImg, OverlayWindow.Width - Convert.ToInt32(305 / wM), OverlayWindow.Height - Convert.ToInt32(350 / hM), Convert.ToSingle(aBtnImg.PixelSize.Width / wM), Convert.ToSingle(aBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(bBtnImg, OverlayWindow.Width - Convert.ToInt32(200 / wM), OverlayWindow.Height - Convert.ToInt32(350 / hM), Convert.ToSingle(bBtnImg.PixelSize.Width / wM), Convert.ToSingle(bBtnImg.PixelSize.Height / hM), transparency);
                 //DrawImage(xBtnImg, OverlayWindow.Width - 290, OverlayWindow.Height - 300);
-                DrawImage(yBtnImg, OverlayWindow.Width - 90, OverlayWindow.Height - 350);
+                DrawImage(yBtnImg, OverlayWindow.Width - Convert.ToInt32(90 / wM), OverlayWindow.Height - Convert.ToInt32(350 / hM), Convert.ToSingle(yBtnImg.PixelSize.Width / wM), Convert.ToSingle(yBtnImg.PixelSize.Height / hM), transparency);
 
-                DrawImage(lBtnImg, OverlayWindow.Width - 400, OverlayWindow.Height - 170);
-                DrawImage(rBtnImg, OverlayWindow.Width - 400, OverlayWindow.Height - 260);
-                DrawImage(ltBtnImg, OverlayWindow.Width - 365, OverlayWindow.Height - 100);
+                DrawImage(lBtnImg, OverlayWindow.Width - Convert.ToInt32(400 / wM), OverlayWindow.Height - Convert.ToInt32(170 / hM), Convert.ToSingle(lBtnImg.PixelSize.Width / wM), Convert.ToSingle(lBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(rBtnImg, OverlayWindow.Width - Convert.ToInt32(400 / wM), OverlayWindow.Height - Convert.ToInt32(260 / hM), Convert.ToSingle(rBtnImg.PixelSize.Width / wM), Convert.ToSingle(rBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(ltBtnImg, OverlayWindow.Width - Convert.ToInt32(365 / wM), OverlayWindow.Height - Convert.ToInt32(100 / hM), Convert.ToSingle(ltBtnImg.PixelSize.Width / wM), Convert.ToSingle(ltBtnImg.PixelSize.Height / hM), transparency);
             }
             else if (GenerateOverlayWindow.WC3Proc != null)
             {
-                OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(240 / hM), Convert.ToInt32(305 / wM), Convert.ToInt32(230 / hM), 2, _redBrush);
+                //OverlayWindow.Graphics.DrawRectangle(OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(240 / hM), Convert.ToInt32(305 / wM), Convert.ToInt32(230 / hM), 2, _redBrush);
 
-                DrawImage(aBtnImg, OverlayWindow.Width - 570, OverlayWindow.Height - 310);
-                DrawImage(bBtnImg, OverlayWindow.Width - 340, OverlayWindow.Height - 310);
-                DrawImage(xBtnImg, OverlayWindow.Width - 490, OverlayWindow.Height - 310);
-                DrawImage(yBtnImg, OverlayWindow.Width - 415, OverlayWindow.Height - 310);
+                DrawImage(aBtnImg, OverlayWindow.Width - Convert.ToInt32(570 / wM), OverlayWindow.Height - Convert.ToInt32(310 / hM), Convert.ToSingle(aBtnImg.PixelSize.Width / wM), Convert.ToSingle(aBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(bBtnImg, OverlayWindow.Width - Convert.ToInt32(340 / wM), OverlayWindow.Height - Convert.ToInt32(310 / hM), Convert.ToSingle(bBtnImg.PixelSize.Width / wM), Convert.ToSingle(bBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(xBtnImg, OverlayWindow.Width - Convert.ToInt32(490 / wM), OverlayWindow.Height - Convert.ToInt32(310 / hM), Convert.ToSingle(xBtnImg.PixelSize.Width / wM), Convert.ToSingle(xBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(yBtnImg, OverlayWindow.Width - Convert.ToInt32(415 / wM), OverlayWindow.Height - Convert.ToInt32(310 / hM), Convert.ToSingle(yBtnImg.PixelSize.Width / wM), Convert.ToSingle(yBtnImg.PixelSize.Height / hM), transparency);
 
-                DrawImage(lBtnImg, OverlayWindow.Width - 660, OverlayWindow.Height - 150);
-                DrawImage(rBtnImg, OverlayWindow.Width - 660, OverlayWindow.Height - 220);
-                DrawImage(ltBtnImg, OverlayWindow.Width - 630, OverlayWindow.Height - 100);
+                DrawImage(lBtnImg, OverlayWindow.Width - Convert.ToInt32(660 / wM), OverlayWindow.Height - Convert.ToInt32(150 / hM), Convert.ToSingle(lBtnImg.PixelSize.Width / wM), Convert.ToSingle(lBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(rBtnImg, OverlayWindow.Width - Convert.ToInt32(660 / wM), OverlayWindow.Height - Convert.ToInt32(220 / hM), Convert.ToSingle(rBtnImg.PixelSize.Width / wM), Convert.ToSingle(rBtnImg.PixelSize.Height / hM), transparency);
+                DrawImage(ltBtnImg, OverlayWindow.Width - Convert.ToInt32(630 / wM), OverlayWindow.Height - Convert.ToInt32(100 / hM), Convert.ToSingle(ltBtnImg.PixelSize.Width / wM), Convert.ToSingle(ltBtnImg.PixelSize.Height / hM), transparency);
             }
 
             if (_watch.ElapsedMilliseconds > 1000)

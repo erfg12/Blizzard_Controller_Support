@@ -1,12 +1,7 @@
-﻿//using GameOverlay.Drawing;
-//using GameOverlay.Windows;
-//using Overlay.NET.Common;
-using System;
-using System.Diagnostics;
+﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using SharpDX.XInput;
-using System.IO;
 using System.Drawing;
 using Overlay.NET;
 using Process.NET;
@@ -14,8 +9,6 @@ using System.Linq;
 using Overlay.NET.Demo.Directx;
 using Process.NET.Memory;
 using System.Globalization;
-using Overlay.NET.Directx;
-using Overlay.NET.Demo.Directx;
 
 namespace Overlay
 {

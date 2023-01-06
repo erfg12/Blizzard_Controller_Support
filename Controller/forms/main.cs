@@ -17,12 +17,13 @@ namespace Blizzard_Controller
 
         private void startOverlay()
         {
+            var FilePath = System.IO.Directory.GetCurrentDirectory() + @"\Overlay.exe";
             if (overlayBox.Checked && Process.GetProcessesByName("Overlay").Length < 1) {
-                if (System.IO.File.Exists(System.IO.Directory.GetCurrentDirectory() + @"\Overlay.exe"))
+                if (System.IO.File.Exists(FilePath))
                 {
-                    ProcessStartInfo startInfo = new ProcessStartInfo("Overlay.exe");
-                    //startInfo.WindowStyle = ProcessWindowStyle.Minimized;
-                    startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(FilePath);
+                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
+                    //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
 
                     Process.Start(startInfo);
                 }

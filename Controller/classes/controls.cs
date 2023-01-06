@@ -27,11 +27,16 @@ namespace Blizzard_Controller.classes
 
         public static bool holdingA = false;
         public static bool holdingRT = false;
+        public static bool holdingRJoy = false;
+        public static bool holdingLJoy = false;
 
         public static string gameProcStatus = "Not Running";
         public static Controller controller = null;
 
+        public static InputSimulator sim = new InputSimulator();
+
         const uint WM_KEYDOWN = 0x0100;
+        const uint WM_KEYUP = 0x0101;
 
         [DllImport("User32.Dll", EntryPoint = "PostMessageA", SetLastError = true)]
         public static extern bool PostMessage(IntPtr hWnd, uint msg, IntPtr wParam, IntPtr lParam);
@@ -78,10 +83,23 @@ namespace Blizzard_Controller.classes
             }
         }
 
-        public static void globalKeyPress(int key)
+        public static void globalKeyPress(int key, bool shift = false, bool ctrl = false, bool alt = false)
         {
+            //if (pname.Length > 0)
+            //{
+            //    if (shift) // gotta add ctrl, alt, etc.
+            //        sim.Keyboard.ModifiedKeyStroke(WindowsInput.Native.VirtualKeyCode.SHIFT, (WindowsInput.Native.VirtualKeyCode)key);
+            //    sim.Keyboard.KeyDown((WindowsInput.Native.VirtualKeyCode)key);
+            //}
             if (pname.Length > 0)
                 PostMessage(pname[0].MainWindowHandle, WM_KEYDOWN, (IntPtr)key, (IntPtr)0);
+            Thread.Sleep(150); // prevent double press
+        }
+
+        public static void globalKeyRelease(int key)
+        {
+            if (pname.Length > 0)
+                PostMessage(pname[0].MainWindowHandle, WM_KEYUP, (IntPtr)key, (IntPtr)0);
         }
 
         // referenced https://docs.microsoft.com/en-us/windows/win32/inputdev/mouse-input-notifications
@@ -119,6 +137,7 @@ namespace Blizzard_Controller.classes
                 sim.Mouse.MiddleButtonDown();
             else if (btn == MouseClicks.WM_MBUTTONUP)
                 sim.Mouse.MiddleButtonUp();
+            Thread.Sleep(150); // prevent double press
         }
 
         /// <summary>
@@ -180,6 +199,29 @@ namespace Blizzard_Controller.classes
 
                     //if (previousState.PacketNumber != state.PacketNumber)
                     //{
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.LeftThumb) != 0 && holdingLJoy == false)
+                    {
+                        globalKeyPress(0xA0);
+                        globalKeyPress(0x10);
+                        Debug.WriteLine("holding shift");
+                        holdingLJoy = true;
+                    }
+                    else if ((state.Gamepad.Buttons & GamepadButtonFlags.LeftThumb) == 0 && holdingLJoy == true)
+                    {
+                        globalKeyRelease(0xA0);
+                        globalKeyRelease(0x10);
+                        holdingLJoy = false;
+                    }
+
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.RightThumb) != 0 && holdingRJoy == false)
+                    {
+                        holdingRJoy = true;
+                    }
+                    else if ((state.Gamepad.Buttons & GamepadButtonFlags.RightThumb) == 0 && holdingRJoy == true)
+                    {
+                        holdingRJoy = false;
+                    }
+
                     if (state.Gamepad.RightTrigger == 255 && holdingRT == false) // hold down if not already
                     {
                         globalMouseClick(MouseClicks.WM_MBUTTONDOWN); //AutoItX.MouseDown("MIDDLE");
@@ -222,6 +264,34 @@ namespace Blizzard_Controller.classes
                         {
                             globalMouseClick(MouseClicks.WM_LBUTTONUP); //AutoItX.MouseUp();
                             holdingA = false;
+                        }
+                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0)
+                        {
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) == 0)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                        }
+                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0)
+                        {
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) == 0)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                        }
+                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0)
+                        {
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) == 0)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                        }
+                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0)
+                        {
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) == 0)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
                         }
                     }
                     // Holding RB down.
@@ -267,7 +337,7 @@ namespace Blizzard_Controller.classes
                             globalKeyPress(0x42); //AutoItX.Send("{B}");
                     }
                     //}
-                    Thread.Sleep(80);
+                    Thread.Sleep(10);
                     previousState = state;
                 }
             }
