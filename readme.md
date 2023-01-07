@@ -51,6 +51,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 - X Button: Right mouse click
 - Y Button: Select non-busy workers (F1)
 - B Button: Select non-busy soldiers (F2)
+- Direction Pad: Select group 1-4 (hold RT to create group)
 - Right Trigger: Middle mouse click for cursor drag (move left joystick for camera moving)
 - RB, LB, LT: Modifier triggers for bottom right command grid
 

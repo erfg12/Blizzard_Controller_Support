@@ -206,6 +206,60 @@ namespace Blizzard_Controller.classes
                         break;
                     }
 
+                    if (state.Gamepad.RightTrigger == 255 && (state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_1));
+
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_1));
+                    }
+                    if (state.Gamepad.RightTrigger == 255 && (state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_2));
+
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_2));
+                    }
+                    if (state.Gamepad.RightTrigger == 255 && (state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_3));
+
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_3));
+                    }
+                    if (state.Gamepad.RightTrigger == 255 && (state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_4));
+
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.CONTROL));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_4));
+                    }
+
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_1));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_1));
+                    }
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_2));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_2));
+                    }
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_3));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_3));
+                    }
+                    if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_4));
+                        globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.VK_4));
+                    }
+
                     //if (previousState.PacketNumber != state.PacketNumber)
                     //{
                     if ((state.Gamepad.Buttons & GamepadButtonFlags.LeftThumb) != 0 && holdingLJoy == false)
@@ -507,12 +561,6 @@ namespace Blizzard_Controller.classes
                         SetCursorPos(cursorPos.X, cursorPos.Y);
                         //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
                     }
-
-
-                    //if (state.Gamepad.RightThumbY > deadzone)
-                    //    globalKeyPress(0x21); //AutoItX.Send("{PGUP}");
-                    //else if (state.Gamepad.RightThumbY < -deadzone)
-                    //    globalKeyPress(0x22); //AutoItX.Send("{PGDN}");
 
                     // move camera
                     if (state.Gamepad.RightThumbY > deadzone)
