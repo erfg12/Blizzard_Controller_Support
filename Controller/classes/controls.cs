@@ -29,6 +29,10 @@ namespace Blizzard_Controller.classes
         public static bool holdingRT = false;
         public static bool holdingRJoy = false;
         public static bool holdingLJoy = false;
+        public static bool holdingRJoyDirLeft = false;
+        public static bool holdingRJoyDirRight = false;
+        public static bool holdingRJoyDirUp = false;
+        public static bool holdingRJoyDirDown = false;
 
         public static string gameProcStatus = "Not Running";
         public static Controller controller = null;
@@ -93,7 +97,12 @@ namespace Blizzard_Controller.classes
             //}
             if (pname.Length > 0)
                 PostMessage(pname[0].MainWindowHandle, WM_KEYDOWN, (IntPtr)key, (IntPtr)0);
-            Thread.Sleep(150); // prevent double press
+
+            if (key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT) && 
+                key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT) && 
+                key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP) && 
+                key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN))
+                    Thread.Sleep(150); // prevent double press
         }
 
         public static void globalKeyRelease(int key)
@@ -265,34 +274,34 @@ namespace Blizzard_Controller.classes
                             globalMouseClick(MouseClicks.WM_LBUTTONUP); //AutoItX.MouseUp();
                             holdingA = false;
                         }
-                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0)
-                        {
-                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
-                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) == 0)
-                        {
-                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
-                        }
-                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0)
-                        {
-                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
-                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) == 0)
-                        {
-                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
-                        }
-                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0)
-                        {
-                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
-                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) == 0)
-                        {
-                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
-                        }
-                        if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0)
-                        {
-                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
-                        } else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) == 0)
-                        {
-                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
-                        }
+                        //if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) != 0)
+                        //{
+                        //    globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                        //} else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadDown) == 0)
+                        //{
+                        //    globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                        //}
+                        //if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) != 0)
+                        //{
+                        //    globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                        //} else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadUp) == 0)
+                        //{
+                        //    globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                        //}
+                        //if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) != 0)
+                        //{
+                        //    globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                        //} else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadLeft) == 0)
+                        //{
+                        //    globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                        //}
+                        //if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) != 0)
+                        //{
+                        //    globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                        //} else if ((state.Gamepad.Buttons & GamepadButtonFlags.DPadRight) == 0)
+                        //{
+                        //    globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                        //}
                     }
                     // Holding RB down.
                     else if ((state.Gamepad.Buttons & GamepadButtonFlags.RightShoulder) != 0 && (state.Gamepad.Buttons & GamepadButtonFlags.LeftShoulder) == 0 && state.Gamepad.LeftTrigger == 0 && state.Gamepad.RightTrigger == 0)
@@ -415,7 +424,8 @@ namespace Blizzard_Controller.classes
                             // left/right slower
                             if (state.Gamepad.LeftThumbX > deadzone)
                             {
-                                if (state.Gamepad.LeftThumbX < faster && state.Gamepad.LeftThumbX < slower) {
+                                if (state.Gamepad.LeftThumbX < faster && state.Gamepad.LeftThumbX < slower)
+                                {
                                     cursorPos.X += mouseDistance / 2;
                                     //Debug.WriteLine("slower");
                                 }
@@ -498,10 +508,84 @@ namespace Blizzard_Controller.classes
                         //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
                     }
 
+
+                    //if (state.Gamepad.RightThumbY > deadzone)
+                    //    globalKeyPress(0x21); //AutoItX.Send("{PGUP}");
+                    //else if (state.Gamepad.RightThumbY < -deadzone)
+                    //    globalKeyPress(0x22); //AutoItX.Send("{PGDN}");
+
+                    // move camera
                     if (state.Gamepad.RightThumbY > deadzone)
-                        globalKeyPress(0x21); //AutoItX.Send("{PGUP}");
+                    {
+                        holdingRJoyDirUp = true;
+                        if (holdingRT)
+                            globalKeyPress(0x21); //AutoItX.Send("{PGUP}");
+                        else
+                        {
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                            if (holdingRJoyDirDown)
+                            {
+                                globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                                holdingRJoyDirDown = false;
+                            }
+                        }
+                    }
                     else if (state.Gamepad.RightThumbY < -deadzone)
-                        globalKeyPress(0x22); //AutoItX.Send("{PGDN}");
+                    {
+                        holdingRJoyDirDown = true;
+                        if (holdingRT)
+                            globalKeyPress(0x22); //AutoItX.Send("{PGDN}");
+                        else
+                        {
+                            if (holdingRJoyDirUp)
+                            {
+                                globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                                holdingRJoyDirUp = false;
+                            }
+                            globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                        }
+                    }
+                    else
+                    {
+                        if (holdingRJoyDirUp || holdingRJoyDirDown)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP));
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN));
+                            holdingRJoyDirUp = false;
+                            holdingRJoyDirDown = false;
+                        }
+                    }
+
+                    if (state.Gamepad.RightThumbX > deadzone)
+                    {
+                        if (holdingRJoyDirLeft)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                            holdingRJoyDirLeft = false;
+                        }
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                        holdingRJoyDirRight = true;
+                    }
+                    else if (state.Gamepad.RightThumbX < -deadzone)
+                    {
+                        globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                        if (holdingRJoyDirRight)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                            holdingRJoyDirRight = false;
+                        }
+                        holdingRJoyDirLeft = true;
+                    }
+                    else
+                    {
+                        if (holdingRJoyDirRight || holdingRJoyDirLeft)
+                        {
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
+                            globalKeyRelease(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
+                            holdingRJoyDirRight = false;
+                            holdingRJoyDirLeft = false;
+                        }
+                    }
 
                     System.Threading.Thread.Sleep(10);
                     previousState = state;
