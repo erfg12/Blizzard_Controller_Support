@@ -2,6 +2,8 @@
 
 This project is to bring Xbox controller support to StarCraft II, StarCraft: Remastered and WarCraft III: Reforged.
 
+**vv** Click this thumbnail to watch the video. **vv**
+
 [![Video](https://img.youtube.com/vi/yYyOBewhT2Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=yYyOBewhT2Q)
 
 ## System Requirements
@@ -11,11 +13,11 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 - StarCraft / StarCraft 2 / WarCraft III
 - Xbox controller _(You can use other controllers, but you'll need [x360ce](https://www.x360ce.com/))_
 - NOTE: This does work for WarCraft III Classic and Original StarCraft, but they have to be on the latest patch.
-- Modify your game's settings using the instructions below.
+- Modify your game's settings using the instructions below. (click to open)
 - Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases/download/1.1/Blizzard_Controller.zip) and unzip the files into a folder and run the .exe program.
 
 <details>
-<summary>StarCraft 2 Game Settings</summary>
+<summary>StarCraft 2 Game Settings (click here to open)</summary>
 
 - Enable Grid Hotkeys
     - `Options` > `Hotkeys` > `Selected Profile: Grid` > `Click Accept Button`
@@ -24,7 +26,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 </details>
 
 <details>
-<summary>WarCraft III: Reforged Game Settings</summary>
+<summary>WarCraft III: Reforged Game Settings (click here to open)</summary>
 
 - Enable Grid Hotkeys
     - `Options` > `Input` > `Preset Keybindings` > `Grid`
@@ -33,7 +35,7 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 </details>
 
 <details>
-<summary>StarCraft: Remastered Game Settings</summary>
+<summary>StarCraft: Remastered Game Settings (click here to open)</summary>
 
 - Fullscreen Window Display Mode
     - `Options` > `Graphics` > `Display Mode: Windowed (Fullscreen)` > `Click Accept Button`
@@ -49,9 +51,9 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 
 - All games must use a Windowed fullscreen mode for the overlay to show. Please use 1920 x 1080 game display for the overlay to fit properly.
 
-- If you want to use [Steam](https://store.steampowered.com/streaming/) to stream to your game, add SC_Controller.exe as a game to Steam. After launching SC_Controller, click the button "Start Battle.net". Otherwise I recommend using [Rainway](https://rainway.com/), [Parsec](https://parsecgaming.com/) or [Moonlight](https://moonlight-stream.org/) for ease of use.
+- If you want to use [Steam](https://store.steampowered.com/streaming/) to stream to your game, add Blizzard_Controller.exe as a game to Steam. After launching Blizzard_Controller, click the button "Start Battle.net". Otherwise I recommend using [Rainway](https://rainway.com/), [Parsec](https://parsecgaming.com/) or [Moonlight](https://moonlight-stream.org/) for ease of use.
 
-- Battle.net must have you logged in and be running in the background prior to SC_Controller launching, or else you'll get a "Required application data not found" error message.
+- Battle.net must have you logged in and be running in the background prior to Blizzard_Controller launching, or else you'll get a "Required application data not found" error message.
 
 - Games (SC1, SC2, WC3) must be launched by the Steam remote user. Please have the games closed prior to the remote session starting or the controller will not work.
 
