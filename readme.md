@@ -8,10 +8,10 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
 
 ## System Requirements
 
-- [.NET Framework 4.7.2](http://go.microsoft.com/fwlink/?linkid=863265)
+- [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
 - Windows 7, 8, 10 or 11
 - StarCraft / StarCraft 2 / WarCraft III
-- Xbox controller _(You can use other controllers, but you'll need [x360ce](https://www.x360ce.com/))_
+- Xbox controller _(You can use other controllers, but you'll need [x360ce](https://www.x360ce.com/) if it's not an Xbox controller)_
 - NOTE: This does work for WarCraft III Classic and Original StarCraft, but they have to be on the latest patch.
 - Modify your game's settings using the instructions below. (click to open)
 - Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases/download/1.1/Blizzard_Controller.zip) and unzip the files into a folder and run the .exe program.
@@ -73,3 +73,7 @@ Use RB, LB and LT to select command grid rows.
 Use A, X, Y, B and Back to select command grid columns.
 
 The in-game overlay will help guide you to which command button you want to press.
+
+## To Build
+- Clone and build [DXNET](https://github.com/lepoco/dxnet). Add reference to the `net48` libraries.
+- Restore NuGet pkgs and build.

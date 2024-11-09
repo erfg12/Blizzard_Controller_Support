@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using SharpDX.XInput;
+using DXNET.XInput;
 using System.Threading;
 using System;
 using System.Drawing;

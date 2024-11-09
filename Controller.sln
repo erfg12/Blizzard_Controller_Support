@@ -1,21 +1,15 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29509.3
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Controller", "Controller\Controller.csproj", "{0632BC65-22D0-423A-B2D8-C7346A5947D5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{3549CD6F-80F8-450F-B99E-CF0A736B1F2A} = {3549CD6F-80F8-450F-B99E-CF0A736B1F2A}
-		{2D411EA5-BC00-4630-B25E-43C554323E72} = {2D411EA5-BC00-4630-B25E-43C554323E72}
 		{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B} = {A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overlay", "Overlay\Overlay.csproj", "{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{2D411EA5-BC00-4630-B25E-43C554323E72} = {2D411EA5-BC00-4630-B25E-43C554323E72}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Overlay.NET", "Overlay.NET\Overlay.NET.csproj", "{2D411EA5-BC00-4630-B25E-43C554323E72}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Overlay", "Overlay\Overlay.csproj", "{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsInput", "InputSimulatorPlus-master\WindowsInput\WindowsInput.csproj", "{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}"
 EndProject
@@ -33,10 +27,6 @@ Global
 		{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A2C3ACF0-E5ED-4C89-8125-64E7268B3F4B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2D411EA5-BC00-4630-B25E-43C554323E72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2D411EA5-BC00-4630-B25E-43C554323E72}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2D411EA5-BC00-4630-B25E-43C554323E72}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2D411EA5-BC00-4630-B25E-43C554323E72}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3549CD6F-80F8-450F-B99E-CF0A736B1F2A}.Release|Any CPU.ActiveCfg = Release|Any CPU

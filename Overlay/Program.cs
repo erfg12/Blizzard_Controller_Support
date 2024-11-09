@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Resources;
 
-namespace Overlay
+namespace GameOverlay
 {
     class Program
     {

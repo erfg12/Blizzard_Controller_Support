@@ -1,24 +1,38 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using SharpDX.XInput;
+using DXNET.XInput;
 using System.Drawing;
-using Overlay.NET;
-using Process.NET;
 using System.Linq;
-using Overlay.NET.Demo.Directx;
-using Process.NET.Memory;
 using System.Globalization;
+using Raylib_cs;
+using static Raylib_cs.Raylib;
+using static Raylib_cs.Raymath;
+using static Raylib_cs.Color;
+using System.Windows;
 
-namespace Overlay
+namespace GameOverlay
 {
     class GenerateOverlayWindow
     {
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
+
+
+        [StructLayout(LayoutKind.Sequential)]
+        public struct RECT
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
         #region init_vars
         public static System.Diagnostics.Process[] pname = null;
         public static Controller controller = null;
 
-        private Rectangle resolution = Screen.PrimaryScreen.Bounds;
+        //private Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
         public static string SC2ProcName = "SC2_x64";
         public static string WC3ProcName = "Warcraft III";
@@ -28,71 +42,131 @@ namespace Overlay
 
         [DllImport("user32.dll")]
         private static extern int GetWindowRect(IntPtr hwnd, out System.Drawing.Rectangle rect);
-
-        [DllImport("user32.dll")]
-        static extern IntPtr GetForegroundWindow();
-
-        private OverlayPlugin _directXoverlayPluginExample;
-        private ProcessSharp _processSharp;
         #endregion
 
         public void Initialize()
         {
+            Raylib.SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
+            Raylib.SetWindowState(ConfigFlags.UndecoratedWindow);
+            Raylib.SetWindowState(ConfigFlags.TopmostWindow);
+            Raylib.SetTargetFPS(60);
+            InitWindow(1, 1, "overlay");
+
+            RECT gameWindowSize = new();
+            
+            // fits at w:1024 x h:768
+            double baseHeight = 768.0;
+            double baseWidth = 1024.0;
+            
             Console.WriteLine($"Starting overlay...");
-            SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
-            SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
-            WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
-            while (SC2Proc == null && SC1Proc == null && WC3Proc == null)
-            {
-                Console.WriteLine($"No processes by the names of {SC1ProcName}, {SC2ProcName} or {WC3ProcName} were found.");
-                System.Threading.Thread.Sleep(1000);
-                SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
-                SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
-                WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
-            }
-            Console.WriteLine($"Starting overlay in 5...");
-            System.Threading.Thread.Sleep(1000);
-            Console.WriteLine($"Starting overlay in 4...");
-            System.Threading.Thread.Sleep(1000);
-            Console.WriteLine($"Starting overlay in 3...");
-            System.Threading.Thread.Sleep(1000);
-            Console.WriteLine($"Starting overlay in 2...");
-            System.Threading.Thread.Sleep(1000);
-            Console.WriteLine($"Starting overlay in 1...");
-            System.Threading.Thread.Sleep(1000);
-            _directXoverlayPluginExample = new DirectxOverlayPluginExample();
-            if (SC2Proc != null)
-            {
-                _processSharp = new ProcessSharp(SC2Proc, MemoryType.Remote);
-            } else if (SC1Proc != null)
-            {
-                _processSharp = new ProcessSharp(SC1Proc, MemoryType.Remote);
-            } else if (WC3Proc != null)
-            {
-                _processSharp = new ProcessSharp(WC3Proc, MemoryType.Remote);
-            }
-            var fpsValid = int.TryParse(Convert.ToString("60", CultureInfo.InvariantCulture), NumberStyles.Any,
-                NumberFormatInfo.InvariantInfo, out int fps);
-            var d3DOverlay = (DirectxOverlayPluginExample)_directXoverlayPluginExample;
-            d3DOverlay.Settings.Current.UpdateRate = 1000 / fps;
-            _directXoverlayPluginExample.Initialize(_processSharp.WindowFactory.MainWindow);
-            _directXoverlayPluginExample.Enable();
-            var info = d3DOverlay.Settings.Current;
-            Console.WriteLine($"Overlay Started.");
+
+            // x, y
+            var aBtnImg = LoadTextureFromImage(LoadImage("Resources/a_btn.png")); // 0,0
+            var xBtnImg = LoadTextureFromImage(LoadImage("Resources/x_btn.png")); // 1,0
+            var yBtnImg = LoadTextureFromImage(LoadImage("Resources/y_btn.png")); // 2,0
+            var bBtnImg = LoadTextureFromImage(LoadImage("Resources/b_btn.png")); // 3,0
+            var backBtnImg = LoadTextureFromImage(LoadImage("Resources/back_btn.png")); // 0,1
+            var lBtnImg = LoadTextureFromImage(LoadImage("Resources/lb_btn.png")); // 0,2
+            var ltBtnImg = LoadTextureFromImage(LoadImage("Resources/lt_btn.png")); // 0,3
+            var rBtnImg = LoadTextureFromImage(LoadImage("Resources/rb_btn.png"));
+
+            int cellWidth = 0;
+            int cellHeight = 0;
+
+            int check = 0;
+
             while (true)
             {
-                _directXoverlayPluginExample.Update();
-
                 // check if game died.
-                SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
-                SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
-                WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
-                if (SC2Proc == null && SC1Proc == null && WC3Proc == null)
+                if (check >= 100)
                 {
-                    Console.WriteLine("Game has exited...");
-                    Initialize();
-                    break;
+                    SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
+                    SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
+                    WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
+                    if (SC2Proc != null || SC1Proc != null || WC3Proc != null)
+                    {
+                        if (SC1Proc != null)
+                            GetWindowRect(SC1Proc.MainWindowHandle, out gameWindowSize);
+                        if (SC2Proc != null)
+                            GetWindowRect(SC2Proc.MainWindowHandle, out gameWindowSize);
+                        if (WC3Proc != null)
+                            GetWindowRect(WC3Proc.MainWindowHandle, out gameWindowSize);
+
+                        var gameWidth = Math.Abs(gameWindowSize.Left - gameWindowSize.Right);
+                        var gameHeight = Math.Abs(gameWindowSize.Top - gameWindowSize.Bottom);
+
+                        double diff = gameHeight / baseHeight;
+                        double overlayHeight = 255 * diff;
+                        double overlayWidth = 280 * diff;
+
+                        cellWidth = GetRenderWidth() / 4;
+                        cellHeight = GetRenderHeight() / 4;
+
+                        aBtnImg.Width = cellWidth;
+                        aBtnImg.Height = cellHeight;
+                        xBtnImg.Width = cellWidth;
+                        xBtnImg.Height = cellHeight;
+                        yBtnImg.Width = cellWidth;
+                        yBtnImg.Height = cellHeight;
+                        bBtnImg.Width = cellWidth;
+                        bBtnImg.Height = cellHeight;
+                        lBtnImg.Width = cellWidth;
+                        lBtnImg.Height = cellHeight;
+                        ltBtnImg.Width = cellWidth;
+                        ltBtnImg.Height = cellHeight;
+                        rBtnImg.Width = cellWidth;
+                        rBtnImg.Height = cellHeight;
+
+                        SetWindowSize(Convert.ToInt32(overlayWidth), Convert.ToInt32(overlayHeight));
+                        Raylib.SetWindowPosition(gameWindowSize.Right - GetRenderWidth() - 5, gameWindowSize.Bottom - GetRenderHeight() - 10);
+                    }
+                    check = 0;
                 }
+                else
+                    check++;
+
+                if ((SC2Proc == null && SC1Proc == null && WC3Proc == null) || (gameWindowSize.Left - gameWindowSize.Right == 0))
+                    continue;
+
+                BeginDrawing();
+                ClearBackground(Blank);
+
+                // top row
+                DrawTexture(aBtnImg, Raylib.GetRenderWidth() - cellWidth * 3, 0, White);
+                DrawTexture(xBtnImg, Raylib.GetRenderWidth() - cellWidth * 2, 0, White);
+                DrawTexture(yBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
+                //DrawTexture(bBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
+                //DrawTexture(backBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
+
+                // left side
+                DrawTexture(rBtnImg, 0, GetRenderHeight() - cellHeight * 3, White);
+                DrawTexture(lBtnImg, 0, GetRenderHeight() - cellHeight * 2, White);
+                DrawTexture(ltBtnImg, 0, GetRenderHeight() - cellHeight, White);
+
+                // row highlighting
+                DrawRectangleLines (
+                    Raylib.GetRenderWidth() - cellWidth * 3 - 4, 
+                    GetRenderHeight() - cellHeight * 3,
+                    Raylib.GetRenderWidth() - cellWidth,
+                    cellHeight,
+                    Green
+                );
+                DrawRectangleLines(
+                    Raylib.GetRenderWidth() - cellWidth * 3 - 4,
+                    GetRenderHeight() - cellHeight * 2,
+                    Raylib.GetRenderWidth() - cellWidth,
+                    cellHeight,
+                    Green
+                );
+                DrawRectangleLines(
+                    Raylib.GetRenderWidth() - cellWidth * 3 - 4,
+                    GetRenderHeight() - cellHeight,
+                    Raylib.GetRenderWidth() - cellWidth,
+                    cellHeight,
+                    Green
+                );
+
+                EndDrawing();
             }
         }
     }

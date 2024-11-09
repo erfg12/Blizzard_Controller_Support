@@ -1,0 +1,31 @@
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+    <NoWarn>$(NoWarn);NU1507</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageVersion Include="ImGui.NET" Version="1.91.0.1" />
+    <PackageVersion Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageVersion Include="Microsoft.DotNet.PlatformAbstractions" Version="2.0.3" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyModel" Version="6.0.1" />
+    <PackageVersion Include="Microsoft.NETCore.Platforms" Version="7.0.4" />
+    <PackageVersion Include="NativeLibraryLoader" Version="1.0.10" />
+    <PackageVersion Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageVersion Include="Raylib-cs" Version="6.1.1" />
+    <PackageVersion Include="SharpDX" Version="4.0.1" />
+    <PackageVersion Include="SharpDX.D3DCompiler" Version="4.0.1" />
+    <PackageVersion Include="SharpDX.Direct3D11" Version="4.0.1" />
+    <PackageVersion Include="SharpDX.DXGI" Version="4.0.1" />
+    <PackageVersion Include="System.ComponentModel.Composition" Version="8.0.0" />
+    <PackageVersion Include="System.Data.DataSetExtensions" Version="4.5.0" />
+    <PackageVersion Include="System.Diagnostics.DiagnosticSource" Version="6.0.1" />
+    <PackageVersion Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageVersion Include="System.Runtime.Handles" Version="4.3.0" />
+    <PackageVersion Include="Veldrid" Version="4.5.0" />
+    <PackageVersion Include="Veldrid.MetalBindings" Version="4.5.0" />
+    <PackageVersion Include="Veldrid.OpenGLBindings" Version="4.5.0" />
+    <PackageVersion Include="Veldrid.SDL2" Version="4.5.0" />
+    <PackageVersion Include="Vk" Version="1.0.21" />
+  </ItemGroup>
+</Project>
