@@ -156,11 +156,14 @@ namespace GameOverlay
                 else
                     check++;
 
-                if ((SC2Proc == null && SC1Proc == null && WC3Proc == null) || (gameWindowSize.Left - gameWindowSize.Right == 0))
-                    continue;
-
                 BeginDrawing();
                 ClearBackground(Blank);
+
+                if ((SC2Proc == null && SC1Proc == null && WC3Proc == null) || (gameWindowSize.Left - gameWindowSize.Right == 0))
+                {
+                    EndDrawing();
+                    continue;
+                }
 
                 // top row
                 List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
