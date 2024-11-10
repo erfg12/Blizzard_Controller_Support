@@ -2,19 +2,20 @@
 
 This project is to bring Xbox controller support to StarCraft II, StarCraft: Remastered and WarCraft III: Reforged.
 
+NOTE: This does work for WarCraft III Classic and Original StarCraft, but they have to be on the latest patch.
+
 **vv** Click this thumbnail to watch the video. **vv**
 
 [![Video](https://img.youtube.com/vi/yYyOBewhT2Q/maxresdefault.jpg)](https://www.youtube.com/watch?v=yYyOBewhT2Q)
 
 ## System Requirements
 
-- [.NET Framework 4.8](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48)
-- Windows 7, 8, 10 or 11
+- [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- Windows 10 or 11
 - StarCraft / StarCraft 2 / WarCraft III
-- Xbox controller _(You can use other controllers, but you'll need [x360ce](https://www.x360ce.com/) if it's not an Xbox controller)_
-- NOTE: This does work for WarCraft III Classic and Original StarCraft, but they have to be on the latest patch.
+- Game controller
 - Modify your game's settings using the instructions below. (click to open)
-- Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases/download/1.1/Blizzard_Controller.zip) and unzip the files into a folder and run the .exe program.
+- Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases) and unzip the files into a folder and run the .exe program.
 
 <details>
 <summary>StarCraft 2 Game Settings (click here to open)</summary>
@@ -32,6 +33,8 @@ This project is to bring Xbox controller support to StarCraft II, StarCraft: Rem
     - `Options` > `Input` > `Preset Keybindings` > `Grid`
 - Fullscreen Window Display Mode
     - `Options` > `Graphics` > `Display Mode: Windowed (Fullscreen)` > `Click Accept Button`
+- Keep mouse in Window
+    - `Options` > `Input` > `Confine Mouse Cursor` > `On`
 </details>
 
 <details>
@@ -73,7 +76,3 @@ Use RB, LB and LT to select command grid rows.
 Use A, X, Y, B and Back to select command grid columns.
 
 The in-game overlay will help guide you to which command button you want to press.
-
-## To Build
-- Clone and build [DXNET](https://github.com/lepoco/dxnet). Add reference to the `net48` libraries.
-- Restore NuGet pkgs and build.

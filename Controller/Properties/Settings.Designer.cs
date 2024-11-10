@@ -37,10 +37,10 @@ namespace Blizzard_Controller.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("6000")]
-        public int Deadzone {
+        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
+        public double Deadzone {
             get {
-                return ((int)(this["Deadzone"]));
+                return ((double)(this["Deadzone"]));
             }
             set {
                 this["Deadzone"] = value;

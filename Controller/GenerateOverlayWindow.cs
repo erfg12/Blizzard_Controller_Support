@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using DXNET.XInput;
 using System.Drawing;
 using System.Linq;
 using System.Globalization;
@@ -14,7 +13,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace GameOverlay
+namespace Blizzard_Controller
 {
     public class GenerateOverlayWindow
     {
@@ -33,7 +32,6 @@ namespace GameOverlay
 
         #region init_vars
         public static System.Diagnostics.Process[] pname = null;
-        public static Controller controller = null;
 
         //private Rectangle resolution = Screen.PrimaryScreen.Bounds;
 
@@ -41,7 +39,6 @@ namespace GameOverlay
         public static string WC3ProcName = "Warcraft III";
         public static string SC1ProcName = "StarCraft";
         public static System.Diagnostics.Process SC2Proc, SC1Proc, WC3Proc;
-        functions f = new functions();
 
         int _overlayWidth { get; set; } = 0;
         int _overlayHeight { get; set; } = 0;
@@ -61,6 +58,7 @@ namespace GameOverlay
 
         public void Initialize()
         {
+            //ControllerInputs ci = new();
             Raylib.SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
             Raylib.SetWindowState(ConfigFlags.UndecoratedWindow);
             Raylib.SetWindowState(ConfigFlags.TopmostWindow);
@@ -203,6 +201,7 @@ namespace GameOverlay
                 int gamepad = 0;
                 if (IsGamepadAvailable(gamepad))
                 {
+                    ControllerInputs.controller = true;
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                         DrawRectangleLines(
@@ -229,7 +228,10 @@ namespace GameOverlay
                             Green
                         );
                     ControllerInputs.processButtons();
+                    ControllerInputs.processJoysticks();
                 }
+                else
+                    ControllerInputs.controller = false;
 
                 EndDrawing();
             }

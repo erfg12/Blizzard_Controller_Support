@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Overlay.Properties {
+namespace GameOverlay.Properties {
     using System;
     
     

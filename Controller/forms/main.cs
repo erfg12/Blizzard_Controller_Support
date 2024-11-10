@@ -4,12 +4,16 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
-using Blizzard_Controller.classes;
+using static Raylib_cs.Raylib;
+using Color = System.Drawing.Color;
+using System.Threading.Tasks;
 
 namespace Blizzard_Controller
 {
     public partial class mainform : Form
     {
+        GenerateOverlayWindow ow = new();
+
         public mainform()
         {
             InitializeComponent();
@@ -17,28 +21,7 @@ namespace Blizzard_Controller
 
         private void startOverlay()
         {
-            var FilePath = System.IO.Directory.GetCurrentDirectory() + @"\Overlay.exe";
-            if (overlayBox.Checked && Process.GetProcessesByName("Overlay").Length < 1) {
-                if (System.IO.File.Exists(FilePath))
-                {
-                    ProcessStartInfo startInfo = new ProcessStartInfo(FilePath);
-                    startInfo.WindowStyle = ProcessWindowStyle.Minimized;
-                    //startInfo.WindowStyle = System.Diagnostics.ProcessWindowStyle.Hidden;
-
-                    Process.Start(startInfo);
-                }
-            }
-        }
-
-        private void closeOverlay()
-        {
-            if (overlayBox.Checked && !controls.shuttingDown)
-                return;
-            foreach (Process myProc in Process.GetProcesses())
-            {
-                if (myProc.ProcessName == "Overlay")
-                    myProc.Kill();
-            }
+            Task.Run(ow.Initialize);
         }
 
         // Update UI form status indicators
@@ -46,7 +29,7 @@ namespace Blizzard_Controller
         {
             while (true)
             {
-                if (controls.shuttingDown)
+                if (ControllerInputs.shuttingDown)
                 {
                     Debug.WriteLine("Controls Shutting Down");
                     break;
@@ -57,19 +40,19 @@ namespace Blizzard_Controller
                 string gameStatus = "Not Running";
                 Color sc2ProcColor = Color.DarkRed;
 
-                if (controls.controller != null) { 
+                if (ControllerInputs.controller) { 
                     ctrlStatus = "Connected"; 
                     cntrlStatusColor = Color.DarkGreen; 
                 } 
                 else
                 {
-                    Debug.WriteLine("Controls.Controller is now null.");
+                    //Debug.WriteLine("Controls.Controller is now null.");
                     gameStatus = "Not Running";
                     sc2ProcColor = Color.DarkRed;
                 }
 
-                if (!controls.gameProcStatus.Equals("Not Running")) {
-                    gameStatus = controls.gameProcStatus; 
+                if (!ControllerInputs.gameProcStatus.Equals("Not Running")) {
+                    gameStatus = ControllerInputs.gameProcStatus; 
                     sc2ProcColor = Color.DarkGreen; 
                 }
 
@@ -102,9 +85,9 @@ namespace Blizzard_Controller
         {
             IncCursorSpeed.Checked = Properties.Settings.Default.IncreaseCursorSpeed;
             deadzoneBox.Text = Properties.Settings.Default.Deadzone.ToString();
-            controls.deadzone = Convert.ToInt32(deadzoneBox.Text);
+            ControllerInputs.deadzone = Convert.ToDouble(deadzoneBox.Text);
             cursorSpeedBox.Text = Properties.Settings.Default.cursorSpeed.ToString();
-            Thread thread = new Thread(controls.CheckGameProc);
+            Thread thread = new Thread(ControllerInputs.CheckGameProc);
             thread.Start();
 
             overlayBox.Checked = Properties.Settings.Default.overlay;
@@ -131,18 +114,18 @@ namespace Blizzard_Controller
         // button presses
         private void buttonPresses_DoWork(object sender, DoWorkEventArgs e)
         {
-            controls.processButtons();
+
         }
 
         // joysticks
         private void joysticks_DoWork(object sender, DoWorkEventArgs e)
         {
-            controls.processJoysticks();
+
         }
 
         private void deadzoneBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar))
+            if (!char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar) && e.KeyChar != '.')
                 e.Handled = true;
         }
 
@@ -156,16 +139,16 @@ namespace Blizzard_Controller
         {
             if (deadzoneBox.TextLength >= 1)
             {
-                controls.deadzone = Convert.ToInt32(deadzoneBox.Text);
-                Properties.Settings.Default.Deadzone = Convert.ToInt32(deadzoneBox.Text);
+                ControllerInputs.deadzone = Convert.ToDouble(deadzoneBox.Text);
+                Properties.Settings.Default.Deadzone = Convert.ToDouble(deadzoneBox.Text);
                 Properties.Settings.Default.Save();
             }
         }
 
         private void mainform_FormClosing(object sender, FormClosingEventArgs e)
         {
-            controls.shuttingDown = true;
-            closeOverlay();
+            ControllerInputs.shuttingDown = true;
+            //closeOverlay();
         }
 
         private void OverlayBox_CheckedChanged(object sender, EventArgs e)
@@ -174,7 +157,7 @@ namespace Blizzard_Controller
             Properties.Settings.Default.Save();
 
             startOverlay();
-            closeOverlay();
+            //closeOverlay();
         }
 
         private void cursorSpeedBox_TextChanged(object sender, EventArgs e)
@@ -182,8 +165,8 @@ namespace Blizzard_Controller
             if (cursorSpeedBox.TextLength >= 1)
             {
                 Properties.Settings.Default.cursorSpeed = Convert.ToInt32(cursorSpeedBox.Text);
-                controls.mouseDistanceDefault = Convert.ToInt32(cursorSpeedBox.Text);
-                controls.mouseDistance = Convert.ToInt32(cursorSpeedBox.Text);
+                ControllerInputs.mouseDistanceDefault = Convert.ToInt32(cursorSpeedBox.Text);
+                ControllerInputs.mouseDistance = Convert.ToInt32(cursorSpeedBox.Text);
                 Properties.Settings.Default.Save();
             }
         }

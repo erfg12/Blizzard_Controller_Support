@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Overlay.Properties {
+namespace GameOverlay.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]

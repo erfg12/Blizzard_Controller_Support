@@ -1,4 +1,4 @@
-﻿namespace GameOverlay;
+﻿namespace Blizzard_Controller;
 public class GameSettings
 {
     public class StarCraft1
