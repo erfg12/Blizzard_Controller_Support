@@ -178,28 +178,35 @@ namespace GameOverlay
                 DrawTexture(lBtnImg, 0, GetRenderHeight() - cellHeight * 2, White);
                 DrawTexture(ltBtnImg, 0, GetRenderHeight() - cellHeight, White);
 
-                // row highlighting
-                DrawRectangleLines (
-                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4, 
-                    GetRenderHeight() - cellHeight * 3,
-                    Raylib.GetRenderWidth() - cellWidth,
-                    cellHeight,
-                    Green
-                );
-                DrawRectangleLines(
-                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
-                    GetRenderHeight() - cellHeight * 2,
-                    Raylib.GetRenderWidth() - cellWidth,
-                    cellHeight,
-                    Green
-                );
-                DrawRectangleLines(
-                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
-                    GetRenderHeight() - cellHeight,
-                    Raylib.GetRenderWidth() - cellWidth,
-                    cellHeight,
-                    Green
-                );
+                int gamepad = 0;
+                if (IsGamepadAvailable(gamepad))
+                {
+                    // row highlighting
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
+                        DrawRectangleLines(
+                            Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                            GetRenderHeight() - cellHeight * 3,
+                            Raylib.GetRenderWidth() - cellWidth,
+                            cellHeight,
+                            Green
+                        );
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
+                        DrawRectangleLines(
+                            Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                            GetRenderHeight() - cellHeight * 2,
+                            Raylib.GetRenderWidth() - cellWidth,
+                            cellHeight,
+                            Green
+                        );
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                        DrawRectangleLines(
+                            Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                            GetRenderHeight() - cellHeight,
+                            Raylib.GetRenderWidth() - cellWidth,
+                            cellHeight,
+                            Green
+                        );
+                }
 
                 EndDrawing();
             }
