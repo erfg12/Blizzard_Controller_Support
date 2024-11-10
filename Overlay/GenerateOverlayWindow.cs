@@ -10,6 +10,8 @@ using static Raylib_cs.Raylib;
 using static Raylib_cs.Raymath;
 using static Raylib_cs.Color;
 using System.Windows;
+using Overlay;
+using System.Collections.Generic;
 
 namespace GameOverlay
 {
@@ -39,6 +41,12 @@ namespace GameOverlay
         public static string SC1ProcName = "StarCraft";
         public static System.Diagnostics.Process SC2Proc, SC1Proc, WC3Proc;
         functions f = new functions();
+
+        int _overlayWidth { get; set; } = 0;
+        int _overlayHeight { get; set; } = 0;
+        int _cellColumns { get; set; } = 0;
+        int _rightOffset { get; set; } = 0;
+        int _bottomOffset { get; set; } = 0;
 
         [DllImport("user32.dll")]
         private static extern int GetWindowRect(IntPtr hwnd, out System.Drawing.Rectangle rect);
@@ -86,21 +94,42 @@ namespace GameOverlay
                     if (SC2Proc != null || SC1Proc != null || WC3Proc != null)
                     {
                         if (SC1Proc != null)
+                        {
                             GetWindowRect(SC1Proc.MainWindowHandle, out gameWindowSize);
+                            _overlayWidth = GameSettings.StarCraft1.overlayWidth;
+                            _overlayHeight = GameSettings.StarCraft1.overlayHeight;
+                            _cellColumns = GameSettings.StarCraft1.cellColumns;
+                            _bottomOffset = GameSettings.StarCraft1.bottomOffset;
+                            _rightOffset = GameSettings.StarCraft1.rightOffset;
+                        }
                         if (SC2Proc != null)
+                        {
                             GetWindowRect(SC2Proc.MainWindowHandle, out gameWindowSize);
+                            _overlayWidth = GameSettings.StarCraft2.overlayWidth;
+                            _overlayHeight = GameSettings.StarCraft2.overlayHeight;
+                            _cellColumns = GameSettings.StarCraft2.cellColumns;
+                            _bottomOffset = GameSettings.StarCraft2.bottomOffset;
+                            _rightOffset = GameSettings.StarCraft2.rightOffset;
+                        }
                         if (WC3Proc != null)
+                        {
                             GetWindowRect(WC3Proc.MainWindowHandle, out gameWindowSize);
+                            _overlayWidth = GameSettings.WarCraft3.overlayWidth;
+                            _overlayHeight = GameSettings.WarCraft3.overlayHeight;
+                            _cellColumns = GameSettings.WarCraft3.cellColumns;
+                            _bottomOffset = GameSettings.WarCraft3.bottomOffset;
+                            _rightOffset = GameSettings.WarCraft3.rightOffset;
+                        }
 
                         var gameWidth = Math.Abs(gameWindowSize.Left - gameWindowSize.Right);
                         var gameHeight = Math.Abs(gameWindowSize.Top - gameWindowSize.Bottom);
 
                         double diff = gameHeight / baseHeight;
-                        double overlayHeight = 255 * diff;
-                        double overlayWidth = 280 * diff;
+                        double overlayHeight = _overlayHeight * diff;
+                        double overlayWidth = _overlayWidth * diff;
 
-                        cellWidth = GetRenderWidth() / 4;
-                        cellHeight = GetRenderHeight() / 4;
+                        cellWidth = GetRenderWidth() / _cellColumns;
+                        cellHeight = GetRenderHeight() / 4; // cell count + 1
 
                         aBtnImg.Width = cellWidth;
                         aBtnImg.Height = cellHeight;
@@ -116,9 +145,11 @@ namespace GameOverlay
                         ltBtnImg.Height = cellHeight;
                         rBtnImg.Width = cellWidth;
                         rBtnImg.Height = cellHeight;
+                        backBtnImg.Width = cellWidth;
+                        backBtnImg.Height = cellHeight;
 
                         SetWindowSize(Convert.ToInt32(overlayWidth), Convert.ToInt32(overlayHeight));
-                        Raylib.SetWindowPosition(gameWindowSize.Right - GetRenderWidth() - 5, gameWindowSize.Bottom - GetRenderHeight() - 10);
+                        Raylib.SetWindowPosition(gameWindowSize.Right - GetRenderWidth() - _rightOffset, gameWindowSize.Bottom - GetRenderHeight() - _bottomOffset);
                     }
                     check = 0;
                 }
@@ -132,11 +163,12 @@ namespace GameOverlay
                 ClearBackground(Blank);
 
                 // top row
-                DrawTexture(aBtnImg, Raylib.GetRenderWidth() - cellWidth * 3, 0, White);
-                DrawTexture(xBtnImg, Raylib.GetRenderWidth() - cellWidth * 2, 0, White);
-                DrawTexture(yBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
-                //DrawTexture(bBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
-                //DrawTexture(backBtnImg, Raylib.GetRenderWidth() - cellWidth, 0, White);
+                List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
+                int c = _cellColumns - 1;
+                for (int i = 0; i < _cellColumns - 1; i++)
+                {
+                    DrawTexture(btnList[i], Raylib.GetRenderWidth() - cellWidth * c--, 0, White);
+                }
 
                 // left side
                 DrawTexture(rBtnImg, 0, GetRenderHeight() - cellHeight * 3, White);
@@ -145,21 +177,21 @@ namespace GameOverlay
 
                 // row highlighting
                 DrawRectangleLines (
-                    Raylib.GetRenderWidth() - cellWidth * 3 - 4, 
+                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4, 
                     GetRenderHeight() - cellHeight * 3,
                     Raylib.GetRenderWidth() - cellWidth,
                     cellHeight,
                     Green
                 );
                 DrawRectangleLines(
-                    Raylib.GetRenderWidth() - cellWidth * 3 - 4,
+                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
                     GetRenderHeight() - cellHeight * 2,
                     Raylib.GetRenderWidth() - cellWidth,
                     cellHeight,
                     Green
                 );
                 DrawRectangleLines(
-                    Raylib.GetRenderWidth() - cellWidth * 3 - 4,
+                    Raylib.GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
                     GetRenderHeight() - cellHeight,
                     Raylib.GetRenderWidth() - cellWidth,
                     cellHeight,
