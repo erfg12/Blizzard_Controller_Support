@@ -59,6 +59,7 @@ namespace Blizzard_Controller
         public void Initialize()
         {
             //ControllerInputs ci = new();
+            int gamepad = 0;
             Raylib.SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
             Raylib.SetWindowState(ConfigFlags.UndecoratedWindow);
             Raylib.SetWindowState(ConfigFlags.TopmostWindow);
@@ -94,6 +95,7 @@ namespace Blizzard_Controller
                 // check if game died. do these operations every 100ms or so
                 if (check >= 100)
                 {
+                    ControllerInputs.controller = IsGamepadAvailable(gamepad);
                     SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
                     SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
                     WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
@@ -198,10 +200,8 @@ namespace Blizzard_Controller
                 DrawTexture(lBtnImg, 0, GetRenderHeight() - cellHeight * 2, White);
                 DrawTexture(ltBtnImg, 0, GetRenderHeight() - cellHeight, White);
 
-                int gamepad = 0;
                 if (IsGamepadAvailable(gamepad))
                 {
-                    ControllerInputs.controller = true;
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                         DrawRectangleLines(
@@ -230,8 +230,6 @@ namespace Blizzard_Controller
                     ControllerInputs.processButtons();
                     ControllerInputs.processJoysticks();
                 }
-                else
-                    ControllerInputs.controller = false;
 
                 EndDrawing();
             }
