@@ -240,7 +240,7 @@ namespace Blizzard_Controller
                 if (/*state.Gamepad.RightTrigger == 255*/ IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && holdingRT == false) // hold down if not already
                 {
                     globalMouseClick(MouseClicks.WM_MBUTTONDOWN); //AutoItX.MouseDown("MIDDLE");
-                    mouseDistance = mouseDistanceDefault * 3;
+                    mouseDistance = mouseDistanceDefault;
                     holdingRT = true;
                 }
                 else if (/*state.Gamepad.RightTrigger == 0*/ IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) && holdingRT == true) // release
@@ -448,7 +448,7 @@ namespace Blizzard_Controller
             }
 
             // move camera
-            if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0)
+            if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
             {
                 holdingRJoyDirUp = true;
                 if (holdingRT)
@@ -463,7 +463,7 @@ namespace Blizzard_Controller
                     }
                 }
             }
-            else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0)
+            else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
             {
                 holdingRJoyDirDown = true;
                 if (holdingRT)
@@ -489,7 +489,7 @@ namespace Blizzard_Controller
                 }
             }
 
-            if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > deadzone)
+            if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > deadzone && !holdingRT)
             {
                 if (holdingRJoyDirLeft)
                 {
@@ -499,7 +499,7 @@ namespace Blizzard_Controller
                 globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT));
                 holdingRJoyDirRight = true;
             }
-            else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -deadzone)
+            else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -deadzone && !holdingRT && !holdingRT)
             {
                 globalKeyPress(Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT));
                 if (holdingRJoyDirRight)
