@@ -293,8 +293,12 @@ namespace Blizzard_Controller
                         globalKeyPress(0x41); //A
                     if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
                         globalKeyPress(0x53); //S
-                    if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-                        globalKeyPress(0x44); //D
+                if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
+                {
+                    globalKeyPress(0x44); //D
+                    globalKeyPress(0x4B); //K // for sc1 (works for Terran, no Zerg. Need to find class offset and read value in memory)
+                    globalKeyPress(0x4C); //L // for sc1
+                }
                     if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
                         globalKeyPress(0x46); //F
                     if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
