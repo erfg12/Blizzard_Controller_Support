@@ -32,13 +32,7 @@ namespace Blizzard_Controller
 
         #region init_vars
         public static System.Diagnostics.Process[] pname = null;
-
-        //private Rectangle resolution = Screen.PrimaryScreen.Bounds;
-
-        public static string SC2ProcName = "SC2_x64";
-        public static string WC3ProcName = "Warcraft III";
-        public static string SC1ProcName = "StarCraft";
-        public static System.Diagnostics.Process SC2Proc, SC1Proc, WC3Proc;
+        public static System.Diagnostics.Process SC2Proc, SC1Proc, WC3Proc, WC1Proc, WC2Proc;
 
         int _overlayWidth { get; set; } = 0;
         int _overlayHeight { get; set; } = 0;
@@ -96,10 +90,12 @@ namespace Blizzard_Controller
                 if (check >= 100)
                 {
                     ControllerInputs.controller = IsGamepadAvailable(gamepad);
-                    SC2Proc = System.Diagnostics.Process.GetProcessesByName(SC2ProcName).FirstOrDefault();
-                    SC1Proc = System.Diagnostics.Process.GetProcessesByName(SC1ProcName).FirstOrDefault();
-                    WC3Proc = System.Diagnostics.Process.GetProcessesByName(WC3ProcName).FirstOrDefault();
-                    if (SC2Proc != null || SC1Proc != null || WC3Proc != null)
+                    SC2Proc = System.Diagnostics.Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName).FirstOrDefault();
+                    SC1Proc = System.Diagnostics.Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName).FirstOrDefault();
+                    WC3Proc = System.Diagnostics.Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName).FirstOrDefault();
+                    WC2Proc = System.Diagnostics.Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).FirstOrDefault();
+                    WC1Proc = System.Diagnostics.Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName).FirstOrDefault();
+                    if (SC2Proc != null || SC1Proc != null || WC3Proc != null || WC1Proc != null || WC2Proc != null)
                     {
                         if (SC1Proc != null)
                         {
@@ -110,7 +106,7 @@ namespace Blizzard_Controller
                             _bottomOffset = GameSettings.StarCraft1.bottomOffset;
                             _rightOffset = GameSettings.StarCraft1.rightOffset;
                         }
-                        if (SC2Proc != null)
+                        else if (SC2Proc != null)
                         {
                             GetWindowRect(SC2Proc.MainWindowHandle, out gameWindowSize);
                             _overlayWidth = GameSettings.StarCraft2.overlayWidth;
@@ -119,9 +115,27 @@ namespace Blizzard_Controller
                             _bottomOffset = GameSettings.StarCraft2.bottomOffset;
                             _rightOffset = GameSettings.StarCraft2.rightOffset;
                         }
-                        if (WC3Proc != null)
+                        else if(WC3Proc != null)
                         {
                             GetWindowRect(WC3Proc.MainWindowHandle, out gameWindowSize);
+                            _overlayWidth = GameSettings.WarCraft3.overlayWidth;
+                            _overlayHeight = GameSettings.WarCraft3.overlayHeight;
+                            _cellColumns = GameSettings.WarCraft3.cellColumns;
+                            _bottomOffset = GameSettings.WarCraft3.bottomOffset;
+                            _rightOffset = GameSettings.WarCraft3.rightOffset;
+                        }
+                        else if (WC1Proc != null)
+                        {
+                            GetWindowRect(WC1Proc.MainWindowHandle, out gameWindowSize);
+                            _overlayWidth = GameSettings.WarCraft3.overlayWidth;
+                            _overlayHeight = GameSettings.WarCraft3.overlayHeight;
+                            _cellColumns = GameSettings.WarCraft3.cellColumns;
+                            _bottomOffset = GameSettings.WarCraft3.bottomOffset;
+                            _rightOffset = GameSettings.WarCraft3.rightOffset;
+                        }
+                        else if (WC2Proc != null)
+                        {
+                            GetWindowRect(WC2Proc.MainWindowHandle, out gameWindowSize);
                             _overlayWidth = GameSettings.WarCraft3.overlayWidth;
                             _overlayHeight = GameSettings.WarCraft3.overlayHeight;
                             _cellColumns = GameSettings.WarCraft3.cellColumns;
@@ -181,7 +195,7 @@ namespace Blizzard_Controller
                 BeginDrawing();
                 ClearBackground(Blank);
 
-                if ((SC2Proc == null && SC1Proc == null && WC3Proc == null) || (gameWindowSize.Left - gameWindowSize.Right == 0))
+                if ((SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null) || (gameWindowSize.Left - gameWindowSize.Right == 0))
                 {
                     EndDrawing();
                     continue;

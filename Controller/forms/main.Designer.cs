@@ -28,12 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            buttonPressesBGW = new System.ComponentModel.BackgroundWorker();
             label1 = new System.Windows.Forms.Label();
             cntrlStatus = new System.Windows.Forms.Label();
             label2 = new System.Windows.Forms.Label();
             ProcRunningLabel = new System.Windows.Forms.Label();
-            joysticksBGW = new System.ComponentModel.BackgroundWorker();
             IncCursorSpeed = new System.Windows.Forms.CheckBox();
             deadzoneBox = new System.Windows.Forms.TextBox();
             label3 = new System.Windows.Forms.Label();
@@ -44,25 +42,27 @@
             groupBox2 = new System.Windows.Forms.GroupBox();
             HowToSetupTabControl = new System.Windows.Forms.TabControl();
             tabPage1 = new System.Windows.Forms.TabPage();
+            label5 = new System.Windows.Forms.Label();
+            restoreHotkeysBtn = new System.Windows.Forms.Button();
+            gridForZBtn = new System.Windows.Forms.Button();
+            gridForTPBtn = new System.Windows.Forms.Button();
             SC1SetupBox = new System.Windows.Forms.TextBox();
             tabPage2 = new System.Windows.Forms.TabPage();
             SC2SetupBox = new System.Windows.Forms.TextBox();
             tabPage3 = new System.Windows.Forms.TabPage();
+            tabPage4 = new System.Windows.Forms.TabPage();
+            tabPage5 = new System.Windows.Forms.TabPage();
             WC3SetupBox = new System.Windows.Forms.TextBox();
             startSC2 = new System.Windows.Forms.Button();
             ExitBtn = new System.Windows.Forms.Button();
+            label6 = new System.Windows.Forms.Label();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             HowToSetupTabControl.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
-            tabPage3.SuspendLayout();
+            tabPage5.SuspendLayout();
             SuspendLayout();
-            // 
-            // buttonPressesBGW
-            // 
-            buttonPressesBGW.WorkerSupportsCancellation = true;
-            buttonPressesBGW.DoWork += buttonPresses_DoWork;
             // 
             // label1
             // 
@@ -107,11 +107,6 @@
             ProcRunningLabel.Size = new System.Drawing.Size(75, 15);
             ProcRunningLabel.TabIndex = 3;
             ProcRunningLabel.Text = "Not Running";
-            // 
-            // joysticksBGW
-            // 
-            joysticksBGW.WorkerSupportsCancellation = true;
-            joysticksBGW.DoWork += joysticks_DoWork;
             // 
             // IncCursorSpeed
             // 
@@ -221,6 +216,8 @@
             HowToSetupTabControl.Controls.Add(tabPage1);
             HowToSetupTabControl.Controls.Add(tabPage2);
             HowToSetupTabControl.Controls.Add(tabPage3);
+            HowToSetupTabControl.Controls.Add(tabPage4);
+            HowToSetupTabControl.Controls.Add(tabPage5);
             HowToSetupTabControl.Location = new System.Drawing.Point(8, 23);
             HowToSetupTabControl.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             HowToSetupTabControl.Name = "HowToSetupTabControl";
@@ -230,6 +227,11 @@
             // 
             // tabPage1
             // 
+            tabPage1.Controls.Add(label6);
+            tabPage1.Controls.Add(label5);
+            tabPage1.Controls.Add(restoreHotkeysBtn);
+            tabPage1.Controls.Add(gridForZBtn);
+            tabPage1.Controls.Add(gridForTPBtn);
             tabPage1.Controls.Add(SC1SetupBox);
             tabPage1.Location = new System.Drawing.Point(4, 24);
             tabPage1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -239,6 +241,56 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "StarCraft 1";
             tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new System.Drawing.Point(578, 80);
+            label5.Name = "label5";
+            label5.Size = new System.Drawing.Size(39, 15);
+            label5.TabIndex = 6;
+            label5.Text = "- OR -";
+            // 
+            // restoreHotkeysBtn
+            // 
+            restoreHotkeysBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            restoreHotkeysBtn.Location = new System.Drawing.Point(557, 202);
+            restoreHotkeysBtn.Name = "restoreHotkeysBtn";
+            restoreHotkeysBtn.Size = new System.Drawing.Size(81, 53);
+            restoreHotkeysBtn.TabIndex = 5;
+            restoreHotkeysBtn.Text = "Restore Default Hotkeys";
+            restoreHotkeysBtn.UseVisualStyleBackColor = true;
+            restoreHotkeysBtn.Click += restoreHotkeysBtn_Click;
+            // 
+            // gridForZBtn
+            // 
+            gridForZBtn.BackColor = System.Drawing.Color.Maroon;
+            gridForZBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            gridForZBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            gridForZBtn.Font = new System.Drawing.Font("Segoe UI", 9F);
+            gridForZBtn.ForeColor = System.Drawing.SystemColors.Control;
+            gridForZBtn.Location = new System.Drawing.Point(557, 97);
+            gridForZBtn.Name = "gridForZBtn";
+            gridForZBtn.Size = new System.Drawing.Size(81, 74);
+            gridForZBtn.TabIndex = 4;
+            gridForZBtn.Text = "Set Grid Layout for Zerg";
+            gridForZBtn.UseVisualStyleBackColor = false;
+            gridForZBtn.Click += gridForZBtn_Click;
+            // 
+            // gridForTPBtn
+            // 
+            gridForTPBtn.BackColor = System.Drawing.Color.Teal;
+            gridForTPBtn.Cursor = System.Windows.Forms.Cursors.Hand;
+            gridForTPBtn.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            gridForTPBtn.Font = new System.Drawing.Font("Segoe UI", 9F);
+            gridForTPBtn.ForeColor = System.Drawing.SystemColors.Control;
+            gridForTPBtn.Location = new System.Drawing.Point(557, 6);
+            gridForTPBtn.Name = "gridForTPBtn";
+            gridForTPBtn.Size = new System.Drawing.Size(81, 71);
+            gridForTPBtn.TabIndex = 3;
+            gridForTPBtn.Text = "Set Grid Layout for Terran and Protoss";
+            gridForTPBtn.UseVisualStyleBackColor = false;
+            gridForTPBtn.Click += gridForTPBtn_Click;
             // 
             // SC1SetupBox
             // 
@@ -251,7 +303,7 @@
             SC1SetupBox.Name = "SC1SetupBox";
             SC1SetupBox.ReadOnly = true;
             SC1SetupBox.ScrollBars = System.Windows.Forms.ScrollBars.Both;
-            SC1SetupBox.Size = new System.Drawing.Size(630, 248);
+            SC1SetupBox.Size = new System.Drawing.Size(543, 248);
             SC1SetupBox.TabIndex = 2;
             SC1SetupBox.Text = "N/A";
             // 
@@ -283,14 +335,32 @@
             // 
             // tabPage3
             // 
-            tabPage3.Controls.Add(WC3SetupBox);
             tabPage3.Location = new System.Drawing.Point(4, 24);
-            tabPage3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             tabPage3.Name = "tabPage3";
             tabPage3.Size = new System.Drawing.Size(645, 264);
-            tabPage3.TabIndex = 2;
-            tabPage3.Text = "WarCraft III";
+            tabPage3.TabIndex = 3;
+            tabPage3.Text = "WarCraft I";
             tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // tabPage4
+            // 
+            tabPage4.Location = new System.Drawing.Point(4, 24);
+            tabPage4.Name = "tabPage4";
+            tabPage4.Size = new System.Drawing.Size(645, 264);
+            tabPage4.TabIndex = 4;
+            tabPage4.Text = "WarCraft II";
+            tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // tabPage5
+            // 
+            tabPage5.Controls.Add(WC3SetupBox);
+            tabPage5.Location = new System.Drawing.Point(4, 24);
+            tabPage5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            tabPage5.Name = "tabPage5";
+            tabPage5.Size = new System.Drawing.Size(645, 264);
+            tabPage5.TabIndex = 2;
+            tabPage5.Text = "WarCraft III";
+            tabPage5.UseVisualStyleBackColor = true;
             // 
             // WC3SetupBox
             // 
@@ -302,7 +372,7 @@
             WC3SetupBox.Multiline = true;
             WC3SetupBox.Name = "WC3SetupBox";
             WC3SetupBox.ReadOnly = true;
-            WC3SetupBox.Size = new System.Drawing.Size(539, 248);
+            WC3SetupBox.Size = new System.Drawing.Size(634, 248);
             WC3SetupBox.TabIndex = 1;
             WC3SetupBox.Text = "N/A";
             // 
@@ -334,6 +404,15 @@
             ExitBtn.UseVisualStyleBackColor = true;
             ExitBtn.Click += ExitBtn_Click;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Location = new System.Drawing.Point(557, 174);
+            label6.Name = "label6";
+            label6.Size = new System.Drawing.Size(82, 15);
+            label6.TabIndex = 7;
+            label6.Text = "---------------";
+            // 
             // mainform
             // 
             AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -364,20 +443,17 @@
             tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
-            tabPage3.ResumeLayout(false);
-            tabPage3.PerformLayout();
+            tabPage5.ResumeLayout(false);
+            tabPage5.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
-
-        private System.ComponentModel.BackgroundWorker buttonPressesBGW;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label cntrlStatus;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label ProcRunningLabel;
-        private System.ComponentModel.BackgroundWorker joysticksBGW;
         private System.Windows.Forms.CheckBox IncCursorSpeed;
         private System.Windows.Forms.TextBox deadzoneBox;
         private System.Windows.Forms.Label label3;
@@ -391,10 +467,17 @@
         private System.Windows.Forms.TabControl HowToSetupTabControl;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.TextBox WC3SetupBox;
         private System.Windows.Forms.TextBox SC1SetupBox;
         private System.Windows.Forms.TextBox SC2SetupBox;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button gridForTPBtn;
+        private System.Windows.Forms.Button gridForZBtn;
+        private System.Windows.Forms.Button restoreHotkeysBtn;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
     }
 }
 

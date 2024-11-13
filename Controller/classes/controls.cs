@@ -20,10 +20,6 @@ namespace Blizzard_Controller
         public static double slower = 0.4;
         public static bool shuttingDown = false;
 
-        public static string SC2ProcName = "SC2_x64";
-        public static string WC3ProcName = "Warcraft III";
-        public static string SC1ProcName = "StarCraft";
-
         public static Process[] pname = null;
 
         public static Point cursorPos = new Point();
@@ -62,20 +58,30 @@ namespace Blizzard_Controller
         {
             while (true)
             {
-                if (Process.GetProcessesByName(SC2ProcName).Length > 0)
+                if (Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName).Length > 0)
                 {
-                    pname = Process.GetProcessesByName(SC2ProcName);
+                    pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName);
                     gameProcStatus = "StarCraft 2 Running";
                 }
-                else if (Process.GetProcessesByName(SC1ProcName).Length > 0)
+                else if (Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName).Length > 0)
                 {
-                    pname = Process.GetProcessesByName(SC1ProcName);
+                    pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName);
                     gameProcStatus = "StarCraft: Remastered";
                 }
-                else if (Process.GetProcessesByName(WC3ProcName).Length > 0)
+                else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName).Length > 0)
                 {
-                    pname = Process.GetProcessesByName(WC3ProcName);
+                    pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName);
                     gameProcStatus = "WarCraft III: Reforged";
+                }
+                else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName).Length > 0)
+                {
+                    pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName);
+                    gameProcStatus = "WarCraft I: Remastered";
+                }
+                else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).Length > 0)
+                {
+                    pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName);
+                    gameProcStatus = "WarCraft II: Remastered";
                 }
                 else
                 {
