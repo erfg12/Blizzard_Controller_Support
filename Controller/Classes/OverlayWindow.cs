@@ -174,25 +174,28 @@ public class OverlayWindow
                 continue;
             }
 
+            bool leftSide = WC1Proc != null || WC2Proc != null;
+
             // top row
             List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
-            int c = _cellColumns - 1;
+            int c = _cellColumns - (leftSide ? 0 : 1);
             for (int i = 0; i < _cellColumns - 1; i++)
             {
                 DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, Raylib_cs.Color.White);
             }
 
-            // left side
-            DrawTexture(rBtnImg, 0, GetRenderHeight() - cellHeight * 3, Raylib_cs.Color.White);
-            DrawTexture(lBtnImg, 0, GetRenderHeight() - cellHeight * 2, Raylib_cs.Color.White);
-            DrawTexture(ltBtnImg, 0, GetRenderHeight() - cellHeight, Raylib_cs.Color.White);
+            // side buttons
+            DrawTexture(rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, Raylib_cs.Color.White);
+            DrawTexture(lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, Raylib_cs.Color.White);
+            if (WC1Proc == null)
+                DrawTexture(ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, Raylib_cs.Color.White);
 
             if (IsGamepadAvailable(gamepad))
             {
                 // row highlighting
                 if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
                         GetRenderHeight() - cellHeight * 3,
                         GetRenderWidth() - cellWidth,
                         cellHeight,
@@ -200,15 +203,15 @@ public class OverlayWindow
                     );
                 if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                     DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
                         GetRenderHeight() - cellHeight * 2,
                         GetRenderWidth() - cellWidth,
                         cellHeight,
                         Raylib_cs.Color.Green
                     );
-                if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
                     DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - 1) - 4,
+                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
                         GetRenderHeight() - cellHeight,
                         GetRenderWidth() - cellWidth,
                         cellHeight,
