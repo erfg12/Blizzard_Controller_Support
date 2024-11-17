@@ -9,7 +9,9 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include=".nuget\mouse-keyboard-hook-logo.png" />
+    <Compile Remove=".nuget\**" />
+    <EmbeddedResource Remove=".nuget\**" />
+    <None Remove=".nuget\**" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\InputSimulatorPlus-master\WindowsInput\WindowsInput.csproj" />
