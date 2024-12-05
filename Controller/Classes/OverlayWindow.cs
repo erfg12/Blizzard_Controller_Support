@@ -53,7 +53,7 @@ public class OverlayWindow
 
         int check = 0;
 
-        while (true)
+        while (!ControllerInputs.shuttingDown)
         {
             // check if game died. do these operations every 100ms or so
             if (check >= 100)

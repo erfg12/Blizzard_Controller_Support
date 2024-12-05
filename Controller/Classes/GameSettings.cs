@@ -35,7 +35,7 @@ public class GameSettings
     }
     public class WarCraft2
     {
-        public static readonly int overlayWidth = 370;
+        public static readonly int overlayWidth = 400;
         public static readonly int overlayHeight = 315;
         public static readonly int cellColumns = 4;
         public static readonly int sideOffset = 0;

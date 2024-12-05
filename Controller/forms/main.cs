@@ -16,14 +16,8 @@ public partial class mainform : Form
     // Update UI form status indicators
     private void UIStatus()
     {
-        while (true)
+        while (!ControllerInputs.shuttingDown)
         {
-            if (ControllerInputs.shuttingDown)
-            {
-                Debug.WriteLine("Controls Shutting Down");
-                break;
-            }
-
             string ctrlStatus = "Not Connected";
             Color cntrlStatusColor = Color.DarkRed;
             string gameStatus = "Not Running";
@@ -69,6 +63,12 @@ public partial class mainform : Form
 
     private void Form1_Load(object sender, EventArgs e)
     {
+        
+    }
+
+    // start background workers and UI threads when form is shown
+    private void Mainform_Shown(object sender, EventArgs e)
+    {
         IncCursorSpeed.Checked = Properties.Settings.Default.IncreaseCursorSpeed;
         deadzoneBox.Text = Properties.Settings.Default.Deadzone.ToString();
         ControllerInputs.deadzone = Convert.ToDouble(deadzoneBox.Text);
@@ -79,11 +79,7 @@ public partial class mainform : Form
         overlayBox.Checked = Properties.Settings.Default.overlay;
 
         startOverlay();
-    }
 
-    // start background workers and UI threads when form is shown
-    private void Mainform_Shown(object sender, EventArgs e)
-    {
         SC2SetupBox.Text = "Enable Grid Hotkeys:" + Environment.NewLine + "- [OPTIONS] > [HOTKEYS] > Selected Profile: Grid > Click Accept Button" + Environment.NewLine + Environment.NewLine +
             "Enable Fullscreen Window Display Mode" + Environment.NewLine + "[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button";
         WC3SetupBox.Text = "Enable Grid Hotkeys:" + Environment.NewLine + "- [OPTIONS] > [INPUT] > Preset Keybindings > [GRID]" + Environment.NewLine + Environment.NewLine +
@@ -91,8 +87,9 @@ public partial class mainform : Form
         SC1SetupBox.Text = "Fullscreen Window Display Mode" + Environment.NewLine +
             "[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button" + Environment.NewLine + Environment.NewLine +
             "Click on one of the buttons to the right to modify your CSettings.json file for you. >>";
-        Thread thread = new Thread(UIStatus);
-        thread.Start();
+        WC2SetupBox.Text = "Enable Grid Hotkeys:" + Environment.NewLine + "- [OPTIONS] > [Gameplay] > [Grid layout hot keys] > Click to check this box" + Environment.NewLine + Environment.NewLine + "Enable Classic UI:" + Environment.NewLine + "- [OPTIONS] > [Preferences] > UI Scale > Classic > Click to check the radio button" + Environment.NewLine + Environment.NewLine + "Fullscreen Window Display Mode:" + Environment.NewLine + "- [OPTIONS] > [Preferences] > Display Mode: Windowed > Click to check this box > Click Ok Button";
+        Thread thread2 = new Thread(UIStatus);
+        thread2.Start();
     }
 
     private void deadzoneBox_KeyPress(object sender, KeyPressEventArgs e)
@@ -154,7 +151,7 @@ public partial class mainform : Form
 
     private void ExitBtn_Click(object sender, EventArgs e)
     {
-        Close();
+        Application.Exit();
     }
 
     

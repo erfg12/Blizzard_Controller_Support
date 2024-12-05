@@ -50,6 +50,8 @@
             SC1SetupBox = new TextBox();
             tabPage2 = new TabPage();
             SC2SetupBox = new TextBox();
+            tabPage3 = new TabPage();
+            WC2SetupBox = new TextBox();
             tabPage5 = new TabPage();
             WC3SetupBox = new TextBox();
             startSC2 = new Button();
@@ -59,6 +61,7 @@
             HowToSetupTabControl.SuspendLayout();
             tabPage1.SuspendLayout();
             tabPage2.SuspendLayout();
+            tabPage3.SuspendLayout();
             tabPage5.SuspendLayout();
             SuspendLayout();
             // 
@@ -213,6 +216,7 @@
             HowToSetupTabControl.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             HowToSetupTabControl.Controls.Add(tabPage1);
             HowToSetupTabControl.Controls.Add(tabPage2);
+            HowToSetupTabControl.Controls.Add(tabPage3);
             HowToSetupTabControl.Controls.Add(tabPage5);
             HowToSetupTabControl.Location = new Point(8, 23);
             HowToSetupTabControl.Margin = new Padding(4, 3, 4, 3);
@@ -302,13 +306,13 @@
             SC1SetupBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             SC1SetupBox.BackColor = Color.White;
             SC1SetupBox.BorderStyle = BorderStyle.None;
-            SC1SetupBox.Location = new Point(7, 7);
+            SC1SetupBox.Location = new Point(1, 0);
             SC1SetupBox.Margin = new Padding(4, 3, 4, 3);
             SC1SetupBox.Multiline = true;
             SC1SetupBox.Name = "SC1SetupBox";
             SC1SetupBox.ReadOnly = true;
             SC1SetupBox.ScrollBars = ScrollBars.Both;
-            SC1SetupBox.Size = new Size(543, 248);
+            SC1SetupBox.Size = new Size(543, 264);
             SC1SetupBox.TabIndex = 2;
             SC1SetupBox.Text = "N/A";
             // 
@@ -326,17 +330,38 @@
             // 
             // SC2SetupBox
             // 
-            SC2SetupBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             SC2SetupBox.BackColor = Color.White;
             SC2SetupBox.BorderStyle = BorderStyle.None;
-            SC2SetupBox.Location = new Point(7, 7);
-            SC2SetupBox.Margin = new Padding(4, 3, 4, 3);
+            SC2SetupBox.Dock = DockStyle.Fill;
+            SC2SetupBox.Location = new Point(4, 3);
+            SC2SetupBox.Margin = new Padding(0);
             SC2SetupBox.Multiline = true;
             SC2SetupBox.Name = "SC2SetupBox";
             SC2SetupBox.ReadOnly = true;
-            SC2SetupBox.Size = new Size(630, 248);
+            SC2SetupBox.Size = new Size(637, 258);
             SC2SetupBox.TabIndex = 2;
             SC2SetupBox.Text = "N/A";
+            // 
+            // tabPage3
+            // 
+            tabPage3.Controls.Add(WC2SetupBox);
+            tabPage3.Location = new Point(4, 24);
+            tabPage3.Name = "tabPage3";
+            tabPage3.Size = new Size(645, 264);
+            tabPage3.TabIndex = 3;
+            tabPage3.Text = "WarCraft II";
+            tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // WC2SetupBox
+            // 
+            WC2SetupBox.BorderStyle = BorderStyle.None;
+            WC2SetupBox.Dock = DockStyle.Fill;
+            WC2SetupBox.Location = new Point(0, 0);
+            WC2SetupBox.Margin = new Padding(0, 4, 0, 0);
+            WC2SetupBox.Multiline = true;
+            WC2SetupBox.Name = "WC2SetupBox";
+            WC2SetupBox.Size = new Size(645, 264);
+            WC2SetupBox.TabIndex = 0;
             // 
             // tabPage5
             // 
@@ -351,44 +376,50 @@
             // 
             // WC3SetupBox
             // 
-            WC3SetupBox.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             WC3SetupBox.BackColor = Color.White;
             WC3SetupBox.BorderStyle = BorderStyle.None;
-            WC3SetupBox.Location = new Point(7, 7);
-            WC3SetupBox.Margin = new Padding(4, 3, 4, 3);
+            WC3SetupBox.Dock = DockStyle.Fill;
+            WC3SetupBox.Location = new Point(0, 0);
+            WC3SetupBox.Margin = new Padding(0, 4, 0, 0);
             WC3SetupBox.Multiline = true;
             WC3SetupBox.Name = "WC3SetupBox";
             WC3SetupBox.ReadOnly = true;
-            WC3SetupBox.Size = new Size(634, 248);
+            WC3SetupBox.Size = new Size(645, 264);
             WC3SetupBox.TabIndex = 1;
             WC3SetupBox.Text = "N/A";
             // 
             // startSC2
             // 
             startSC2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            startSC2.BackColor = Color.DarkSeaGreen;
+            startSC2.Cursor = Cursors.Hand;
+            startSC2.FlatStyle = FlatStyle.Popup;
             startSC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            startSC2.ForeColor = Color.RoyalBlue;
+            startSC2.ForeColor = SystemColors.ButtonHighlight;
             startSC2.Location = new Point(410, 72);
             startSC2.Margin = new Padding(4, 3, 4, 3);
             startSC2.Name = "startSC2";
             startSC2.Size = new Size(273, 66);
             startSC2.TabIndex = 10;
             startSC2.Text = "START BATTLE.NET";
-            startSC2.UseVisualStyleBackColor = true;
+            startSC2.UseVisualStyleBackColor = false;
             startSC2.Click += startSC2_Click;
             // 
             // ExitBtn
             // 
             ExitBtn.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ExitBtn.BackColor = Color.RosyBrown;
+            ExitBtn.Cursor = Cursors.Hand;
+            ExitBtn.FlatStyle = FlatStyle.Popup;
             ExitBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            ExitBtn.ForeColor = Color.Maroon;
+            ExitBtn.ForeColor = SystemColors.ButtonHighlight;
             ExitBtn.Location = new Point(410, 14);
             ExitBtn.Margin = new Padding(4, 3, 4, 3);
             ExitBtn.Name = "ExitBtn";
             ExitBtn.Size = new Size(273, 51);
             ExitBtn.TabIndex = 11;
             ExitBtn.Text = "EXIT APPLICATION";
-            ExitBtn.UseVisualStyleBackColor = true;
+            ExitBtn.UseVisualStyleBackColor = false;
             ExitBtn.Click += ExitBtn_Click;
             // 
             // mainform
@@ -421,6 +452,8 @@
             tabPage1.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
+            tabPage3.ResumeLayout(false);
+            tabPage3.PerformLayout();
             tabPage5.ResumeLayout(false);
             tabPage5.PerformLayout();
             ResumeLayout(false);
@@ -454,6 +487,8 @@
         private System.Windows.Forms.Button restoreHotkeysBtn;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private TabPage tabPage3;
+        private TextBox WC2SetupBox;
     }
 }
 

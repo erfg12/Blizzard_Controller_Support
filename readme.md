@@ -11,8 +11,9 @@ NOTE: This does work for WarCraft III Classic and Original StarCraft, but they h
 ## System Requirements
 
 - [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
+- [AutoIt Full Installation](https://www.autoitscript.com/site/autoit/downloads/)
 - Windows 10 or 11
-- StarCraft / StarCraft 2 / WarCraft III
+- StarCraft / StarCraft 2 / WarCraft II: Remastered / WarCraft III
 - Game controller
 - Modify your game's settings using the instructions below. (click to open)
 - Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases) and unzip the files into a folder and run the .exe program.
@@ -24,6 +25,17 @@ NOTE: This does work for WarCraft III Classic and Original StarCraft, but they h
     - `Options` > `Hotkeys` > `Selected Profile: Grid` > `Click Accept Button`
 - Fullscreen Window Display Mode
     - `Options` > `Graphics` > `Display Mode: Windowed (Fullscreen)` > `Click Accept Button`
+</details>
+
+<details>
+<summary>WarCraft II: Remastered Game Settings (click here to open)</summary>
+
+- Enable Grid Hotkeys
+    - `Options` > `Gameplay` > `Grid layout hot keys` > `Click to check this box`
+- Enable Classic UI
+    - `Options` > `Preferences` > `UI Scale` > `Classic` > `Click to check the radio button`
+- Fullscreen Window Display Mode
+    - `Options` > `Preferences` > `Display Mode: Windowed` > `Click to check this box` > `Click Ok Button`
 </details>
 
 <details>

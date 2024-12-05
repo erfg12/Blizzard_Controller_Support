@@ -3,7 +3,6 @@ global using System.Runtime.InteropServices;
 global using System.Threading;
 global using System;
 global using System.Drawing;
-global using WindowsInput;
 global using Raylib_cs;
 global using static Raylib_cs.Raylib;
 global using System.Linq;
