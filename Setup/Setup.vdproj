@@ -15,13 +15,19 @@
     {
         "Entry"
         {
-        "MsmKey" = "8:_29B5563FCF0147BDAA2768E4B0D4E052"
+        "MsmKey" = "8:_6AFC8D312B08429BB26B19D5E8CE457C"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
-        "MsmKey" = "8:_C69743E2977340BBBA0BDE0927B35197"
+        "MsmKey" = "8:_87DC73BCAB7144319E33DCB344055297"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_C705A1AA12D34F3FA2E3019C232BF126"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -43,6 +49,22 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+                "Items"
+                {
+                    "{EDC2488A-8267-493A-A98E-7D9C3B36CDF3}:.NETFramework,Version=v4.7.2"
+                    {
+                    "Name" = "8:Microsoft .NET Framework 4.7.2 (x86 and x64)"
+                    "ProductCode" = "8:.NETFramework,Version=v4.7.2"
+                    }
+                }
+            }
         }
         "Release"
         {
@@ -59,12 +81,34 @@
         "PrivateKeyFile" = "8:"
         "TimeStampServer" = "8:"
         "InstallerBootstrapper" = "3:2"
+            "BootstrapperCfg:{63ACBE69-63AA-4F98-B2B6-99F9E24495F2}"
+            {
+            "Enabled" = "11:TRUE"
+            "PromptEnabled" = "11:TRUE"
+            "PrerequisitesLocation" = "2:1"
+            "Url" = "8:"
+            "ComponentsUrl" = "8:"
+            }
         }
     }
     "Deployable"
     {
         "CustomAction"
         {
+            "{4AA51A2D-7D85-4A59-BA75-B0809FC8B380}:_B171E41CD4E14E0AAF71EA623204B43E"
+            {
+            "Name" = "8:autoit-v3-setup.exe"
+            "Condition" = "8:NOT AUTOIT"
+            "Object" = "8:_C705A1AA12D34F3FA2E3019C232BF126"
+            "FileType" = "3:2"
+            "InstallAction" = "3:1"
+            "Arguments" = "8:"
+            "EntryPoint" = "8:"
+            "Sequence" = "3:1"
+            "Identifier" = "8:_5ADFF030_27A9_4EB3_BFF2_8CF5ECBA7D38"
+            "InstallerClass" = "11:FALSE"
+            "CustomActionData" = "8:"
+            }
         }
         "DefaultFeature"
         {
@@ -90,10 +134,30 @@
         }
         "File"
         {
-            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C69743E2977340BBBA0BDE0927B35197"
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_87DC73BCAB7144319E33DCB344055297"
             {
-            "SourcePath" = "8:..\\Controller\\bin\\Debug\\net8.0-windows\\Blizzard_Controller.exe"
-            "TargetName" = "8:Blizzard_Controller.exe"
+            "SourcePath" = "8:..\\media\\frozen-game-controller.ico"
+            "TargetName" = "8:frozen-game-controller.ico"
+            "Tag" = "8:"
+            "Folder" = "8:_B7E66E5C43154C439556974E9575BD56"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_C705A1AA12D34F3FA2E3019C232BF126"
+            {
+            "SourcePath" = "8:..\\..\\..\\..\\Downloads\\autoit-v3-setup.exe"
+            "TargetName" = "8:autoit-v3-setup.exe"
             "Tag" = "8:"
             "Folder" = "8:_B7E66E5C43154C439556974E9575BD56"
             "Condition" = "8:"
@@ -156,6 +220,21 @@
         }
         "Locator"
         {
+            "{39E1837C-0DB9-45A2-89C8-438377A77565}:_02DFE9897A344EFAB7D04905707C0965"
+            {
+            "Name" = "8:Search for AutoIt"
+            "Folder" = "8:C:\\Program Files (x86)\\AutoIt3\\AutoItX"
+            "Depth" = "2:0"
+            "FileName" = "8:AutoItX3.dll"
+            "MinVesion" = "8:"
+            "MaxVersion" = "8:"
+            "MinSize" = "8:"
+            "MaxSize" = "8:"
+            "MinDate" = "8:"
+            "MaxDate" = "8:"
+            "Languages" = "8:"
+            "Property" = "8:AUTOIT"
+            }
         }
         "MsiBootstrapper"
         {
@@ -167,7 +246,7 @@
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Blizzard Controller"
         "ProductCode" = "8:{292ABD1F-563F-4DEE-8136-01ABFFF01C31}"
-        "PackageCode" = "8:{2CA74241-574F-46E9-977A-7BBEB067EA11}"
+        "PackageCode" = "8:{97EEEB18-B5EF-48E7-BF2D-22BA720D9B8E}"
         "UpgradeCode" = "8:{85972B65-C4DA-4FB0-88EA-93E8A1D8F50D}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
@@ -184,7 +263,7 @@
         "Keywords" = "8:"
         "ARPCOMMENTS" = "8:"
         "ARPURLINFOABOUT" = "8:https://github.com/erfg12"
-        "ARPPRODUCTICON" = "8:"
+        "ARPPRODUCTICON" = "8:_87DC73BCAB7144319E33DCB344055297"
         "ARPIconIndex" = "3:0"
         "SearchPath" = "8:"
         "UseSystemSearchPath" = "11:TRUE"
@@ -287,18 +366,18 @@
         }
         "Shortcut"
         {
-            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_BACD147E51284D68B3B961597016003F"
+            "{970C0BB2-C7D0-45D7-ABFA-7EC378858BC0}:_1403C1CB6A4E4245BB58F0ACE9C4E0B9"
             {
-            "Name" = "8:Shortcut to %sBlizzard_Controller.exe"
+            "Name" = "8:Blizzard Controller"
             "Arguments" = "8:"
             "Description" = "8:"
             "ShowCmd" = "3:1"
             "IconIndex" = "3:0"
             "Transitive" = "11:FALSE"
-            "Target" = "8:_C69743E2977340BBBA0BDE0927B35197"
+            "Target" = "8:_6AFC8D312B08429BB26B19D5E8CE457C"
             "Folder" = "8:_6BAEC96E3ADF4EF28C4BF59FAB76A0A1"
             "WorkingFolder" = "8:_B7E66E5C43154C439556974E9575BD56"
-            "Icon" = "8:"
+            "Icon" = "8:_87DC73BCAB7144319E33DCB344055297"
             "Feature" = "8:"
             }
         }
@@ -342,54 +421,6 @@
                             "Setting" = "3:0"
                             "Value" = "3:1"
                             "DefaultValue" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                        }
-                    }
-                    "{688940B3-5CA9-4162-8DEE-2993FA9D8CBC}:_A4AC387F287D4F949A81DB65523AC38E"
-                    {
-                    "Sequence" = "3:100"
-                    "DisplayName" = "8:Welcome"
-                    "UseDynamicProperties" = "11:TRUE"
-                    "IsDependency" = "11:FALSE"
-                    "SourcePath" = "8:<VsdDialogDir>\\VsdWelcomeDlg.wid"
-                        "Properties"
-                        {
-                            "BannerBitmap"
-                            {
-                            "Name" = "8:BannerBitmap"
-                            "DisplayName" = "8:#1001"
-                            "Description" = "8:#1101"
-                            "Type" = "3:8"
-                            "ContextData" = "8:Bitmap"
-                            "Attributes" = "3:4"
-                            "Setting" = "3:1"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "CopyrightWarning"
-                            {
-                            "Name" = "8:CopyrightWarning"
-                            "DisplayName" = "8:#1002"
-                            "Description" = "8:#1102"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1202"
-                            "DefaultValue" = "8:#1202"
-                            "UsePlugInResources" = "11:TRUE"
-                            }
-                            "Welcome"
-                            {
-                            "Name" = "8:Welcome"
-                            "DisplayName" = "8:#1003"
-                            "Description" = "8:#1103"
-                            "Type" = "3:3"
-                            "ContextData" = "8:"
-                            "Attributes" = "3:0"
-                            "Setting" = "3:1"
-                            "Value" = "8:#1203"
-                            "DefaultValue" = "8:#1203"
                             "UsePlugInResources" = "11:TRUE"
                             }
                         }
@@ -700,7 +731,7 @@
         }
         "ProjectOutput"
         {
-            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_29B5563FCF0147BDAA2768E4B0D4E052"
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_6AFC8D312B08429BB26B19D5E8CE457C"
             {
             "SourcePath" = "8:..\\Controller\\obj\\Debug\\net8.0-windows\\apphost.exe"
             "TargetName" = "8:"
