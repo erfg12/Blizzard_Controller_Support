@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(mainform));
             label1 = new Label();
             cntrlStatus = new Label();
             label2 = new Label();
@@ -436,11 +437,11 @@
             Controls.Add(cntrlStatus);
             Controls.Add(label1);
             FormBorderStyle = FormBorderStyle.Fixed3D;
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Margin = new Padding(4, 3, 4, 3);
             MaximizeBox = false;
             Name = "mainform";
-            ShowIcon = false;
-            Text = "SC / SC2 / WC3 Controller";
+            Text = "Blizzard Controller";
             FormClosing += mainform_FormClosing;
             Load += Form1_Load;
             Shown += Mainform_Shown;

@@ -9,6 +9,14 @@
     <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <PlatformTarget>x86</PlatformTarget>
+    <Version>2.2.0</Version>
+    <Authors>Jacob Fliss</Authors>
+    <Company>New Age Software</Company>
+    <Description>Control your favorite StarCraft and WarCraft games with a game controller.</Description>
+    <Product>Blizzard Controller</Product>
+    <Title>Blizzard Controller</Title>
+    <PackageIcon>frozen-game-controller.png</PackageIcon>
+    <ApplicationIcon>frozen-game-controller.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove=".nuget\**" />
@@ -25,6 +33,15 @@
       <Isolated>false</Isolated>
       <EmbedInteropTypes>true</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="frozen-game-controller.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\media\frozen-game-controller.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="AutoItX.Dotnet" Version="3.3.14.5" />
