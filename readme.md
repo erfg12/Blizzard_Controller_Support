@@ -43,8 +43,6 @@ NOTE: This does work for WarCraft III Classic and Original StarCraft, but they h
     - `Options` > `Gameplay` > `Grid layout hot keys` > `Click to check this box`
 - Enable Classic UI
     - `Options` > `Preferences` > `UI Scale` > `Classic` > `Click to check the radio button`
-- Fullscreen Window Display Mode
-    - `Options` > `Preferences` > `Display Mode: Windowed` > `Click to check this box` > `Click Ok Button`
 </details>
 
 <details>
