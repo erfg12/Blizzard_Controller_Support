@@ -168,6 +168,7 @@ public class OverlayWindow
             BeginDrawing();
             ClearBackground(Raylib_cs.Color.Blank);
 
+            // no games running, so don't do anything
             if (SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null || gameWindowSize.Left - gameWindowSize.Right == 0)
             {
                 EndDrawing();
@@ -176,22 +177,30 @@ public class OverlayWindow
 
             bool leftSide = WC1Proc != null || WC2Proc != null;
 
-            // top row
-            List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
-            int c = _cellColumns - (leftSide ? 0 : 1);
-            for (int i = 0; i < _cellColumns - 1; i++)
-            {
-                DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, Raylib_cs.Color.White);
-            }
-
-            // side buttons
-            DrawTexture(rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, Raylib_cs.Color.White);
-            DrawTexture(lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, Raylib_cs.Color.White);
-            if (WC1Proc == null)
-                DrawTexture(ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, Raylib_cs.Color.White);
-
             if (IsGamepadAvailable(gamepad))
             {
+                // draw overlay buttons only if we're holding trigger buttons
+                if (
+                    IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
+                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
+                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                {
+                    var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
+                    // top row
+                    List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
+                    int c = _cellColumns - (leftSide ? 0 : 1);
+                    for (int i = 0; i < _cellColumns - 1; i++)
+                    {
+                        DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
+                    }
+
+                    // side buttons
+                    DrawTexture(rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
+                    DrawTexture(lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
+                    if (WC1Proc == null)
+                        DrawTexture(ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
+                }
+
                 // row highlighting
                 if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     DrawRectangleLines(
