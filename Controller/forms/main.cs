@@ -87,7 +87,7 @@ public partial class mainform : Form
         SC1SetupBox.Text = "Fullscreen Window Display Mode" + Environment.NewLine +
             "[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button" + Environment.NewLine + Environment.NewLine +
             "Click on one of the buttons to the right to modify your CSettings.json file for you. >>";
-        WC2SetupBox.Text = "Enable Grid Hotkeys:" + Environment.NewLine + "- [OPTIONS] > [Gameplay] > [Grid layout hot keys] > Click to check this box" + Environment.NewLine + Environment.NewLine + "Enable Classic UI:" + Environment.NewLine + "- [OPTIONS] > [Preferences] > UI Scale > Classic > Click to check the radio button";
+        WC2SetupBox.Text = "Enable Grid Hotkeys:" + Environment.NewLine + "- [OPTIONS] > [Gameplay] > [Grid layout hot keys] > Click to check this box" + Environment.NewLine + Environment.NewLine + "Enable Classic UI:" + Environment.NewLine + "- [OPTIONS] > [Preferences] > UI Scale > Classic > Click to check the radio button" + Environment.NewLine + Environment.NewLine + "Fullscreen Window Display Mode:" + Environment.NewLine + "- [OPTIONS] > [Preferences] > Display Mode: Windowed > Click to check this box > Click Ok Button";
         Thread thread2 = new Thread(UIStatus);
         thread2.Start();
     }

@@ -67,16 +67,16 @@ class ControllerInputs
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName);
                 //if (pname == null) continue;
                 gameProcStatus = "WarCraft I: Remastered";
-                //if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                //    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
+                if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
+                    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
             }
             else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).Length > 0)
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName);
                 //if (pname == null) continue;
                 gameProcStatus = "WarCraft II: Remastered";
-                //if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                //    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
+                if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
+                    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
             }
             else
             {
