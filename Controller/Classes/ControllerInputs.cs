@@ -28,7 +28,6 @@ class ControllerInputs
     public static bool controller = false;
     public static int gamepad = 0;
 
-    //public static InputSimulator sim = new InputSimulator();
     static AutoItX3 aix3c = new();
 
     private const int SW_MAXIMIZE = 3;
@@ -36,7 +35,6 @@ class ControllerInputs
     public static bool IsWindowedMode(IntPtr hWnd)
     {
         int style = Invoke.GetWindowLong(hWnd, Invoke.GWL_STYLE);
-        // Check if the window has the overlapped window style, which indicates windowed mode
         return (style & Invoke.WS_OVERLAPPEDWINDOW) == Invoke.WS_OVERLAPPEDWINDOW;
     }
 
@@ -86,25 +84,7 @@ class ControllerInputs
 
             Thread.Sleep(500);
         }
-    } 
-
-    //public static void globalKeyPress(int key, bool shift = false, bool ctrl = false, bool alt = false)
-    //{
-    //    if (pname.Length > 0)
-    //        Invoke.PostMessage(pname[0].MainWindowHandle, WM_KEYDOWN, (IntPtr)key, (IntPtr)0);
-
-    //    if (key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.LEFT) && 
-    //        key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.RIGHT) && 
-    //        key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.UP) && 
-    //        key != Convert.ToInt32(WindowsInput.Native.VirtualKeyCode.DOWN))
-    //            Thread.Sleep(150); // prevent double press
-    //}
-
-    //public static void globalKeyRelease(int key)
-    //{
-    //    if (pname.Length > 0)
-    //        Invoke.PostMessage(pname[0].MainWindowHandle, WM_KEYUP, (IntPtr)key, (IntPtr)0);
-    //}
+    }
 
     /// <summary>
     /// Mouse click. x, y coords with button.
@@ -171,7 +151,6 @@ class ControllerInputs
         if (IsGamepadButtonDown(gamepad, GamepadButton.LeftThumb) && holdingLJoy == false)
         {
             aix3c.Send("{LSHIFT down}");
-            Debug.WriteLine("holding shift");
             holdingLJoy = true;
         }
         else if (IsGamepadButtonUp(gamepad, GamepadButton.LeftThumb) && holdingLJoy == true)

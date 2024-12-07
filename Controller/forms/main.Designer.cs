@@ -37,6 +37,8 @@
             deadzoneBox = new TextBox();
             label3 = new Label();
             groupBox1 = new GroupBox();
+            label7 = new Label();
+            overlayBtns = new ComboBox();
             cursorSpeedBox = new TextBox();
             label4 = new Label();
             overlayBox = new CheckBox();
@@ -129,7 +131,7 @@
             deadzoneBox.Location = new Point(90, 54);
             deadzoneBox.Margin = new Padding(4, 3, 4, 3);
             deadzoneBox.Name = "deadzoneBox";
-            deadzoneBox.Size = new Size(62, 23);
+            deadzoneBox.Size = new Size(39, 23);
             deadzoneBox.TabIndex = 6;
             deadzoneBox.Text = "0.1";
             deadzoneBox.TextChanged += deadzoneBox_TextChanged;
@@ -148,6 +150,8 @@
             // 
             // groupBox1
             // 
+            groupBox1.Controls.Add(label7);
+            groupBox1.Controls.Add(overlayBtns);
             groupBox1.Controls.Add(cursorSpeedBox);
             groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(overlayBox);
@@ -163,12 +167,32 @@
             groupBox1.TabStop = false;
             groupBox1.Text = "SETTINGS";
             // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.Location = new Point(284, 29);
+            label7.Name = "label7";
+            label7.Size = new Size(91, 15);
+            label7.TabIndex = 12;
+            label7.Text = "Overlay Buttons";
+            // 
+            // overlayBtns
+            // 
+            overlayBtns.DropDownStyle = ComboBoxStyle.DropDownList;
+            overlayBtns.FormattingEnabled = true;
+            overlayBtns.Items.AddRange(new object[] { "xbox", "playstation" });
+            overlayBtns.Location = new Point(284, 54);
+            overlayBtns.Name = "overlayBtns";
+            overlayBtns.Size = new Size(97, 23);
+            overlayBtns.TabIndex = 11;
+            overlayBtns.SelectedIndexChanged += overlayBtns_SelectedIndexChanged;
+            // 
             // cursorSpeedBox
             // 
-            cursorSpeedBox.Location = new Point(299, 54);
+            cursorSpeedBox.Location = new Point(231, 54);
             cursorSpeedBox.Margin = new Padding(4, 3, 4, 3);
             cursorSpeedBox.Name = "cursorSpeedBox";
-            cursorSpeedBox.Size = new Size(62, 23);
+            cursorSpeedBox.Size = new Size(32, 23);
             cursorSpeedBox.TabIndex = 9;
             cursorSpeedBox.Text = "12";
             cursorSpeedBox.TextChanged += cursorSpeedBox_TextChanged;
@@ -178,7 +202,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label4.Location = new Point(196, 58);
+            label4.Location = new Point(136, 58);
             label4.Margin = new Padding(4, 0, 4, 0);
             label4.Name = "label4";
             label4.Size = new Size(87, 13);
@@ -190,7 +214,7 @@
             overlayBox.AutoSize = true;
             overlayBox.Checked = true;
             overlayBox.CheckState = CheckState.Checked;
-            overlayBox.Location = new Point(200, 28);
+            overlayBox.Location = new Point(160, 28);
             overlayBox.Margin = new Padding(4, 3, 4, 3);
             overlayBox.Name = "overlayBox";
             overlayBox.Size = new Size(66, 19);
@@ -490,6 +514,8 @@
         private System.Windows.Forms.Label label6;
         private TabPage tabPage3;
         private TextBox WC2SetupBox;
+        private Label label7;
+        public ComboBox overlayBtns;
     }
 }
 

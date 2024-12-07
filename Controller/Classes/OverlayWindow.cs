@@ -4,6 +4,7 @@ public class OverlayWindow
     #region init_vars
     public static Process[] pname = null;
     public static Process SC2Proc, SC1Proc, WC3Proc, WC1Proc, WC2Proc;
+    public static string overlayBtns = "xbox";
 
     int _overlayWidth { get; set; } = 0;
     int _overlayHeight { get; set; } = 0;
@@ -39,14 +40,23 @@ public class OverlayWindow
         Console.WriteLine($"Starting overlay...");
 
         // x, y
-        var aBtnImg = LoadTextureFromImage(LoadImage("Resources/a_btn.png")); // 0,0
-        var xBtnImg = LoadTextureFromImage(LoadImage("Resources/x_btn.png")); // 1,0
-        var yBtnImg = LoadTextureFromImage(LoadImage("Resources/y_btn.png")); // 2,0
-        var bBtnImg = LoadTextureFromImage(LoadImage("Resources/b_btn.png")); // 3,0
-        var backBtnImg = LoadTextureFromImage(LoadImage("Resources/back_btn.png")); // 0,1
-        var lBtnImg = LoadTextureFromImage(LoadImage("Resources/lb_btn.png")); // 0,2
-        var ltBtnImg = LoadTextureFromImage(LoadImage("Resources/lt_btn.png")); // 0,3
+        var aBtnImg = LoadTextureFromImage(LoadImage("Resources/a_btn.png")); 
+        var xBtnImg = LoadTextureFromImage(LoadImage("Resources/x_btn.png"));
+        var yBtnImg = LoadTextureFromImage(LoadImage("Resources/y_btn.png"));
+        var bBtnImg = LoadTextureFromImage(LoadImage("Resources/b_btn.png"));
+        var backBtnImg = LoadTextureFromImage(LoadImage("Resources/back_btn.png"));
+        var lBtnImg = LoadTextureFromImage(LoadImage("Resources/lb_btn.png"));
+        var ltBtnImg = LoadTextureFromImage(LoadImage("Resources/lt_btn.png"));
         var rBtnImg = LoadTextureFromImage(LoadImage("Resources/rb_btn.png"));
+
+        var ps_xBtn = LoadTextureFromImage(LoadImage("Resources/ps_x_btn.png"));
+        var ps_squareBtn = LoadTextureFromImage(LoadImage("Resources/ps_square_btn.png"));
+        var ps_triangleBtn = LoadTextureFromImage(LoadImage("Resources/ps_triangle_btn.png"));
+        var ps_circleBtn = LoadTextureFromImage(LoadImage("Resources/ps_circle_btn.png"));
+        var ps_shareBtn = LoadTextureFromImage(LoadImage("Resources/ps_share_btn.png"));
+        var ps_l1Btn = LoadTextureFromImage(LoadImage("Resources/ps_l1_btn.png"));
+        var ps_l2Btn = LoadTextureFromImage(LoadImage("Resources/ps_l2_btn.png"));
+        var ps_r1Btn = LoadTextureFromImage(LoadImage("Resources/ps_r1_btn.png"));
 
         int cellWidth = 0;
         int cellHeight = 0;
@@ -140,6 +150,23 @@ public class OverlayWindow
                     backBtnImg.Width = cellWidth;
                     backBtnImg.Height = cellHeight;
 
+                    ps_xBtn.Width = cellWidth;
+                    ps_xBtn.Height = cellHeight;
+                    ps_squareBtn.Width = cellWidth;
+                    ps_squareBtn.Height = cellHeight;
+                    ps_triangleBtn.Width = cellWidth;
+                    ps_triangleBtn.Height = cellHeight;
+                    ps_circleBtn.Width = cellWidth;
+                    ps_circleBtn.Height = cellHeight;
+                    ps_l1Btn.Width = cellWidth;
+                    ps_l1Btn.Height = cellHeight;
+                    ps_l2Btn.Width = cellWidth;
+                    ps_l2Btn.Height = cellHeight;
+                    ps_r1Btn.Width = cellWidth;
+                    ps_r1Btn.Height = cellHeight;
+                    ps_shareBtn.Width = cellWidth;
+                    ps_shareBtn.Height = cellHeight;
+
                     // WC3 offsets their command grid differently per aspect ratio
                     if (WC3Proc != null)
                     {
@@ -188,17 +215,21 @@ public class OverlayWindow
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
                     // top row
                     List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
+                    List<Texture2D> ps_btnList = new() { ps_xBtn, ps_squareBtn, ps_triangleBtn, ps_circleBtn, ps_shareBtn };
                     int c = _cellColumns - (leftSide ? 0 : 1);
                     for (int i = 0; i < _cellColumns - 1; i++)
                     {
-                        DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
+                        if (overlayBtns.Equals("playstation"))
+                            DrawTexture(ps_btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
+                        else
+                            DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
                     }
 
                     // side buttons
-                    DrawTexture(rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
-                    DrawTexture(lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
                     if (WC1Proc == null)
-                        DrawTexture(ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
+                        DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
                 }
 
                 // row highlighting
