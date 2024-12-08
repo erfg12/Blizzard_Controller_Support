@@ -59,6 +59,7 @@
             WC3SetupBox = new TextBox();
             startSC2 = new Button();
             ExitBtn = new Button();
+            gameSelectBox = new ComboBox();
             groupBox1.SuspendLayout();
             groupBox2.SuspendLayout();
             HowToSetupTabControl.SuspendLayout();
@@ -421,12 +422,12 @@
             startSC2.FlatStyle = FlatStyle.Popup;
             startSC2.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             startSC2.ForeColor = SystemColors.ButtonHighlight;
-            startSC2.Location = new Point(410, 72);
+            startSC2.Location = new Point(410, 98);
             startSC2.Margin = new Padding(4, 3, 4, 3);
             startSC2.Name = "startSC2";
-            startSC2.Size = new Size(273, 66);
+            startSC2.Size = new Size(273, 40);
             startSC2.TabIndex = 10;
-            startSC2.Text = "START BATTLE.NET";
+            startSC2.Text = "START GAME";
             startSC2.UseVisualStyleBackColor = false;
             startSC2.Click += startSC2_Click;
             // 
@@ -447,11 +448,22 @@
             ExitBtn.UseVisualStyleBackColor = false;
             ExitBtn.Click += ExitBtn_Click;
             // 
+            // gameSelectBox
+            // 
+            gameSelectBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            gameSelectBox.FormattingEnabled = true;
+            gameSelectBox.Items.AddRange(new object[] { "StarCraft 1", "StarCraft 2", "WarCraft 2", "WarCraft 3" });
+            gameSelectBox.Location = new Point(410, 72);
+            gameSelectBox.Name = "gameSelectBox";
+            gameSelectBox.Size = new Size(272, 23);
+            gameSelectBox.TabIndex = 12;
+            // 
             // mainform
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(696, 480);
+            Controls.Add(gameSelectBox);
             Controls.Add(ExitBtn);
             Controls.Add(startSC2);
             Controls.Add(groupBox2);
@@ -516,6 +528,7 @@
         private TextBox WC2SetupBox;
         private Label label7;
         public ComboBox overlayBtns;
+        private ComboBox gameSelectBox;
     }
 }
 

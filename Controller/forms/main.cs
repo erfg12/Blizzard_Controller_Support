@@ -72,6 +72,8 @@ public partial class mainform : Form
     {
         overlayBtns.Text = "xbox";
         overlayBtns.SelectedIndex = 0;
+        gameSelectBox.Text = "StarCraft 1";
+        gameSelectBox.SelectedIndex = 0;
 
         IncCursorSpeed.Checked = Properties.Settings.Default.IncreaseCursorSpeed;
         deadzoneBox.Text = Properties.Settings.Default.Deadzone.ToString();
@@ -148,9 +150,50 @@ public partial class mainform : Form
             e.Handled = true;
     }
 
-    private void startSC2_Click(object sender, EventArgs e)
+    private async Task startGame(string gameCode)
     {
-        Process.Start(@"C:\Program Files (x86)\Battle.net\Battle.net Launcher.exe");
+        string bNetDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\Battle.net";
+        if (!Directory.Exists(bNetDir))
+        {
+            MessageBox.Show("Could not locate Battle.net directory.", "ERROR");
+            return;
+        }
+
+        var p1 = new Process();
+        p1.StartInfo.WorkingDirectory = bNetDir;
+        p1.StartInfo.FileName = "Battle.net Launcher.exe";
+        p1.StartInfo.UseShellExecute = true;
+        p1.Start();
+
+        p1.WaitForInputIdle();
+
+        var p = new Process();
+        p.StartInfo.WorkingDirectory = bNetDir;
+        p.StartInfo.FileName = "Battle.net.exe";
+        p.StartInfo.Arguments = $"--exec=\"launch {gameCode}\"";
+        p.StartInfo.UseShellExecute = true;
+        p.Start();
+    }
+
+    private async void startSC2_Click(object sender, EventArgs e)
+    {
+        string gameCode = "SC1";
+        switch (gameSelectBox.Text)
+        {
+            case "StarCraft 1":
+                gameCode = "SCR";
+                break;
+            case "StarCraft 2":
+                gameCode = "SC2-LOT";
+                break;
+            case "WarCraft 2":
+                gameCode = "W2R";
+                break;
+            case "WarCraft 3":
+                gameCode = "W3";
+                break;
+        }
+        startGame(gameCode);
     }
 
     private void ExitBtn_Click(object sender, EventArgs e)
