@@ -12,9 +12,6 @@ public class OverlayWindow
     int _sideOffset { get; set; } = 0;
     int _bottomOffset { get; set; } = 0;
 
-    [DllImport("user32.dll")]
-    private static extern int GetWindowRect(nint hwnd, out System.Drawing.Rectangle rect);
-
     public static double GetAspectRatio(int width, int height)
     {
         var roundThis = (double)width / height;
@@ -22,11 +19,88 @@ public class OverlayWindow
     }
     #endregion
 
+#if WINDOWS
+    public Invoke.RECT GetWindowSize(IntPtr handle)
+    {
+        Invoke.RECT gameWindowSize = new Invoke.RECT();
+
+        Invoke.GetWindowRect(handle, out gameWindowSize);
+
+        return gameWindowSize;
+    }
+#endif
+
+#if MACOS
+    public Invoke.RECT GetWindowSize(int processId)
+    {
+        IntPtr array = Invoke.CGWindowListCopyWindowInfo(0, 0);
+        if (array == IntPtr.Zero) return default;
+
+        long count = Invoke.CFArrayGetCount(array);
+        IntPtr pidKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowOwnerPID", 0x0600);
+        IntPtr boundsKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowBounds", 0x0600);
+        IntPtr layerKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowLayer", 0x0600);
+
+        Invoke.RECT rect = default;
+
+        for (long i = 0; i < count; i++)
+        {
+            IntPtr dict = Invoke.CFArrayGetValueAtIndex(array, i);
+
+            // Check PID
+            if (Invoke.CFDictionaryGetValueIfPresent(dict, pidKey, out IntPtr pidValue) != 0)
+            {
+                Invoke.CFNumberGetValue(pidValue, 9, out int pid);
+                if (pid == processId)
+                {
+                    Console.WriteLine($"Found Process Window {pid}!");
+                    // Ensure it's main window (layer 0)
+                    Invoke.CFDictionaryGetValueIfPresent(dict, layerKey, out IntPtr layerVal);
+                    Invoke.CFNumberGetValue(layerVal, 9, out int layer);
+                    if (layer != 0)
+                    {
+                        Console.WriteLine("layer not found?");
+                        continue;
+                    }
+                    Console.WriteLine("layer found");
+
+                    // Get bounds
+                    Invoke.CFDictionaryGetValueIfPresent(dict, boundsKey, out IntPtr boundsDict);
+                    IntPtr xKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "X", 0x0600);
+                    IntPtr yKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "Y", 0x0600);
+                    IntPtr wKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "Width", 0x0600);
+                    IntPtr hKey = Invoke.CFStringCreateWithCString(IntPtr.Zero, "Height", 0x0600);
+
+                    Invoke.CFDictionaryGetValueIfPresent(boundsDict, xKey, out IntPtr xVal);
+                    Invoke.CFDictionaryGetValueIfPresent(boundsDict, yKey, out IntPtr yVal);
+                    Invoke.CFDictionaryGetValueIfPresent(boundsDict, wKey, out IntPtr wVal);
+                    Invoke.CFDictionaryGetValueIfPresent(boundsDict, hKey, out IntPtr hVal);
+
+                    Invoke.CFNumberGetValue(xVal, 9, out int x);
+                    Invoke.CFNumberGetValue(yVal, 9, out int y);
+                    Invoke.CFNumberGetValue(wVal, 9, out int w);
+                    Invoke.CFNumberGetValue(hVal, 9, out int h);
+
+                    rect.Left = x;
+                    rect.Top = y;
+                    rect.Right = x + w;
+                    rect.Bottom = y + h;
+                    break;
+                }
+            }
+        }
+
+        Invoke.CFRelease(array);
+        Console.WriteLine($"l:{rect.Left} t:{rect.Top} r:{rect.Right} b:{rect.Bottom}");
+        return rect;
+    }
+#endif
+
     public void Initialize()
     {
         int gamepad = 0;
-        SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
-        SetWindowState(ConfigFlags.UndecoratedWindow);
+        // SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
+        // SetWindowState(ConfigFlags.UndecoratedWindow);
         SetWindowState(ConfigFlags.TopmostWindow);
         SetTargetFPS(60);
         InitWindow(1, 1, "overlay");
@@ -40,7 +114,7 @@ public class OverlayWindow
         Console.WriteLine($"Starting overlay...");
 
         // x, y
-        var aBtnImg = LoadTextureFromImage(LoadImage("Resources/a_btn.png")); 
+        var aBtnImg = LoadTextureFromImage(LoadImage("Resources/a_btn.png"));
         var xBtnImg = LoadTextureFromImage(LoadImage("Resources/x_btn.png"));
         var yBtnImg = LoadTextureFromImage(LoadImage("Resources/y_btn.png"));
         var bBtnImg = LoadTextureFromImage(LoadImage("Resources/b_btn.png"));
@@ -78,7 +152,11 @@ public class OverlayWindow
                 {
                     if (SC1Proc != null)
                     {
-                        Invoke.GetWindowRect(SC1Proc.MainWindowHandle, out gameWindowSize);
+#if WINDOWS
+                        gameWindowSize = GetWindowSize(SC1Proc.MainWindowHandle);
+#elif MACOS
+                        gameWindowSize = GetWindowSize(SC1Proc.Id);
+#endif
                         _overlayWidth = GameSettings.StarCraft1.overlayWidth;
                         _overlayHeight = GameSettings.StarCraft1.overlayHeight;
                         _cellColumns = GameSettings.StarCraft1.cellColumns;
@@ -87,7 +165,11 @@ public class OverlayWindow
                     }
                     else if (SC2Proc != null)
                     {
-                        Invoke.GetWindowRect(SC2Proc.MainWindowHandle, out gameWindowSize);
+#if WINDOWS
+                        gameWindowSize = GetWindowSize(SC2Proc.MainWindowHandle);
+#elif MACOS
+                        gameWindowSize = GetWindowSize(SC2Proc.Id);
+#endif
                         _overlayWidth = GameSettings.StarCraft2.overlayWidth;
                         _overlayHeight = GameSettings.StarCraft2.overlayHeight;
                         _cellColumns = GameSettings.StarCraft2.cellColumns;
@@ -96,7 +178,11 @@ public class OverlayWindow
                     }
                     else if (WC3Proc != null)
                     {
-                        Invoke.GetWindowRect(WC3Proc.MainWindowHandle, out gameWindowSize);
+#if WINDOWS
+                        gameWindowSize = GetWindowSize(WC3Proc.MainWindowHandle);
+#elif MACOS
+                        gameWindowSize = GetWindowSize(WC3Proc.Id);
+#endif
                         _overlayWidth = GameSettings.WarCraft3.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft3.overlayHeight;
                         _cellColumns = GameSettings.WarCraft3.cellColumns;
@@ -106,7 +192,11 @@ public class OverlayWindow
                     // these games have their command grid on the left side of the window
                     else if (WC1Proc != null)
                     {
-                        Invoke.GetWindowRect(WC1Proc.MainWindowHandle, out gameWindowSize);
+#if WINDOWS
+                        gameWindowSize = GetWindowSize(WC1Proc.MainWindowHandle);
+#elif MACOS
+                        gameWindowSize = GetWindowSize(WC1Proc.Id);
+#endif
                         _overlayWidth = GameSettings.WarCraft1.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft1.overlayHeight;
                         _cellColumns = GameSettings.WarCraft1.cellColumns;
@@ -115,7 +205,11 @@ public class OverlayWindow
                     }
                     else if (WC2Proc != null)
                     {
-                        Invoke.GetWindowRect(WC2Proc.MainWindowHandle, out gameWindowSize);
+#if WINDOWS
+                        gameWindowSize = GetWindowSize(WC2Proc.MainWindowHandle);
+#elif MACOS
+                        gameWindowSize = GetWindowSize(WC2Proc.Id);
+#endif
                         _overlayWidth = GameSettings.WarCraft2.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft2.overlayHeight;
                         _cellColumns = GameSettings.WarCraft2.cellColumns;
@@ -207,11 +301,12 @@ public class OverlayWindow
             if (IsGamepadAvailable(gamepad))
             {
                 // draw overlay buttons only if we're holding trigger buttons
-                if (
-                    IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
-                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
-                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
-                {
+                // if (
+                //     IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
+                //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
+                //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                // {
+                    //Console.WriteLine("holding a trigger down");
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
                     // top row
                     List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
@@ -230,10 +325,10 @@ public class OverlayWindow
                     DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
                     if (WC1Proc == null)
                         DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
-                }
+                // }
 
                 // row highlighting
-                if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
+                //if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     DrawRectangleLines(
                         GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
                         GetRenderHeight() - cellHeight * 3,

@@ -1,7 +1,4 @@
-﻿using static Blizzard_Controller.Invoke;
-using AutoItX3Lib;
-
-namespace Blizzard_Controller;
+﻿namespace Blizzard_Controller;
 class ControllerInputs
 {
     public static double deadzone = 0.0;
@@ -28,14 +25,33 @@ class ControllerInputs
     public static bool controller = false;
     public static int gamepad = 0;
 
-    static AutoItX3 aix3c = new();
-
     private const int SW_MAXIMIZE = 3;
 
     public static bool IsWindowedMode(IntPtr hWnd)
     {
+        bool retVal = false;
+
+#if WINDOWS
         int style = Invoke.GetWindowLong(hWnd, Invoke.GWL_STYLE);
-        return (style & Invoke.WS_OVERLAPPEDWINDOW) == Invoke.WS_OVERLAPPEDWINDOW;
+        retVal = (style & Invoke.WS_OVERLAPPEDWINDOW) == Invoke.WS_OVERLAPPEDWINDOW;
+#elif LINUX
+        // to-do
+#elif MACOS
+        // to-do
+#endif
+
+        return retVal;
+    }
+
+    public static void MaximizeWindow(IntPtr handle)
+    {
+#if WINDOWS
+        Invoke.ShowWindow(handle, SW_MAXIMIZE);
+#elif LINUX
+        // to-do
+#elif MACOS
+        // to-do
+#endif
     }
 
     /// <summary>
@@ -66,7 +82,7 @@ class ControllerInputs
                 //if (pname == null) continue;
                 gameProcStatus = "WarCraft I: Remastered";
                 if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
+                    MaximizeWindow(pname.First().MainWindowHandle);
             }
             else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).Length > 0)
             {
@@ -74,7 +90,7 @@ class ControllerInputs
                 //if (pname == null) continue;
                 gameProcStatus = "WarCraft II: Remastered";
                 if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                    Invoke.ShowWindow(pname.First().MainWindowHandle, SW_MAXIMIZE);
+                    MaximizeWindow(pname.First().MainWindowHandle);
             }
             else
             {
@@ -94,18 +110,18 @@ class ControllerInputs
     /// <param name="btn">Button to press. See MouseClicks enum.</param>
     public static void globalMouseClick(Invoke.MouseClicks btn, int x = 0, int y = 0)
     {
-        if (btn == Invoke.MouseClicks.WM_LBUTTONDOWN)
-            aix3c.MouseDown();
-        else if (btn == Invoke.MouseClicks.WM_LBUTTONUP)
-            aix3c.MouseUp();
+        // if (btn == Invoke.MouseClicks.left_down)
+        //     aix3c.MouseDown();
+        // else if (btn == Invoke.MouseClicks.left_up)
+        //     aix3c.MouseUp();
 
-        if (btn == Invoke.MouseClicks.WM_RBUTTONDBLCLK)
-            aix3c.MouseClick("RIGHT");
+        // if (btn == Invoke.MouseClicks.right_BLCLK)
+        //     aix3c.MouseClick("RIGHT");
 
-        if (btn == Invoke.MouseClicks.WM_MBUTTONDOWN)
-            aix3c.MouseDown("MIDDLE");
-        else if (btn == Invoke.MouseClicks.WM_MBUTTONUP)
-            aix3c.MouseUp("MIDDLE");
+        // if (btn == Invoke.MouseClicks.middle_down)
+        //     aix3c.MouseDown("MIDDLE");
+        // else if (btn == Invoke.MouseClicks.middle_up)
+        //     aix3c.MouseUp("MIDDLE");
         Thread.Sleep(150); // prevent double press
     }
 
@@ -114,50 +130,50 @@ class ControllerInputs
     /// </summary>
     public static void processButtons()
     {
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
-        {
-            aix3c.Send("^1"); // CTRL + 1
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
-        {
-            aix3c.Send("^2"); // CTRL + 2
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
-        {
-            aix3c.Send("^3"); // CTRL + 3
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
-        {
-            aix3c.Send("^4"); // CTRL + 4
-        }
+        // if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
+        // {
+        //     aix3c.Send("^1"); // CTRL + 1
+        // }
+        // if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
+        // {
+        //     aix3c.Send("^2"); // CTRL + 2
+        // }
+        // if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
+        // {
+        //     aix3c.Send("^3"); // CTRL + 3
+        // }
+        // if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
+        // {
+        //     aix3c.Send("^4"); // CTRL + 4
+        // }
 
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
-        {
-            aix3c.Send("1"); // 1
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
-        {
-            aix3c.Send("2"); // 2
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
-        {
-            aix3c.Send("3"); // 3
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
-        {
-            aix3c.Send("4"); // 4
-        }
+        // if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
+        // {
+        //     aix3c.Send("1"); // 1
+        // }
+        // if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
+        // {
+        //     aix3c.Send("2"); // 2
+        // }
+        // if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
+        // {
+        //     aix3c.Send("3"); // 3
+        // }
+        // if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
+        // {
+        //     aix3c.Send("4"); // 4
+        // }
 
-        if (IsGamepadButtonDown(gamepad, GamepadButton.LeftThumb) && holdingLJoy == false)
-        {
-            aix3c.Send("{LSHIFT down}");
-            holdingLJoy = true;
-        }
-        else if (IsGamepadButtonUp(gamepad, GamepadButton.LeftThumb) && holdingLJoy == true)
-        {
-            aix3c.Send("{LSHIFT up}");
-            holdingLJoy = false;
-        }
+        // if (IsGamepadButtonDown(gamepad, GamepadButton.LeftThumb) && holdingLJoy == false)
+        // {
+        //     aix3c.Send("{LSHIFT down}");
+        //     holdingLJoy = true;
+        // }
+        // else if (IsGamepadButtonUp(gamepad, GamepadButton.LeftThumb) && holdingLJoy == true)
+        // {
+        //     aix3c.Send("{LSHIFT up}");
+        //     holdingLJoy = false;
+        // }
 
         if (IsGamepadButtonDown(gamepad, GamepadButton.RightThumb) && holdingRJoy == false)
         {
@@ -170,93 +186,93 @@ class ControllerInputs
 
         if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && holdingRT == false) // hold down if not already
         {
-            globalMouseClick(Invoke.MouseClicks.WM_MBUTTONDOWN); // middle mouse btn
+            globalMouseClick(Invoke.MouseClicks.middle_down); // middle mouse btn
             mouseDistance = mouseDistanceDefault;
             holdingRT = true;
         }
         else if (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) && holdingRT == true) // release
         {
-            globalMouseClick(Invoke.MouseClicks.WM_MBUTTONUP); // middle mouse btn
+            globalMouseClick(Invoke.MouseClicks.middle_up); // middle mouse btn
             mouseDistance = mouseDistanceDefault;
             holdingRT = false;
         }
 
         if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleRight))
         {
-            aix3c.Send("{f10}"); // F10
+            // aix3c.Send("{f10}"); // F10
         }
 
         // Not holding RB, RT, LB, LT and pressing buttons
         if (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger1) && IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger2) && IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger1) && IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2))
         {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                aix3c.Send("{f1}"); //F1
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-            {
-                aix3c.Send("{f2}"); //F2
-            }
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
+            // {
+            //     aix3c.Send("{f1}"); //F1
+            // }
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
+            // {
+            //     aix3c.Send("{f2}"); //F2
+            // }
             if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
             {
-                globalMouseClick(Invoke.MouseClicks.WM_RBUTTONDBLCLK); // right mouse btn
+                globalMouseClick(Invoke.MouseClicks.right_BLCLK); // right mouse btn
             }
             if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceDown) && holdingA == false)
             {
-                globalMouseClick(Invoke.MouseClicks.WM_LBUTTONDOWN);
+                globalMouseClick(Invoke.MouseClicks.left_down);
                 holdingA = true;
             }
             else if (IsGamepadButtonUp(gamepad, GamepadButton.RightFaceDown) && holdingA == true)
             {
-                globalMouseClick(Invoke.MouseClicks.WM_LBUTTONUP); // l mouse click up
+                globalMouseClick(Invoke.MouseClicks.left_up); // l mouse click up
                 holdingA = false;
             }
         }
         // Holding RB down.
         else if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
         {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-                aix3c.Send("{q}"); //Q
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-                aix3c.Send("{w}"); //W
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-                aix3c.Send("{e}"); //E
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-                aix3c.Send("{r}"); //R
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-                aix3c.Send("{t}"); //T
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
+            //     aix3c.Send("{q}"); //Q
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
+            //     aix3c.Send("{w}"); //W
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
+            //     aix3c.Send("{e}"); //E
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
+            //     aix3c.Send("{r}"); //R
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
+            //     aix3c.Send("{t}"); //T
         }
         // Holding LB down.
         else if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
         {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-                aix3c.Send("{a}"); //A
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-                aix3c.Send("{s}"); //S
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                aix3c.Send("{d}"); //D
-                aix3c.Send("{k}"); //K // for sc1 (works for Terran, not Zerg. Need to find class offset and read value in memory)
-                aix3c.Send("{l}"); //L // for sc1
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-                aix3c.Send("{f}"); //F
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-                aix3c.Send("{g}"); //G
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
+            //     aix3c.Send("{a}"); //A
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
+            //     aix3c.Send("{s}"); //S
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
+            // {
+            //     aix3c.Send("{d}"); //D
+            //     aix3c.Send("{k}"); //K // for sc1 (works for Terran, not Zerg. Need to find class offset and read value in memory)
+            //     aix3c.Send("{l}"); //L // for sc1
+            // }
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
+            //     aix3c.Send("{f}"); //F
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
+            //     aix3c.Send("{g}"); //G
         }
         // Holding LT down.
         else if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
         {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-                aix3c.Send("{z}"); //Z
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-                aix3c.Send("{x}"); //X
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-                aix3c.Send("{c}"); //C
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-                aix3c.Send("{v}"); //V
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-                aix3c.Send("{b}"); //B
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
+            //     aix3c.Send("{z}"); //Z
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
+            //     aix3c.Send("{x}"); //X
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
+            //     aix3c.Send("{c}"); //C
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
+            //     aix3c.Send("{v}"); //V
+            // if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
+            //     aix3c.Send("{b}"); //B
         }
         Thread.Sleep(10);
     }
@@ -269,7 +285,13 @@ class ControllerInputs
         if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone
             || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone)
         {
+#if WINDOWS
             Invoke.GetCursorPos(ref cursorPos);
+#elif LINUX
+            // to-do
+#elif MACOS
+            // to-do
+#endif
 
             if (Properties.Settings.Default.IncreaseCursorSpeed)
             {
@@ -351,8 +373,13 @@ class ControllerInputs
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone) cursorPos.Y += mouseDistance;
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone) cursorPos.Y -= mouseDistance;
             }
-
+#if WINDOWS
             Invoke.SetCursorPos(cursorPos.X, cursorPos.Y);
+#elif LINUX
+            // to-do
+#elif MACOS
+            // to-do
+#endif
             //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
         }
 
@@ -360,39 +387,39 @@ class ControllerInputs
         if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
         {
             holdingRJoyDirUp = true;
-            if (holdingRT)
-                aix3c.Send("{PGUP}"); //PGUP
-            else
-            {
-                aix3c.Send("{UP down}");
-                if (holdingRJoyDirDown)
-                {
-                    aix3c.Send("{DOWN up}");
-                    holdingRJoyDirDown = false;
-                }
-            }
+            // if (holdingRT)
+            //     aix3c.Send("{PGUP}"); //PGUP
+            // else
+            // {
+            //     aix3c.Send("{UP down}");
+            //     if (holdingRJoyDirDown)
+            //     {
+            //         aix3c.Send("{DOWN up}");
+            //         holdingRJoyDirDown = false;
+            //     }
+            // }
         }
         else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
         {
             holdingRJoyDirDown = true;
-            if (holdingRT)
-                aix3c.Send("{PGDN}"); //PGDN
-            else
-            {
-                if (holdingRJoyDirUp)
-                {
-                    aix3c.Send("{UP up}");
-                    holdingRJoyDirUp = false;
-                }
-                aix3c.Send("{DOWN down}");
-            }
+            // if (holdingRT)
+            //     aix3c.Send("{PGDN}"); //PGDN
+            // else
+            // {
+            //     if (holdingRJoyDirUp)
+            //     {
+            //         aix3c.Send("{UP up}");
+            //         holdingRJoyDirUp = false;
+            //     }
+            //     aix3c.Send("{DOWN down}");
+            // }
         }
         else
         {
             if (holdingRJoyDirUp || holdingRJoyDirDown)
             {
-                aix3c.Send("{UP up}");
-                aix3c.Send("{DOWN up}");
+                // aix3c.Send("{UP up}");
+                // aix3c.Send("{DOWN up}");
                 holdingRJoyDirUp = false;
                 holdingRJoyDirDown = false;
             }
@@ -400,30 +427,30 @@ class ControllerInputs
 
         if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > deadzone && !holdingRT)
         {
-            if (holdingRJoyDirLeft)
-            {
-                aix3c.Send("{LEFT up}");
-                holdingRJoyDirLeft = false;
-            }
-            aix3c.Send("{RIGHT down}");
+            // if (holdingRJoyDirLeft)
+            // {
+            //     aix3c.Send("{LEFT up}");
+            //     holdingRJoyDirLeft = false;
+            // }
+            // aix3c.Send("{RIGHT down}");
             holdingRJoyDirRight = true;
         }
         else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -deadzone && !holdingRT && !holdingRT)
         {
-            aix3c.Send("{LEFT down}");
-            if (holdingRJoyDirRight)
-            {
-                aix3c.Send("{RIGHT up}");
-                holdingRJoyDirRight = false;
-            }
+            // aix3c.Send("{LEFT down}");
+            // if (holdingRJoyDirRight)
+            // {
+            //     aix3c.Send("{RIGHT up}");
+            //     holdingRJoyDirRight = false;
+            // }
             holdingRJoyDirLeft = true;
         }
         else
         {
             if (holdingRJoyDirRight || holdingRJoyDirLeft)
             {
-                aix3c.Send("{LEFT up}");
-                aix3c.Send("{RIGHT up}");
+                // aix3c.Send("{LEFT up}");
+                // aix3c.Send("{RIGHT up}");
                 holdingRJoyDirRight = false;
                 holdingRJoyDirLeft = false;
             }
