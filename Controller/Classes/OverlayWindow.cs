@@ -33,7 +33,7 @@ public class OverlayWindow
 #if MACOS
     public Invoke.RECT GetWindowSize(int processId)
     {
-        IntPtr array = Invoke.CGWindowListCopyWindowInfo(0, 0);
+        IntPtr array = Invoke.CGWindowListCopyWindowInfo(1, 0);
         if (array == IntPtr.Zero) return default;
 
         long count = Invoke.CFArrayGetCount(array);
@@ -62,7 +62,6 @@ public class OverlayWindow
                         Console.WriteLine("layer not found?");
                         continue;
                     }
-                    Console.WriteLine("layer found");
 
                     // Get bounds
                     Invoke.CFDictionaryGetValueIfPresent(dict, boundsKey, out IntPtr boundsDict);
@@ -99,8 +98,8 @@ public class OverlayWindow
     public void Initialize()
     {
         int gamepad = 0;
-        // SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
-        // SetWindowState(ConfigFlags.UndecoratedWindow);
+        SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
+        SetWindowState(ConfigFlags.UndecoratedWindow);
         SetWindowState(ConfigFlags.TopmostWindow);
         SetTargetFPS(60);
         InitWindow(1, 1, "overlay");
@@ -224,6 +223,8 @@ public class OverlayWindow
                     double overlayHeight = _overlayHeight * diff;
                     double overlayWidth = _overlayWidth * diff;
 
+                    SetWindowSize(Convert.ToInt32(overlayWidth), Convert.ToInt32(overlayHeight));
+
                     cellWidth = GetRenderWidth() / _cellColumns;
                     cellHeight = GetRenderHeight() / 4; // cell count + 1
 
@@ -275,7 +276,6 @@ public class OverlayWindow
                         }
                     }
 
-                    SetWindowSize(Convert.ToInt32(overlayWidth), Convert.ToInt32(overlayHeight));
                     if (WC1Proc != null || WC2Proc != null) // left side
                         SetWindowPosition(gameWindowSize.Left - _sideOffset, gameWindowSize.Bottom - GetRenderHeight() - _bottomOffset);
                     else                                    // right side
@@ -300,12 +300,15 @@ public class OverlayWindow
 
             if (IsGamepadAvailable(gamepad))
             {
+                string gamepadName = GetGamepadName_(0);
+                Console.WriteLine(gamepadName);
+
                 // draw overlay buttons only if we're holding trigger buttons
-                // if (
-                //     IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
-                //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
-                //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
-                // {
+                    // if (
+                    //     IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
+                    //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
+                    //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                    // {
                     //Console.WriteLine("holding a trigger down");
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
                     // top row
@@ -320,22 +323,22 @@ public class OverlayWindow
                             DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
                     }
 
-                    // side buttons
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
+                // side buttons
+                DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
+                DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
                     if (WC1Proc == null)
                         DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
                 // }
 
                 // row highlighting
-                //if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
+                if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                     DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                        GetRenderHeight() - cellHeight * 3,
-                        GetRenderWidth() - cellWidth,
-                        cellHeight,
-                        Raylib_cs.Color.Green
-                    );
+                            GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
+                            GetRenderHeight() - cellHeight * 3,
+                            GetRenderWidth() - cellWidth,
+                            cellHeight,
+                            Raylib_cs.Color.Green
+                        );
                 if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                     DrawRectangleLines(
                         GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
