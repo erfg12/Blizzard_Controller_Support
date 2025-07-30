@@ -98,11 +98,21 @@ public class OverlayWindow
     public void Initialize()
     {
         int gamepad = 0;
+
         SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
         SetWindowState(ConfigFlags.UndecoratedWindow);
         SetWindowState(ConfigFlags.TopmostWindow);
         SetTargetFPS(60);
         InitWindow(1, 1, "overlay");
+
+#if MACOS
+        string mapping = "";
+        mapping += "030000005e040000130b000020050000,Xbox Wireless Controller,platform:Mac OS X,a:b0,b:b1,x:b3,y:b4,back:b10,guide:b12,start:b11,leftstick:b13,rightstick:b14,leftshoulder:b6,rightshoulder:b7,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:a5,righttrigger:a4,\n";
+        mapping += "030000004c050000e60c000000010000,PS5 Controller,platform:Mac OS X,a:b1,b:b2,x:b0,y:b3,back:b8,guide:b13,start:b9,leftstick:b10,rightstick:b11,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a5,lefttrigger:a3,righttrigger:a4,\n";
+        mapping += "030000004c050000cc09000000010000,PS4 Controller,platform:Mac OS X,a:b1,b:b2,x:b0,y:b3,back:b8,guide:b13,start:b9,leftstick:b10,rightstick:b11,leftshoulder:b4,rightshoulder:b5,dpup:h0.1,dpdown:h0.4,dpleft:h0.8,dpright:h0.2,leftx:a0,lefty:a1,rightx:a2,righty:a5,lefttrigger:a3,righttrigger:a4,\n";
+        mapping += "030000004c0500006802000000010000,PS3 Controller,platform:Mac OS X,a:b14,b:b13,x:b15,y:b12,back:b0,guide:b16,start:b3,leftstick:b1,rightstick:b2,leftshoulder:b10,rightshoulder:b11,dpup:b4,dpdown:b6,dpleft:b7,dpright:b5,leftx:a0,lefty:a1,rightx:a2,righty:a3,lefttrigger:b8,righttrigger:b9,\n";
+        SetGamepadMappings(mapping);
+#endif
 
         Invoke.RECT gameWindowSize = new();
 
@@ -300,8 +310,6 @@ public class OverlayWindow
 
             if (IsGamepadAvailable(gamepad))
             {
-                string gamepadName = GetGamepadName_(0);
-                Console.WriteLine(gamepadName);
 
                 // draw overlay buttons only if we're holding trigger buttons
                     // if (
