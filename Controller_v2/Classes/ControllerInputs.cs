@@ -280,7 +280,7 @@ class ControllerInputs
     /// <summary>
     /// Process all controller joystick movements. This function loops endlessly.
     /// </summary>
-    public static void processJoysticks()
+    public static void processJoysticks(bool increaseSpeed)
     {
         if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone
             || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone)
@@ -293,7 +293,7 @@ class ControllerInputs
             // to-do
 #endif
 
-            if (Properties.Settings.Default.IncreaseCursorSpeed)
+            if (increaseSpeed)
             {
                 // left/right slower
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone)

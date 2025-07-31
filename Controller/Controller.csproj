@@ -5,8 +5,8 @@
     <OutputType>Exe</OutputType>
 
     <!-- Keep name consistent -->
-    <RootNamespace>Blizzard_Controller</RootNamespace>
-    <AssemblyName>Blizzard_Controller</AssemblyName>
+    <RootNamespace>Controller</RootNamespace>
+    <AssemblyName>Controller</AssemblyName>
 
     <!-- Remove Windows‑only settings -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
