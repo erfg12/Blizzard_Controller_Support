@@ -6,8 +6,9 @@
         xmlns:views="clr-namespace:Controller_v2.Views"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="Controller_v2.Views.MainWindow"
-        Icon="/Assets/avalonia-logo.ico"
-        Width="700" Height="500"
+        Icon="/Assets/frozen-game-controller.ico"
+		Title="Blizzard Game Controller"
+        Width="900" Height="500"
         CanResize="False">
         <views:MainView />
 </Window>

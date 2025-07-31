@@ -297,7 +297,7 @@ public class OverlayWindow
                 check++;
 
             BeginDrawing();
-            ClearBackground(Raylib_cs.Color.Blank);
+            ClearBackground(Color.Blank);
 
             // no games running, so don't do anything
             if (SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null || gameWindowSize.Left - gameWindowSize.Right == 0)
@@ -308,8 +308,8 @@ public class OverlayWindow
 
             bool leftSide = WC1Proc != null || WC2Proc != null;
 
-            if (IsGamepadAvailable(gamepad))
-            {
+            //if (IsGamepadAvailable(gamepad))
+            //{
 
                 // draw overlay buttons only if we're holding trigger buttons
                     // if (
@@ -365,7 +365,7 @@ public class OverlayWindow
                     );
                 ControllerInputs.processButtons();
                 ControllerInputs.processJoysticks();
-            }
+            //}
 
             EndDrawing();
         }

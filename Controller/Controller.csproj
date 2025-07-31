@@ -15,22 +15,9 @@
     <!-- Remove Windows‑only manifest and platform target -->
     <!--<ApplicationManifest>app.manifest</ApplicationManifest>-->
     <!--<PlatformTarget>x86</PlatformTarget>-->
-
-    <Version>2.3.0</Version>
-    <Authors>Jacob Fliss</Authors>
-    <Company>New Age Software</Company>
-    <Description>Control your favorite StarCraft and WarCraft games with a game controller.</Description>
-    <Product>Blizzard Controller</Product>
-    <Title>Blizzard Controller</Title>
-    <PackageIcon>frozen-game-controller.png</PackageIcon>
-    <ApplicationIcon>frozen-game-controller.ico</ApplicationIcon>
   </PropertyGroup>
 
   <!-- Remove .nuget clean section (not needed cross‑platform) -->
-
-  <ItemGroup>
-    <Content Include="frozen-game-controller.ico" />
-  </ItemGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
@@ -38,6 +25,14 @@
 
 <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
   <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+</PropertyGroup>
+
+<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 </PropertyGroup>
 
   <ItemGroup>

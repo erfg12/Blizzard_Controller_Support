@@ -23,18 +23,18 @@
 		<!-- Status -->
 		<StackPanel Orientation="Horizontal" Spacing="15">
 			<TextBlock Text="Controller:" FontWeight="Bold"/>
-			<TextBlock Text="Not Connected" Foreground="Red"/>
+			<TextBlock Foreground="BlueViolet" Text="{Binding ControllerDetectLabel}"/>
 		</StackPanel>
 
 		<StackPanel Orientation="Horizontal" Spacing="15">
-			<TextBlock Text="Game:" Margin="28,20,0,0" FontWeight="Bold"/>
-			<TextBlock Text="Not Running" Foreground="Red" Margin="0,20,0,0"/>
+			<TextBlock Text="Game:" Margin="29,20,0,0" FontWeight="Bold"/>
+			<TextBlock Foreground="BlueViolet" Margin="0,20,0,0" Text="{Binding GameDetectLabel}"/>
 		</StackPanel>
 
 		<!-- Buttons -->
 		<StackPanel Orientation="Horizontal" Spacing="15" Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,0,5">
-			<Button Content="EXIT APPLICATION" Background="#B5655E" Foreground="White" Width="150" Height="30"/>
-			<Button Content="START BATTLE.NET" Background="#5EB565" Foreground="White" Width="150" Height="30"/>
+			<Button Content="EXIT APPLICATION" Background="#B5655E" Foreground="White" Width="150" Height="30" Command="{Binding ExitButtonClickCommand}"/>
+			<Button Content="START BATTLE.NET" Background="#5EB565" Foreground="White" Width="150" Height="30" Command="{Binding StartBattleNetButtonClickCommand}"/>
 		</StackPanel>
 
 		<!-- Settings -->
@@ -44,16 +44,16 @@
 					
 					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 						<TextBlock Text="Deadzone:" VerticalAlignment="Center"/>
-						<TextBox Width="50" Margin="5,0,0,0" Text="0.1"/>
+						<TextBox Width="50" Margin="5,0,0,0" Text="{Binding Deadzone}"/>
 					</StackPanel>
 				</StackPanel>
 
 				<StackPanel>
 					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
 						<TextBlock Text="Cursor Speed:" VerticalAlignment="Center"/>
-						<TextBox Width="50" Margin="5,0,0,0" Text="12"/>
+						<TextBox Width="50" Margin="5,0,0,0" Text="{Binding CursorSpeed}"/>
 					</StackPanel>
-					<CheckBox Content="Variable Cursor Speed" IsChecked="True"/>
+					<CheckBox Content="Variable Cursor Speed" IsChecked="{Binding VariableCursorSpeed}"/>
 				</StackPanel>
 			</StackPanel>
 		</Border>
@@ -73,31 +73,60 @@
 					</Style>
 				</TabControl.Styles>
 				<TabItem Header="StarCraft I">
-					<TextBlock TextWrapping="Wrap" Margin="5">
-						Fullscreen Window Display Mode
-						[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
-
-						Click on one of the buttons to the right to modify your CSettings.json file for you. >>
-					</TextBlock>
+						<TextBlock TextWrapping="Wrap" Margin="5">
+							Fullscreen Window Display Mode
+						<LineBreak/>
+							[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+						<LineBreak/><LineBreak/>
+							Click on one of the buttons to the right to modify your CSettings.json file for you. >>
+						</TextBlock>
 				</TabItem>
 				<TabItem Header="StarCraft II">
-					<TextBlock>test</TextBlock>
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [HOTKEYS] > Selected Profile: Grid > Click Accept Button
+						<LineBreak/><LineBreak/>
+						Enable Fullscreen Window Display Mode
+						<LineBreak/>
+						[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+					</TextBlock>
 				</TabItem>
 				<TabItem Header="WarCraft II">
-					<TextBlock>test</TextBlock>
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [Gameplay] > [Grid layout hot keys] > Click to check this box
+						<LineBreak/><LineBreak/>
+						Enable Classic UI:
+						<LineBreak/>
+						[OPTIONS] > [Preferences] > UI Scale > Classic > Click to check the radio button
+						<LineBreak/><LineBreak/>
+						Fullscreen Window Display Mode:
+						<LineBreak/>
+						[OPTIONS] > [Preferences] > Display Mode: Windowed > Click to check this box > Click Ok Button
+					</TextBlock>
 				</TabItem>
 				<TabItem Header="WarCraft III">
-					<TextBlock>test</TextBlock>
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [INPUT] > Preset Keybindings > [GRID]
+						<LineBreak/><LineBreak/>
+						Enable Fullscreen Window Display Mode:
+						<LineBreak/>
+						[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+					</TextBlock>
 				</TabItem>
 			</TabControl>
 
 			<!-- Right side buttons -->
 			<StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Top" Spacing="10">
-				<Button Content="Set Grid Layout for Terran and Protoss" Background="#008080" Foreground="White"/>
+				<Button Content="Set Grid Layout for Terran and Protoss" Background="#008080" Foreground="White" Command="{Binding TerranGridLayoutButtonClickCommand}"/>
 				<TextBlock Text="- OR -" HorizontalAlignment="Center"/>
-				<Button Content="Set Grid Layout for Zerg" Background="#8B0000" Foreground="White"/>
+				<Button Content="Set Grid Layout for Zerg" Background="#8B0000" Foreground="White" Command="{Binding ZergGridLayoutButtonClickCommand}"/>
 				<Separator/>
-				<Button Content="Restore Default Hotkeys"/>
+				<Button Content="Restore Default Hotkeys" Command="{Binding RestoreDefaultHotkeysButtonClickCommand}"/>
 			</StackPanel>
 		</Grid>
 	</Grid>

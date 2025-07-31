@@ -1,7 +1,8 @@
-﻿namespace Controller;
-class ControllerInputs
+﻿namespace Blizzard_Controller;
+public class ControllerInputs
 {
-    public static double deadzone = 0.0;
+    // Settings that can be updated by the UI
+    public static double deadzone = 0.1;
     public static int mouseDistance = 12;
     public static int mouseDistanceDefault = 12;
     public static double faster = 0.5; // increase mouse speed once it goes past this
@@ -24,6 +25,25 @@ class ControllerInputs
     public static string gameProcStatus = "Not Running";
     public static bool controller = false;
     public static int gamepad = 0;
+
+    /// <summary>
+    /// Check if controller is connected and update the shared settings
+    /// </summary>
+    public static void CheckControllerStatus()
+    {
+        while (!shuttingDown)
+        {
+            bool isConnected = IsGamepadAvailable(gamepad);
+            
+            if (controller != isConnected)
+            {
+                controller = isConnected;
+                AppSettings.Instance.UpdateControllerStatus(isConnected);
+            }
+            
+            Thread.Sleep(1000); // Check every second
+        }
+    }
 
     private const int SW_MAXIMIZE = 3;
 
@@ -56,31 +76,34 @@ class ControllerInputs
 
     /// <summary>
     /// Check if game is running. If not, change public variable (gameProcStatus) to false to stop BGWorkers till a new game is launched.
+    /// Updates the shared AppSettings instance to keep UI synchronized.
     /// </summary>
     public static void CheckGameProc()
     {
         while (!shuttingDown)
         {
+            string newGameStatus;
+            
             if (Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName).Length > 0)
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName);
-                gameProcStatus = "StarCraft 2 Running";
+                newGameStatus = "StarCraft 2 Running";
             }
             else if (Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName).Length > 0)
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName);
-                gameProcStatus = "StarCraft: Remastered";
+                newGameStatus = "StarCraft: Remastered";
             }
             else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName).Length > 0)
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName);
-                gameProcStatus = "WarCraft III: Reforged";
+                newGameStatus = "WarCraft III: Reforged";
             }
             else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName).Length > 0)
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName);
                 //if (pname == null) continue;
-                gameProcStatus = "WarCraft I: Remastered";
+                newGameStatus = "WarCraft I: Remastered";
                 if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
                     MaximizeWindow(pname.First().MainWindowHandle);
             }
@@ -88,14 +111,21 @@ class ControllerInputs
             {
                 pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName);
                 //if (pname == null) continue;
-                gameProcStatus = "WarCraft II: Remastered";
+                newGameStatus = "WarCraft II: Remastered";
                 if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
                     MaximizeWindow(pname.First().MainWindowHandle);
             }
             else
             {
                 pname = null;
-                gameProcStatus = "Not Running";
+                newGameStatus = "Not Running";
+            }
+
+            // Update both the static variable and the shared settings
+            if (gameProcStatus != newGameStatus)
+            {
+                gameProcStatus = newGameStatus;
+                AppSettings.Instance.UpdateGameStatus(newGameStatus);
             }
 
             Thread.Sleep(500);
@@ -187,13 +217,13 @@ class ControllerInputs
         if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && holdingRT == false) // hold down if not already
         {
             globalMouseClick(Invoke.MouseClicks.middle_down); // middle mouse btn
-            mouseDistance = mouseDistanceDefault;
+            //mouseDistance = mouseDistanceDefault;
             holdingRT = true;
         }
         else if (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) && holdingRT == true) // release
         {
             globalMouseClick(Invoke.MouseClicks.middle_up); // middle mouse btn
-            mouseDistance = mouseDistanceDefault;
+            //mouseDistance = mouseDistanceDefault;
             holdingRT = false;
         }
 
@@ -279,11 +309,15 @@ class ControllerInputs
 
     /// <summary>
     /// Process all controller joystick movements. This function loops endlessly.
+    /// Uses the shared AppSettings for deadzone and cursor speed values.
     /// </summary>
     public static void processJoysticks()
     {
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone
-            || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone)
+        // Use the shared settings for deadzone (with fallback to static variable for compatibility)
+        double currentDeadzone = AppSettings.Instance.Deadzone;
+        
+        if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone
+            || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
         {
 #if WINDOWS
             Invoke.GetCursorPos(ref cursorPos);
@@ -293,85 +327,91 @@ class ControllerInputs
             // to-do
 #endif
 
-            if (Properties.Settings.Default.IncreaseCursorSpeed)
+            if (AppSettings.Instance.VariableCursorSpeed)
             {
+                // Use the shared settings for cursor speed
+                int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
+                
                 // left/right slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < slower)
                     {
-                        cursorPos.X += mouseDistance / 2;
+                        cursorPos.X += currentCursorSpeed / 2;
                     }
                 }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -slower)
                     {
-                        cursorPos.X -= mouseDistance / 2;
+                        cursorPos.X -= currentCursorSpeed / 2;
                     }
                 }
 
                 // up/down slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < slower)
                     {
-                        cursorPos.Y += mouseDistance / 2;
+                        cursorPos.Y += currentCursorSpeed / 2;
                     }
                 }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -slower)
                     {
-                        cursorPos.Y -= mouseDistance / 2;
+                        cursorPos.Y -= currentCursorSpeed / 2;
                     }
                 }
 
                 // left/right normal
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > slower)
-                        cursorPos.X += mouseDistance;
+                        cursorPos.X += currentCursorSpeed;
                 }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -slower)
-                        cursorPos.X -= mouseDistance;
+                        cursorPos.X -= currentCursorSpeed;
                 }
 
                 // up/down normal
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > slower)
-                        cursorPos.Y += mouseDistance;
+                        cursorPos.Y += currentCursorSpeed;
                 }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone)
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
                 {
                     if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -slower)
-                        cursorPos.Y -= mouseDistance;
+                        cursorPos.Y -= currentCursorSpeed;
                 }
 
                 // left/right faster
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > faster)
-                    cursorPos.X += mouseDistance * 2;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -faster)
-                    cursorPos.X -= mouseDistance * 2;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > faster)
+                    cursorPos.X += currentCursorSpeed * 2;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -faster)
+                    cursorPos.X -= currentCursorSpeed * 2;
 
                 // up/down faster
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > faster)
-                    cursorPos.Y += mouseDistance * 2;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -faster)
-                    cursorPos.Y -= mouseDistance * 2;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > faster)
+                    cursorPos.Y += currentCursorSpeed * 2;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -faster)
+                    cursorPos.Y -= currentCursorSpeed * 2;
             }
             else
             {
+                // Use the shared settings for cursor speed
+                int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
+                
                 // left/right slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > deadzone) cursorPos.X += mouseDistance;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -deadzone) cursorPos.X -= mouseDistance;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone) cursorPos.X += currentCursorSpeed;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone) cursorPos.X -= currentCursorSpeed;
 
                 // up/down slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > deadzone) cursorPos.Y += mouseDistance;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -deadzone) cursorPos.Y -= mouseDistance;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone) cursorPos.Y += currentCursorSpeed;
+                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone) cursorPos.Y -= currentCursorSpeed;
             }
 #if WINDOWS
             Invoke.SetCursorPos(cursorPos.X, cursorPos.Y);
@@ -384,7 +424,7 @@ class ControllerInputs
         }
 
         // move camera
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
+        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
         {
             holdingRJoyDirUp = true;
             // if (holdingRT)
@@ -399,7 +439,7 @@ class ControllerInputs
             //     }
             // }
         }
-        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > -deadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
+        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
         {
             holdingRJoyDirDown = true;
             // if (holdingRT)
@@ -425,7 +465,7 @@ class ControllerInputs
             }
         }
 
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > deadzone && !holdingRT)
+        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > currentDeadzone && !holdingRT)
         {
             // if (holdingRJoyDirLeft)
             // {
@@ -435,7 +475,7 @@ class ControllerInputs
             // aix3c.Send("{RIGHT down}");
             holdingRJoyDirRight = true;
         }
-        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -deadzone && !holdingRT && !holdingRT)
+        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -currentDeadzone && !holdingRT && !holdingRT)
         {
             // aix3c.Send("{LEFT down}");
             // if (holdingRJoyDirRight)

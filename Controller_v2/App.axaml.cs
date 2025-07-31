@@ -1,11 +1,11 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
-
+using Blizzard_Controller;
 using Controller_v2.ViewModels;
 using Controller_v2.Views;
-using Controller;
 
 namespace Controller_v2;
 
@@ -14,10 +14,6 @@ public partial class App : Application
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
-
-        Thread thread = new Thread(ControllerInputs.CheckGameProc);
-        thread.Start();
-
     }
 
     public override void OnFrameworkInitializationCompleted()
@@ -28,17 +24,37 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            var mainViewModel = new MainViewModel();
+            
             desktop.MainWindow = new MainWindow
             {
-                DataContext = new MainViewModel()
+                DataContext = mainViewModel
             };
+
+            // start up our threads for controller processing and overlay drawing
+            if (!Design.IsDesignMode)
+            {
+                Task.Run(ControllerInputs.CheckGameProc);
+
+                Task.Run(() =>
+                {
+                    var ow = new OverlayWindow();
+                    ow.Initialize();
+                });
+            }
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
         {
+            var mainViewModel = new MainViewModel();
+            
             singleViewPlatform.MainView = new MainView
             {
-                DataContext = new MainViewModel()
+                DataContext = mainViewModel
             };
+
+            // Initialize Controller static values with MainViewModel values
+            ControllerInputs.deadzone = mainViewModel.Deadzone;
+            ControllerInputs.mouseDistance = mainViewModel.CursorSpeed;
         }
 
         base.OnFrameworkInitializationCompleted();

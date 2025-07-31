@@ -93,4 +93,31 @@ public class GameSettings
 
         return true;
     }
+
+    public static bool startGame(string gameCode = "")
+    {
+        string bNetDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\Battle.net";
+        if (!Directory.Exists(bNetDir))
+        {
+            return false;
+        }
+
+        var p1 = new Process();
+        p1.StartInfo.WorkingDirectory = bNetDir;
+        p1.StartInfo.FileName = "Battle.net Launcher.exe";
+        p1.StartInfo.UseShellExecute = true;
+        p1.Start();
+
+        p1.WaitForInputIdle();
+
+        var p = new Process();
+        p.StartInfo.WorkingDirectory = bNetDir;
+        p.StartInfo.FileName = "Battle.net.exe";
+        if (!string.IsNullOrEmpty(gameCode))
+            p.StartInfo.Arguments = $"--exec=\"launch {gameCode}\"";
+        p.StartInfo.UseShellExecute = true;
+        p.Start();
+
+        return true;
+    }
 }
