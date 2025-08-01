@@ -36,6 +36,8 @@ public partial class App : Application
             {
                 Task.Run(ControllerInputs.CheckGameProc);
 
+                Task.Run(ControllerInputs.CheckControllerStatus);
+
                 Task.Run(() =>
                 {
                     var ow = new OverlayWindow();

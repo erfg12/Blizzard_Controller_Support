@@ -28,8 +28,8 @@ public class AppSettings : INotifyPropertyChanged
         }
     }
 
-    private double _deadzone = 0.1;
-    private int _cursorSpeed = 12;
+    private double _deadzone = 0.05;
+    private int _cursorSpeed = 10;
     private bool _variableCursorSpeed = true;
     private string _gameDetectLabel = "Not Running";
     private string _controllerDetectLabel = "Not Connected";
