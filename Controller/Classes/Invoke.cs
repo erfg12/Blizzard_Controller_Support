@@ -11,7 +11,7 @@ public class Invoke
         public int Bottom;
     }
 
-// https://docs.microsoft.com/en-us/windows/win32/inputdev/mouse-input-notifications
+    // https://docs.microsoft.com/en-us/windows/win32/inputdev/mouse-input-notifications
     public enum MouseClicks
     {
         left_down = 0x0201,
@@ -28,7 +28,7 @@ public class Invoke
 #if WINDOWS
     public const int GWL_STYLE = -16;
     public const int WS_OVERLAPPEDWINDOW = 0x00CF0000;
-    
+
     [DllImport("User32.Dll")]
     public static extern long SetCursorPos(int x, int y);
     [DllImport("user32.dll")]
@@ -150,3 +150,4 @@ public class Invoke
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern long CFDataGetLength(IntPtr data);
 #endif
+}

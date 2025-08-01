@@ -6,6 +6,7 @@
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
+	<BaseOutputPath>../bin</BaseOutputPath>
   </PropertyGroup>
 
 <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">

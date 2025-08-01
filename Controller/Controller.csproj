@@ -11,6 +11,7 @@
     <!-- Remove Windows‑only settings -->
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <UseWindowsForms>false</UseWindowsForms>
+    <BaseOutputPath>../bin</BaseOutputPath>
 
     <!-- Remove Windows‑only manifest and platform target -->
     <!--<ApplicationManifest>app.manifest</ApplicationManifest>-->
