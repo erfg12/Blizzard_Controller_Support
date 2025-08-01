@@ -19,20 +19,20 @@ public class OverlayWindow
     }
     #endregion
 
+    #region GetGameWindowSize
 #if WINDOWS
-    public Invoke.RECT GetWindowSize(IntPtr handle)
+    public Invoke.RECT GetWindowSize(Process gameProc)
     {
         Invoke.RECT gameWindowSize = new Invoke.RECT();
 
-        Invoke.GetWindowRect(handle, out gameWindowSize);
+        Invoke.GetWindowRect(gameProc.MainWindowHandle, out gameWindowSize);
 
         return gameWindowSize;
     }
-#endif
-
-#if MACOS
-    public Invoke.RECT GetWindowSize(int processId)
+#elif MACOS
+    public Invoke.RECT GetWindowSize(Process gameProc)
     {
+        int processId = gameProc.Id;
         IntPtr array = Invoke.CGWindowListCopyWindowInfo(1, 0);
         if (array == IntPtr.Zero) return default;
 
@@ -93,7 +93,97 @@ public class OverlayWindow
         Console.WriteLine($"l:{rect.Left} t:{rect.Top} r:{rect.Right} b:{rect.Bottom}");
         return rect;
     }
+#elif LINUX
+public Invoke.RECT GetWindowSize(Process gameProc)
+{
+    IntPtr display = Invoke.XOpenDisplay(IntPtr.Zero);
+    if (display == IntPtr.Zero)
+        return default;
+
+    IntPtr root = Invoke.XDefaultRootWindow(display);
+
+    // Find all windows for this PID
+    var window = FindWindowByPID(display, root, gameProc.Id);
+    if (window == IntPtr.Zero)
+    {
+        Invoke.XCloseDisplay(display);
+        return default;
+    }
+
+    Invoke.XWindowAttributes attr;
+    if (Invoke.XGetWindowAttributes(display, window, out attr) == 0)
+    {
+        Invoke.XCloseDisplay(display);
+        return default;
+    }
+
+    Invoke.RECT rect = new Invoke.RECT
+    {
+        Left = attr.x,
+        Top = attr.y,
+        Right = attr.x + attr.width,
+        Bottom = attr.y + attr.height
+    };
+
+    Invoke.XCloseDisplay(display);
+    return rect;
+}
+
+private IntPtr FindWindowByPID(IntPtr display, IntPtr root, int pid)
+{
+    // Recursively check child windows to match PID
+    IntPtr rootReturn, parentReturn;
+    IntPtr[] children;
+    uint nChildren;
+
+    if (Invoke.XQueryTree(display, root, out rootReturn, out parentReturn, out children, out nChildren) == 0)
+        return IntPtr.Zero;
+
+    IntPtr result = IntPtr.Zero;
+    for (int i = 0; i < nChildren; i++)
+    {
+        if (WindowMatchesPID(display, children[i], pid))
+        {
+            result = children[i];
+            break;
+        }
+
+        // Recursively search
+        result = FindWindowByPID(display, children[i], pid);
+        if (result != IntPtr.Zero)
+            break;
+    }
+
+    if (children != null && children.Length > 0)
+        Invoke.XFree(children);
+
+    return result;
+}
+
+private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
+{
+    // Get _NET_WM_PID property
+    IntPtr actualType;
+    int actualFormat;
+    ulong nItems, bytesAfter;
+    IntPtr propPID;
+
+    if (Invoke.XGetWindowProperty(display, window,
+        Invoke.XInternAtom(display, "_NET_WM_PID", false),
+        IntPtr.Zero, new IntPtr(1), false,
+        0, out actualType, out actualFormat, out nItems, out bytesAfter, out propPID) != 0)
+        return false;
+
+    if (propPID == IntPtr.Zero)
+        return false;
+
+    int windowPID = System.Runtime.InteropServices.Marshal.ReadInt32(propPID);
+    Invoke.XFree(propPID);
+
+    return windowPID == pid;
+}
 #endif
+    #endregion
 
     public void Initialize()
     {
@@ -161,11 +251,7 @@ public class OverlayWindow
                 {
                     if (SC1Proc != null)
                     {
-#if WINDOWS
-                        gameWindowSize = GetWindowSize(SC1Proc.MainWindowHandle);
-#elif MACOS
-                        gameWindowSize = GetWindowSize(SC1Proc.Id);
-#endif
+                        gameWindowSize = GetWindowSize(SC1Proc);
                         _overlayWidth = GameSettings.StarCraft1.overlayWidth;
                         _overlayHeight = GameSettings.StarCraft1.overlayHeight;
                         _cellColumns = GameSettings.StarCraft1.cellColumns;
@@ -174,11 +260,7 @@ public class OverlayWindow
                     }
                     else if (SC2Proc != null)
                     {
-#if WINDOWS
-                        gameWindowSize = GetWindowSize(SC2Proc.MainWindowHandle);
-#elif MACOS
-                        gameWindowSize = GetWindowSize(SC2Proc.Id);
-#endif
+                        gameWindowSize = GetWindowSize(SC2Proc);
                         _overlayWidth = GameSettings.StarCraft2.overlayWidth;
                         _overlayHeight = GameSettings.StarCraft2.overlayHeight;
                         _cellColumns = GameSettings.StarCraft2.cellColumns;
@@ -187,11 +269,7 @@ public class OverlayWindow
                     }
                     else if (WC3Proc != null)
                     {
-#if WINDOWS
-                        gameWindowSize = GetWindowSize(WC3Proc.MainWindowHandle);
-#elif MACOS
-                        gameWindowSize = GetWindowSize(WC3Proc.Id);
-#endif
+                        gameWindowSize = GetWindowSize(WC3Proc);
                         _overlayWidth = GameSettings.WarCraft3.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft3.overlayHeight;
                         _cellColumns = GameSettings.WarCraft3.cellColumns;
@@ -201,11 +279,7 @@ public class OverlayWindow
                     // these games have their command grid on the left side of the window
                     else if (WC1Proc != null)
                     {
-#if WINDOWS
-                        gameWindowSize = GetWindowSize(WC1Proc.MainWindowHandle);
-#elif MACOS
-                        gameWindowSize = GetWindowSize(WC1Proc.Id);
-#endif
+                        gameWindowSize = GetWindowSize(WC1Proc);
                         _overlayWidth = GameSettings.WarCraft1.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft1.overlayHeight;
                         _cellColumns = GameSettings.WarCraft1.cellColumns;
@@ -214,11 +288,7 @@ public class OverlayWindow
                     }
                     else if (WC2Proc != null)
                     {
-#if WINDOWS
-                        gameWindowSize = GetWindowSize(WC2Proc.MainWindowHandle);
-#elif MACOS
-                        gameWindowSize = GetWindowSize(WC2Proc.Id);
-#endif
+                        gameWindowSize = GetWindowSize(WC2Proc);
                         _overlayWidth = GameSettings.WarCraft2.overlayWidth;
                         _overlayHeight = GameSettings.WarCraft2.overlayHeight;
                         _cellColumns = GameSettings.WarCraft2.cellColumns;
@@ -308,15 +378,15 @@ public class OverlayWindow
 
             bool leftSide = WC1Proc != null || WC2Proc != null;
 
-            //if (IsGamepadAvailable(gamepad))
-            //{
+            if (IsGamepadAvailable(gamepad))
+            {
 
-                // draw overlay buttons only if we're holding trigger buttons
-                    // if (
-                    //     IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
-                    //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
-                    //     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
-                    // {
+                //draw overlay buttons only if we're holding trigger buttons
+                if (
+                    IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||
+                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
+                    IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
+                {
                     //Console.WriteLine("holding a trigger down");
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
                     // top row
@@ -331,41 +401,41 @@ public class OverlayWindow
                             DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
                     }
 
-                // side buttons
-                DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
-                DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
+                    // side buttons
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
                     if (WC1Proc == null)
                         DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
-                // }
 
-                // row highlighting
-                if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
-                    DrawRectangleLines(
+                    // row highlighting
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
+                        DrawRectangleLines(
+                                GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
+                                GetRenderHeight() - cellHeight * 3,
+                                GetRenderWidth() - cellWidth,
+                                cellHeight,
+                                Raylib_cs.Color.Green
+                            );
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
+                        DrawRectangleLines(
                             GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                            GetRenderHeight() - cellHeight * 3,
+                            GetRenderHeight() - cellHeight * 2,
                             GetRenderWidth() - cellWidth,
                             cellHeight,
                             Raylib_cs.Color.Green
                         );
-                if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
-                    DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                        GetRenderHeight() - cellHeight * 2,
-                        GetRenderWidth() - cellWidth,
-                        cellHeight,
-                        Raylib_cs.Color.Green
-                    );
-                if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
-                    DrawRectangleLines(
-                        GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                        GetRenderHeight() - cellHeight,
-                        GetRenderWidth() - cellWidth,
-                        cellHeight,
-                        Raylib_cs.Color.Green
-                    );
-                ControllerInputs.processButtons();
-                ControllerInputs.processJoysticks();
-            //}
+                    if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
+                        DrawRectangleLines(
+                            GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
+                            GetRenderHeight() - cellHeight,
+                            GetRenderWidth() - cellWidth,
+                            cellHeight,
+                            Raylib_cs.Color.Green
+                        );
+                    ControllerInputs.processButtons();
+                    ControllerInputs.processJoysticks();
+                }
+            }
 
             EndDrawing();
         }
