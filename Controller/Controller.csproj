@@ -19,7 +19,7 @@
 
   <!-- Remove .nuget clean section (not needed cross‑platform) -->
 
-  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
   <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
 </PropertyGroup>
 
@@ -27,11 +27,7 @@
   <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 </PropertyGroup>
 
-<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-</PropertyGroup>
-
-<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
   <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
 </PropertyGroup>
 
@@ -44,8 +40,8 @@
 
   <!-- Keep resources -->
   <ItemGroup>
-    <None Update="Resources\*.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+  <Content Include="Resources\**\*.*">
+    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+  </Content>
+</ItemGroup>
 </Project>

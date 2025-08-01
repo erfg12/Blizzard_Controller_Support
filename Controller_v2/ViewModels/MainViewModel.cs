@@ -2,6 +2,8 @@
 using CommunityToolkit.Mvvm.Input;
 using Blizzard_Controller;
 using MsBox.Avalonia;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace Controller_v2.ViewModels;
 
@@ -74,7 +76,18 @@ public partial class MainViewModel : ViewModelBase
     [RelayCommand]
     public void OnExitButtonClick()
     {
-        Environment.Exit(0);
+        ControllerInputs.shuttingDown = true;
+        if (Application.Current?.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+
+        Task.Run(async () =>
+        {
+            // Wait briefly for background tasks to exit
+            await Task.Delay(1500);
+            Environment.Exit(0);
+        });
     }
 
     [RelayCommand]

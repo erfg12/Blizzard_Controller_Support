@@ -7,12 +7,18 @@
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
 	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-  </PropertyGroup>
+
+<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+  <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
+</PropertyGroup>
+
+<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+  <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+</PropertyGroup>
+
+<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+</PropertyGroup>
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\**" />

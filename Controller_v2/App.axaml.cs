@@ -38,7 +38,7 @@ public partial class App : Application
 
                 Task.Run(ControllerInputs.CheckControllerStatus);
 
-                Task.Run(() =>
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
                     var ow = new OverlayWindow();
                     ow.Initialize();

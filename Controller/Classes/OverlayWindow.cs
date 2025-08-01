@@ -53,7 +53,6 @@ public class OverlayWindow
                 Invoke.CFNumberGetValue(pidValue, 9, out int pid);
                 if (pid == processId)
                 {
-                    Console.WriteLine($"Found Process Window {pid}!");
                     // Ensure it's main window (layer 0)
                     Invoke.CFDictionaryGetValueIfPresent(dict, layerKey, out IntPtr layerVal);
                     Invoke.CFNumberGetValue(layerVal, 9, out int layer);
@@ -90,7 +89,6 @@ public class OverlayWindow
         }
 
         Invoke.CFRelease(array);
-        Console.WriteLine($"l:{rect.Left} t:{rect.Top} r:{rect.Right} b:{rect.Bottom}");
         return rect;
     }
 #elif LINUX

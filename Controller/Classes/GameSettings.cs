@@ -11,14 +11,14 @@ public class GameSettings
         public static readonly string WC2ProcName = "Warcraft II";
 #elif LINUX
         public static readonly string SC2ProcName = "SC2";
-        ublic static readonly string WC3ProcName = "unknown";
-        public static readonly string SC1ProcName = "unknown";
-        public static readonly string WC1ProcName = "unknown";
-        public static readonly string WC2ProcName = "unknown";
+        ublic static readonly string WC3ProcName = "Warcraft III";
+        public static readonly string SC1ProcName = "StarCraft";
+        public static readonly string WC1ProcName = "Warcraft";
+        public static readonly string WC2ProcName = "Warcraft II";
 #elif MACOS
         public static readonly string SC2ProcName = "SC2";
-        public static readonly string WC3ProcName = "unknown";
-        public static readonly string SC1ProcName = "unknown";
+        public static readonly string WC3ProcName = "Warcraft III";
+        public static readonly string SC1ProcName = "StarCraft";
         public static readonly string WC1ProcName = "unknown";
         public static readonly string WC2ProcName = "unknown";
 #endif
