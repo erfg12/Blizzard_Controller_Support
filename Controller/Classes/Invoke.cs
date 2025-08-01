@@ -40,9 +40,6 @@ public class Invoke
     [DllImport("user32.dll", SetLastError = true)]
     public static extern bool GetWindowRect(nint hwnd, out RECT lpRect);
 #elif LINUX
-    public static class Invoke
-{
-
     // XWindowAttributes struct
     [StructLayout(LayoutKind.Sequential)]
     public struct XWindowAttributes
@@ -91,7 +88,7 @@ public class Invoke
         IntPtr window,
         out IntPtr root_return,
         out IntPtr parent_return,
-        out IntPtr[] children_return,
+        out IntPtr children_return,
         out uint nchildren_return);
 
     [DllImport("libX11")]
@@ -153,4 +150,3 @@ public class Invoke
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern long CFDataGetLength(IntPtr data);
 #endif
-}

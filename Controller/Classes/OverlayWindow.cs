@@ -129,34 +129,46 @@ public Invoke.RECT GetWindowSize(Process gameProc)
 
 private IntPtr FindWindowByPID(IntPtr display, IntPtr root, int pid)
 {
-    // Recursively check child windows to match PID
     IntPtr rootReturn, parentReturn;
-    IntPtr[] children;
+    IntPtr childrenPtr;
     uint nChildren;
 
-    if (Invoke.XQueryTree(display, root, out rootReturn, out parentReturn, out children, out nChildren) == 0)
+    // Query the window tree
+    if (Invoke.XQueryTree(display, root, out rootReturn, out parentReturn, out childrenPtr, out nChildren) == 0)
         return IntPtr.Zero;
 
     IntPtr result = IntPtr.Zero;
-    for (int i = 0; i < nChildren; i++)
+
+    if (nChildren > 0)
     {
-        if (WindowMatchesPID(display, children[i], pid))
+        // Convert unmanaged array of window handles to managed IntPtr[]
+        IntPtr[] children = new IntPtr[nChildren];
+        for (int i = 0; i < nChildren; i++)
         {
-            result = children[i];
-            break;
+            children[i] = Marshal.ReadIntPtr(childrenPtr, i * IntPtr.Size);
         }
 
-        // Recursively search
-        result = FindWindowByPID(display, children[i], pid);
-        if (result != IntPtr.Zero)
-            break;
-    }
+        // Iterate through children
+        for (int i = 0; i < children.Length; i++)
+        {
+            if (WindowMatchesPID(display, children[i], pid))
+            {
+                result = children[i];
+                break;
+            }
 
-    if (children != null && children.Length > 0)
-        Invoke.XFree(children);
+            // Recursively search in child windows
+            result = FindWindowByPID(display, children[i], pid);
+            if (result != IntPtr.Zero)
+                break;
+        }
+
+        Invoke.XFree(childrenPtr);
+    }
 
     return result;
 }
+
 
 private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
 {
