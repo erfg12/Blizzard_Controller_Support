@@ -120,10 +120,8 @@ public class Invoke
         IntPtr display,
         string atom_name,
         bool only_if_exists);
-}
-
 #elif MACOS
-[DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
+    [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern long CFArrayGetCount(IntPtr array);
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern IntPtr CFArrayGetValueAtIndex(IntPtr array, long index);
@@ -150,4 +148,5 @@ public class Invoke
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern long CFDataGetLength(IntPtr data);
 #endif
+
 }

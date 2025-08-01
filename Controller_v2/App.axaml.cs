@@ -38,11 +38,22 @@ public partial class App : Application
 
                 Task.Run(ControllerInputs.CheckControllerStatus);
 
+#if LINUX // without this, the main window will become transparent
+                desktop.MainWindow.Opened += (_, __) =>
+                {
+                    Task.Run(() =>
+                    {
+                        var ow = new OverlayWindow();
+                        ow.Initialize();
+                    });
+                };
+#else // macos, windows
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
                     var ow = new OverlayWindow();
                     ow.Initialize();
                 });
+#endif
             }
         }
         else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
