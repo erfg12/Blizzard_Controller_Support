@@ -13,7 +13,7 @@ public class ControllerInputs
     public static double slower = 0.4;
     public static bool shuttingDown = false;
 
-    public static Process[] pname = null;
+    public static Process pname = null;
 
     public static Point cursorPos = new Point(0,0);
 
@@ -90,36 +90,40 @@ public class ControllerInputs
         {
             string newGameStatus;
             
-            if (Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName).Length > 0)
+            if (OverlayWindow.SC2Proc != null)
             {
-                pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName);
+                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
                 newGameStatus = "StarCraft 2 Running";
             }
-            else if (Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName).Length > 0)
+            else if (OverlayWindow.SC1Proc != null)
             {
-                pname = Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName);
+                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
                 newGameStatus = "StarCraft: Remastered";
             }
-            else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName).Length > 0)
+            else if (OverlayWindow.WC3Proc != null)
             {
-                pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName);
+                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);
                 newGameStatus = "WarCraft III: Reforged";
             }
-            else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName).Length > 0)
+            else if (OverlayWindow.WC1Proc != null)
             {
-                pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName);
+                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC1ProcName);
                 //if (pname == null) continue;
                 newGameStatus = "WarCraft I: Remastered";
-                if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                    MaximizeWindow(pname.First().MainWindowHandle);
+                #if WINDOWS
+                if (IsWindowedMode(pname.MainWindowHandle)) // maximize windowed mode
+                    MaximizeWindow(pname.MainWindowHandle);
+                    #endif
             }
-            else if (Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).Length > 0)
+            else if (OverlayWindow.WC2Proc != null)
             {
-                pname = Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName);
+                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC2ProcName);
                 //if (pname == null) continue;
                 newGameStatus = "WarCraft II: Remastered";
-                if (IsWindowedMode(pname.First().MainWindowHandle)) // maximize windowed mode
-                    MaximizeWindow(pname.First().MainWindowHandle);
+                #if WINDOWS
+                if (IsWindowedMode(pname.MainWindowHandle)) // maximize windowed mode
+                    MaximizeWindow(pname.MainWindowHandle);
+                    #endif
             }
             else
             {

@@ -195,6 +195,34 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
 #endif
     #endregion
 
+    public static Process GetProcess(string procName)
+    {
+#if LINUX
+        foreach (var process in Process.GetProcesses())
+        {
+            string cmdlinePath = $"/proc/{process.Id}/cmdline";
+            try
+            {
+                if (File.Exists(cmdlinePath))
+                {
+                    string cmdline = File.ReadAllText(cmdlinePath).Replace('\0', ' ');
+                    if (cmdline.Contains(procName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return process;
+                    }
+                }
+            }
+            catch
+            {
+                // Some processes might not allow reading /proc
+            }
+        }
+#else
+        return Process.GetProcessesByName(procName).FirstOrDefault();
+#endif
+        return null;
+    }
+
     public void Initialize()
     {
         int gamepad = 0;
@@ -252,11 +280,11 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
             if (check >= 100)
             {
                 ControllerInputs.controller = IsGamepadAvailable(gamepad);
-                SC2Proc = Process.GetProcessesByName(GameSettings.ProcessNames.SC2ProcName).FirstOrDefault();
-                SC1Proc = Process.GetProcessesByName(GameSettings.ProcessNames.SC1ProcName).FirstOrDefault();
-                WC3Proc = Process.GetProcessesByName(GameSettings.ProcessNames.WC3ProcName).FirstOrDefault();
-                WC2Proc = Process.GetProcessesByName(GameSettings.ProcessNames.WC2ProcName).FirstOrDefault();
-                WC1Proc = Process.GetProcessesByName(GameSettings.ProcessNames.WC1ProcName).FirstOrDefault();
+                SC2Proc = GetProcess(GameSettings.ProcessNames.SC2ProcName);
+                SC1Proc = GetProcess(GameSettings.ProcessNames.SC1ProcName);
+                WC3Proc = GetProcess(GameSettings.ProcessNames.WC3ProcName);
+                WC2Proc = GetProcess(GameSettings.ProcessNames.WC2ProcName);
+                WC1Proc = GetProcess(GameSettings.ProcessNames.WC1ProcName);
                 if (SC2Proc != null || SC1Proc != null || WC3Proc != null || WC1Proc != null || WC2Proc != null)
                 {
                     if (SC1Proc != null)
@@ -399,7 +427,7 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                 {
                     //Console.WriteLine("holding a trigger down");
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
-                    // top row
+                                                                               // top row
                     List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
                     List<Texture2D> ps_btnList = new() { ps_xBtn, ps_squareBtn, ps_triangleBtn, ps_circleBtn, ps_shareBtn };
                     int c = _cellColumns - (leftSide ? 0 : 1);
