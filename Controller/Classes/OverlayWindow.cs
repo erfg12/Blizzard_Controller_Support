@@ -295,6 +295,10 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                         _cellColumns = GameSettings.StarCraft1.cellColumns;
                         _bottomOffset = GameSettings.StarCraft1.bottomOffset;
                         _sideOffset = GameSettings.StarCraft1.sideOffset;
+
+                        //Console.WriteLine($"_overlayWidth:{_overlayWidth} _overlayHeight:{_overlayHeight} _cellColumns:{ _cellColumns} _bottomOffset:{_bottomOffset} _sideOffset:{_sideOffset}");
+                        //Console.WriteLine($"gameWindowSize.Left:{gameWindowSize.Left} gameWindowSize.Top:{gameWindowSize.Top} gameWindowSize.Right:{gameWindowSize.Right} gameWindowSize.Bottom:{gameWindowSize.Bottom}");
+                    
                     }
                     else if (SC2Proc != null)
                     {
@@ -337,14 +341,18 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                     var gameWidth = Math.Abs(gameWindowSize.Left - gameWindowSize.Right);
                     var gameHeight = Math.Abs(gameWindowSize.Top - gameWindowSize.Bottom);
 
+                    //Console.WriteLine($"gameWidth:{gameWidth} gameHeight:{gameHeight}");
+
                     double diff = gameHeight / baseHeight;
                     double overlayHeight = _overlayHeight * diff;
                     double overlayWidth = _overlayWidth * diff;
 
-                    SetWindowSize(Convert.ToInt32(overlayWidth), Convert.ToInt32(overlayHeight));
+                    //Console.WriteLine($"overlayHeight:{overlayHeight} overlayWidth:{overlayWidth}");
 
-                    cellWidth = GetRenderWidth() / _cellColumns;
-                    cellHeight = GetRenderHeight() / 4; // cell count + 1
+                    cellWidth = Convert.ToInt32(overlayWidth) / _cellColumns;
+                    cellHeight = Convert.ToInt32(overlayHeight) / 4; // cell count + 1
+
+                    //Console.WriteLine($"GetRenderHeight:{_overlayHeight} GetRenderWidth:{_overlayWidth} _cellColumns:{_cellColumns} cellWidth:{cellWidth} cellHeight:{cellHeight}");
 
                     aBtnImg.Width = cellWidth;
                     aBtnImg.Height = cellHeight;
@@ -394,10 +402,27 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                         }
                     }
 
+                    // Calculate position BEFORE calling SetWindowSize
+                    int targetWidth = Convert.ToInt32(overlayWidth);
+                    int targetHeight = Convert.ToInt32(overlayHeight);
+
+                    int posX;
+                    int posY;
+
                     if (WC1Proc != null || WC2Proc != null) // left side
-                        SetWindowPosition(gameWindowSize.Left - _sideOffset, gameWindowSize.Bottom - GetRenderHeight() - _bottomOffset);
-                    else                                    // right side
-                        SetWindowPosition(gameWindowSize.Right - GetRenderWidth() - _sideOffset, gameWindowSize.Bottom - GetRenderHeight() - _bottomOffset);
+                    {
+                        posX = gameWindowSize.Left - _sideOffset;
+                        posY = gameWindowSize.Bottom - targetHeight - _bottomOffset;
+                    }
+                    else // right side
+                    {
+                        posX = gameWindowSize.Right - targetWidth - _sideOffset;
+                        posY = gameWindowSize.Bottom - targetHeight - _bottomOffset;
+                    }
+
+                    // Resize, then reapply position
+                    SetWindowSize(targetWidth, targetHeight);
+                    SetWindowPosition(posX, posY);
                 }
                 check = 0;
             }
@@ -430,43 +455,48 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                                                                                // top row
                     List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
                     List<Texture2D> ps_btnList = new() { ps_xBtn, ps_squareBtn, ps_triangleBtn, ps_circleBtn, ps_shareBtn };
-                    int c = _cellColumns - (leftSide ? 0 : 1);
-                    for (int i = 0; i < _cellColumns - 1; i++)
+                    int c = _cellColumns - (leftSide ? 1 : 2);
+                    for (int i = 0; i < _cellColumns - 1; i++) // draw top row buttons
                     {
                         if (overlayBtns.Equals("playstation"))
-                            DrawTexture(ps_btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
+                            DrawTexture(ps_btnList[i], _overlayWidth - cellWidth * c--, 0, customColor);
                         else
-                            DrawTexture(btnList[i], GetRenderWidth() - cellWidth * c--, 0, customColor);
+                        {
+                            var posX = _overlayWidth - cellWidth * c--;
+                            var posY = 0;
+                            //Console.WriteLine($"posY:{posY} posX:{posX}");
+                            DrawTexture(btnList[i], posX, posY, customColor);
+                        }
                     }
 
                     // side buttons
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 3, customColor);
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight * 2, customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 2), customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight , customColor);
                     if (WC1Proc == null)
-                        DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, GetRenderHeight() - cellHeight, customColor);
+                        DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight, customColor);
 
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                         DrawRectangleLines(
-                                GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                                GetRenderHeight() - cellHeight * 3,
-                                GetRenderWidth() - cellWidth,
+                                _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                                _overlayHeight - cellHeight * 2,
+                                _overlayWidth,
                                 cellHeight,
                                 Raylib_cs.Color.Green
                             );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                         DrawRectangleLines(
-                            GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                            GetRenderHeight() - cellHeight * 2,
-                            GetRenderWidth() - cellWidth,
+                            _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                            _overlayHeight - cellHeight,
+                            _overlayWidth,
                             cellHeight,
                             Raylib_cs.Color.Green
                         );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
                         DrawRectangleLines(
-                            GetRenderWidth() - cellWidth * (_cellColumns - (leftSide ? 0 : 1)) - 4,
-                            GetRenderHeight() - cellHeight,
-                            GetRenderWidth() - cellWidth,
+                            _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                            _overlayHeight,
+                            _overlayWidth,
                             cellHeight,
                             Raylib_cs.Color.Green
                         );
