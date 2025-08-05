@@ -92,6 +92,11 @@ public class Invoke
         out uint nchildren_return);
 
     [DllImport("libX11")]
+    public static extern int XTranslateCoordinates(IntPtr display, IntPtr src_w, IntPtr dest_w,
+        int src_x, int src_y, out int dest_x, out int dest_y, out IntPtr child);
+
+
+    [DllImport("libX11")]
     public static extern int XFree(IntPtr data);
 
     [DllImport("libX11")]

@@ -24,59 +24,59 @@ public partial class App : Application
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            var mainViewModel = new MainViewModel();
-            
             desktop.MainWindow = new MainWindow
             {
-                DataContext = mainViewModel
+                DataContext = new MainViewModel()
             };
+
 
             // start up our threads for controller processing and overlay drawing
             if (!Design.IsDesignMode)
             {
 #if MACOS
-                Invoke.AXUIElementCreateSystemWide();
+                            Invoke.AXUIElementCreateSystemWide();
 
-                if (!Invoke.AXIsProcessTrusted())
-                    Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
+                            if (!Invoke.AXIsProcessTrusted())
+                                Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
 #endif
 
                 Task.Run(ControllerInputs.CheckGameProc);
 
                 Task.Run(ControllerInputs.CheckControllerStatus);
 
-#if LINUX // without this, the main window will become transparent
-                desktop.MainWindow.Opened += (_, __) =>
+#if LINUX
+
+                Task.Run(() =>
                 {
-                    Task.Run(() =>
-                    {
-                        var ow = new OverlayWindow();
-                        ow.Initialize();
-                    });
-                };
-#else // macos, windows
-                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                {
-                    var ow = new OverlayWindow();
+                    OverlayWindow ow = new OverlayWindow();
                     ow.Initialize();
                 });
+
+
+
+#else // macos, windows
+                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                            {
+                                var ow = new OverlayWindow();
+                                ow.Initialize();
+                            });
 #endif
             }
-        }
-        else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
-        {
-            var mainViewModel = new MainViewModel();
-            
-            singleViewPlatform.MainView = new MainView
+            else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
             {
-                DataContext = mainViewModel
-            };
+                var mainViewModel = new MainViewModel();
 
-            // Initialize Controller static values with MainViewModel values
-            ControllerInputs.deadzone = mainViewModel.Deadzone;
-            ControllerInputs.mouseDistance = mainViewModel.CursorSpeed;
+                singleViewPlatform.MainView = new MainView
+                {
+                    DataContext = mainViewModel
+                };
+
+                // Initialize Controller static values with MainViewModel values
+                // ControllerInputs.deadzone = mainViewModel.Deadzone;
+                // ControllerInputs.mouseDistance = mainViewModel.CursorSpeed;
+            }
+
+            base.OnFrameworkInitializationCompleted();
         }
-
-        base.OnFrameworkInitializationCompleted();
     }
 }

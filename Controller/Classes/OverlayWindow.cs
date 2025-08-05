@@ -108,12 +108,8 @@ public Invoke.RECT GetWindowSize(Process gameProc)
         return default;
     }
 
-    Invoke.XWindowAttributes attr;
-    if (Invoke.XGetWindowAttributes(display, window, out attr) == 0)
-    {
-        Invoke.XCloseDisplay(display);
-        return default;
-    }
+    var windowHandle = new IntPtr(window);
+    var attr = GetWindowInfo(windowHandle);
 
     Invoke.RECT rect = new Invoke.RECT
     {
@@ -127,71 +123,86 @@ public Invoke.RECT GetWindowSize(Process gameProc)
     return rect;
 }
 
-private IntPtr FindWindowByPID(IntPtr display, IntPtr root, int pid)
-{
-    IntPtr rootReturn, parentReturn;
-    IntPtr childrenPtr;
-    uint nChildren;
-
-    // Query the window tree
-    if (Invoke.XQueryTree(display, root, out rootReturn, out parentReturn, out childrenPtr, out nChildren) == 0)
-        return IntPtr.Zero;
-
-    IntPtr result = IntPtr.Zero;
-
-    if (nChildren > 0)
+    private IntPtr FindWindowByPID(IntPtr display, IntPtr root, int pid)
     {
-        // Convert unmanaged array of window handles to managed IntPtr[]
-        IntPtr[] children = new IntPtr[nChildren];
-        for (int i = 0; i < nChildren; i++)
-        {
-            children[i] = Marshal.ReadIntPtr(childrenPtr, i * IntPtr.Size);
-        }
+        IntPtr rootReturn, parentReturn;
+        IntPtr childrenPtr;
+        uint nChildren;
 
-        // Iterate through children
-        for (int i = 0; i < children.Length; i++)
+        // Query the window tree
+        if (Invoke.XQueryTree(display, root, out rootReturn, out parentReturn, out childrenPtr, out nChildren) == 0)
+            return IntPtr.Zero;
+
+        IntPtr result = IntPtr.Zero;
+
+        if (nChildren > 0)
         {
-            if (WindowMatchesPID(display, children[i], pid))
+            // Convert unmanaged array of window handles to managed IntPtr[]
+            IntPtr[] children = new IntPtr[nChildren];
+            for (int i = 0; i < nChildren; i++)
             {
-                result = children[i];
-                break;
+                children[i] = Marshal.ReadIntPtr(childrenPtr, i * IntPtr.Size);
             }
 
-            // Recursively search in child windows
-            result = FindWindowByPID(display, children[i], pid);
-            if (result != IntPtr.Zero)
-                break;
+            // Iterate through children
+            for (int i = 0; i < children.Length; i++)
+            {
+                if (WindowMatchesPID(display, children[i], pid))
+                {
+                    result = children[i];
+                    break;
+                }
+
+                // Recursively search in child windows
+                result = FindWindowByPID(display, children[i], pid);
+                if (result != IntPtr.Zero)
+                    break;
+            }
+
+            Invoke.XFree(childrenPtr);
         }
 
-        Invoke.XFree(childrenPtr);
+        return result;
     }
 
-    return result;
-}
+public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
+    {
+        IntPtr display = Invoke.XOpenDisplay(IntPtr.Zero);
+        if (display == IntPtr.Zero)
+            throw new Exception("Cannot open X display.");
+
+        Invoke.XGetWindowAttributes(display, window, out Invoke.XWindowAttributes attrs);
+
+        // Translate coordinates to root
+        Invoke.XTranslateCoordinates(display, window, (IntPtr)Invoke.XDefaultRootWindow(display),
+            0, 0, out int absX, out int absY, out _);
+
+        return (absX, absY, attrs.width, attrs.height);
+    }
 
 
-private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
-{
-    // Get _NET_WM_PID property
-    IntPtr actualType;
-    int actualFormat;
-    ulong nItems, bytesAfter;
-    IntPtr propPID;
+    private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
+    {
+        // Get _NET_WM_PID property
+        IntPtr actualType;
+        int actualFormat;
+        ulong nItems, bytesAfter;
+        IntPtr propPID;
 
-    if (Invoke.XGetWindowProperty(display, window,
-        Invoke.XInternAtom(display, "_NET_WM_PID", false),
-        IntPtr.Zero, new IntPtr(1), false,
-        0, out actualType, out actualFormat, out nItems, out bytesAfter, out propPID) != 0)
-        return false;
+        if (Invoke.XGetWindowProperty(display, window,
+            Invoke.XInternAtom(display, "_NET_WM_PID", false),
+            IntPtr.Zero, new IntPtr(1), false,
+            0, out actualType, out actualFormat, out nItems, out bytesAfter, out propPID) != 0)
+            return false;
 
-    if (propPID == IntPtr.Zero)
-        return false;
+        if (propPID == IntPtr.Zero)
+            return false;
 
-    int windowPID = System.Runtime.InteropServices.Marshal.ReadInt32(propPID);
-    Invoke.XFree(propPID);
+        int windowPID = System.Runtime.InteropServices.Marshal.ReadInt32(propPID);
+        Invoke.XFree(propPID);
 
-    return windowPID == pid;
-}
+        return windowPID == pid;
+    }
 #endif
     #endregion
 
@@ -208,6 +219,7 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                     string cmdline = File.ReadAllText(cmdlinePath).Replace('\0', ' ');
                     if (cmdline.Contains(procName, StringComparison.OrdinalIgnoreCase))
                     {
+                        //Console.WriteLine($"pid:{process.Id}");
                         return process;
                     }
                 }
@@ -222,7 +234,7 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
 #endif
         return null;
     }
-
+    
     public void Initialize()
     {
         int gamepad = 0;
@@ -230,8 +242,9 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
         SetConfigFlags(ConfigFlags.TransparentWindow | ConfigFlags.MousePassthroughWindow);
         SetWindowState(ConfigFlags.UndecoratedWindow);
         SetWindowState(ConfigFlags.TopmostWindow);
-        SetTargetFPS(60);
+        
         InitWindow(1, 1, "overlay");
+        SetTargetFPS(60);
 
 #if MACOS
         string mapping = "";
@@ -296,9 +309,9 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                         _bottomOffset = GameSettings.StarCraft1.bottomOffset;
                         _sideOffset = GameSettings.StarCraft1.sideOffset;
 
-                        //Console.WriteLine($"_overlayWidth:{_overlayWidth} _overlayHeight:{_overlayHeight} _cellColumns:{ _cellColumns} _bottomOffset:{_bottomOffset} _sideOffset:{_sideOffset}");
+                        //Console.WriteLine($"_overlayWidth:{_overlayWidth} _overlayHeight:{_overlayHeight} _cellColumns:{_cellColumns} _bottomOffset:{_bottomOffset} _sideOffset:{_sideOffset}");
                         //Console.WriteLine($"gameWindowSize.Left:{gameWindowSize.Left} gameWindowSize.Top:{gameWindowSize.Top} gameWindowSize.Right:{gameWindowSize.Right} gameWindowSize.Bottom:{gameWindowSize.Bottom}");
-                    
+
                     }
                     else if (SC2Proc != null)
                     {
@@ -450,7 +463,7 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1) ||
                     IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
                 {
-                    //Console.WriteLine("holding a trigger down");
+
                     var customColor = new Raylib_cs.Color(255, 255, 255, 150); // make images slightly transparent
                                                                                // top row
                     List<Texture2D> btnList = new() { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
