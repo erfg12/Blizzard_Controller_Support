@@ -67,12 +67,13 @@ public class GameSettings
     public static bool writeToCSettingsFile(string stringToWrite)
     {
         // To-Do: make this cross platform!
-        string cloudPath = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH") + "\\AppData\\Roaming\\Blizzard\\StarCraft\\Cloud";
-        string localFile = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH") + "\\Documents\\StarCraft\\CSettings.json";
+#if WINDOWS
+        string cloudPath = Path.Combine(Environment.GetEnvironmentVariable("HOMEDRIVE"), Environment.GetEnvironmentVariable("HOMEPATH"), "\\AppData\\Roaming\\Blizzard\\StarCraft\\Cloud");
+        string localFile = Path.Combine(Environment.GetEnvironmentVariable("HOMEDRIVE"), Environment.GetEnvironmentVariable("HOMEPATH"), "\\Documents\\StarCraft\\CSettings.json");
         List<string> cloudFiles = new();
         if (!File.Exists(localFile))
         {
-            localFile = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH") + "\\OneDrive\\Documents\\StarCraft\\CSettings.json";
+            localFile = Path.Combine(Environment.GetEnvironmentVariable("HOMEDRIVE"), Environment.GetEnvironmentVariable("HOMEPATH"), "\\OneDrive\\Documents\\StarCraft\\CSettings.json");
             if (!File.Exists(localFile))
                 return false;
         }
@@ -84,13 +85,23 @@ public class GameSettings
                     cloudFiles.Add(f);
             }
         }
-        string jsonString = File.ReadAllText(localFile);
+#elif MACOS
+        string localFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Library/Application Support/Blizzard/Starcraft/CSettings.json");
+        if (!File.Exists(localFile))
+        {
+            Console.WriteLine($"Failed to write to {localFile}");
+            return false;
+        }
+#endif
+            string jsonString = File.ReadAllText(localFile);
         JsonNode jsonNode = JsonNode.Parse(jsonString);
         jsonNode["Hotkeys"] = String.IsNullOrEmpty(stringToWrite) ? new JsonObject() : stringToWrite;
         jsonString = jsonNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(localFile, jsonString);
+#if WINDOWS
         foreach (var cf in cloudFiles)
             File.WriteAllText(cf, jsonString);
+#endif
 
         return true;
     }
