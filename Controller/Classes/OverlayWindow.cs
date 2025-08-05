@@ -471,7 +471,7 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
 
                     // side buttons
                     DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 2), customColor);
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight , customColor);
+                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight, customColor);
                     if (WC1Proc == null)
                         DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight, customColor);
 
@@ -500,9 +500,9 @@ private bool WindowMatchesPID(IntPtr display, IntPtr window, int pid)
                             cellHeight,
                             Raylib_cs.Color.Green
                         );
-                    ControllerInputs.processButtons();
-                    ControllerInputs.processJoysticks();
                 }
+                ControllerInputs.processButtons();
+                ControllerInputs.processJoysticks();
             }
 
             EndDrawing();

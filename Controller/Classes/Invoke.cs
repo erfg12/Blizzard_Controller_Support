@@ -147,6 +147,13 @@ public class Invoke
 
     [DllImport("/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation")]
     public static extern long CFDataGetLength(IntPtr data);
+
+    [DllImport("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")]
+    public static extern bool AXIsProcessTrusted();
+
+    [DllImport("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")]
+    public static extern IntPtr AXUIElementCreateSystemWide();
+
 #endif
 
 }

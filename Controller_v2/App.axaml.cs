@@ -34,6 +34,13 @@ public partial class App : Application
             // start up our threads for controller processing and overlay drawing
             if (!Design.IsDesignMode)
             {
+#if MACOS
+                Invoke.AXUIElementCreateSystemWide();
+
+                if (!Invoke.AXIsProcessTrusted())
+                    Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
+#endif
+
                 Task.Run(ControllerInputs.CheckGameProc);
 
                 Task.Run(ControllerInputs.CheckControllerStatus);
