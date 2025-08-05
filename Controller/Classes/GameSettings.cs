@@ -66,6 +66,7 @@ public class GameSettings
 
     public static bool writeToCSettingsFile(string stringToWrite)
     {
+        // To-Do: make this cross platform!
         string cloudPath = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH") + "\\AppData\\Roaming\\Blizzard\\StarCraft\\Cloud";
         string localFile = Environment.GetEnvironmentVariable("HOMEDRIVE") + Environment.GetEnvironmentVariable("HOMEPATH") + "\\Documents\\StarCraft\\CSettings.json";
         List<string> cloudFiles = new();
