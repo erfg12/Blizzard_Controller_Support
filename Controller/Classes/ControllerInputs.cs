@@ -397,7 +397,7 @@ public class ControllerInputs
     {
         // Use the shared settings for deadzone (with fallback to static variable for compatibility)
         double currentDeadzone = AppSettings.Instance.Deadzone;
-        
+
         if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < currentDeadzone
             || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < currentDeadzone)
         {
@@ -405,7 +405,7 @@ public class ControllerInputs
             {
                 // Use the shared settings for cursor speed
                 int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
-                
+
                 // left/right slower
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone)
                 {
@@ -478,7 +478,7 @@ public class ControllerInputs
             {
                 // Use the shared settings for cursor speed
                 int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
-                
+
                 // left/right slower
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone) cursorPos.X += currentCursorSpeed;
                 if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone) cursorPos.X -= currentCursorSpeed;
@@ -489,12 +489,12 @@ public class ControllerInputs
             }
 
             // if joystick is moving, move the cursor
-            if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < currentDeadzone ||
-                GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < currentDeadzone)
-            {
-                simulator.SimulateMouseMovement((short)cursorPos.X, (short)cursorPos.Y);
-                //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
-            }
+            // if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < currentDeadzone ||
+            //     GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < currentDeadzone)
+            // {
+            //     simulator.SimulateMouseMovement((short)cursorPos.X, (short)cursorPos.Y);
+            //     //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
+            // }
 
         }
 

@@ -1,4 +1,6 @@
-﻿namespace Blizzard_Controller;
+﻿
+            // if joystick is moving, move the cursor
+namespace Blizzard_Controller;
 public class GameSettings
 {
     public class ProcessNames
@@ -77,6 +79,8 @@ public class GameSettings
             if (!File.Exists(localFile))
                 return false;
         }
+
+        if (Directory.Exists(cloudPath))
         foreach (var d in Directory.GetDirectories(cloudPath))
         {
             foreach (var f in Directory.GetFiles(d))
@@ -85,6 +89,38 @@ public class GameSettings
                     cloudFiles.Add(f);
             }
         }
+#elif LINUX
+        string linuxUser = Environment.UserName;
+
+        string lutrisPrefix = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Games", "battlenet"
+        );
+
+        string cloudPath = Path.Combine( 
+            lutrisPrefix,
+            "drive_c", "users", linuxUser, "AppData", "Roaming", "Blizzard", "StarCraft", "Cloud"
+        );
+
+        string localFile = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            "Documents", "StarCraft", "CSettings.json");
+
+        List<string> cloudFiles = new();
+        if (!File.Exists(localFile))
+        {
+            return false;
+        }
+        
+        if (Directory.Exists(cloudPath))
+            foreach (var d in Directory.GetDirectories(cloudPath))
+            {
+                foreach (var f in Directory.GetFiles(d))
+                {
+                    if (Path.GetFileName(f).Equals("CSettings.json"))
+                        cloudFiles.Add(f);
+                }
+            }
 #elif MACOS
         string localFile = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),"Library/Application Support/Blizzard/Starcraft/CSettings.json");
         if (!File.Exists(localFile))
@@ -93,12 +129,12 @@ public class GameSettings
             return false;
         }
 #endif
-            string jsonString = File.ReadAllText(localFile);
+        string jsonString = File.ReadAllText(localFile);
         JsonNode jsonNode = JsonNode.Parse(jsonString);
         jsonNode["Hotkeys"] = String.IsNullOrEmpty(stringToWrite) ? new JsonObject() : stringToWrite;
         jsonString = jsonNode.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(localFile, jsonString);
-#if WINDOWS
+#if WINDOWS || LINUX
         foreach (var cf in cloudFiles)
             File.WriteAllText(cf, jsonString);
 #endif
