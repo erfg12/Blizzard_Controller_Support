@@ -1,4 +1,5 @@
-﻿using Avalonia;
+﻿using System.Configuration;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
@@ -34,16 +35,12 @@ public partial class App : Application
             if (!Design.IsDesignMode)
             {
 #if MACOS
-                            Invoke.AXUIElementCreateSystemWide();
-
-                            if (!Invoke.AXIsProcessTrusted())
-                                Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
+                Invoke.AXUIElementCreateSystemWide();
+                if (!Invoke.AXIsProcessTrusted())
+                    Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
 #endif
-
                 Task.Run(ControllerInputs.CheckGameProc);
-
                 Task.Run(ControllerInputs.CheckControllerStatus);
-
 #if LINUX
 
                 Task.Run(() =>
@@ -52,14 +49,12 @@ public partial class App : Application
                     ow.Initialize();
                 });
 
-
-
 #else // macos, windows
-                            Avalonia.Threading.Dispatcher.UIThread.Post(() =>
-                            {
-                                var ow = new OverlayWindow();
-                                ow.Initialize();
-                            });
+                Avalonia.Threading.Dispatcher.UIThread.Post(() =>
+                {
+                    var ow = new OverlayWindow();
+                    ow.Initialize();
+                });
 #endif
             }
             else if (ApplicationLifetime is ISingleViewApplicationLifetime singleViewPlatform)
@@ -70,10 +65,6 @@ public partial class App : Application
                 {
                     DataContext = mainViewModel
                 };
-
-                // Initialize Controller static values with MainViewModel values
-                // ControllerInputs.deadzone = mainViewModel.Deadzone;
-                // ControllerInputs.mouseDistance = mainViewModel.CursorSpeed;
             }
 
             base.OnFrameworkInitializationCompleted();

@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using System.Configuration;
 using System.Runtime.CompilerServices;
 
 namespace Blizzard_Controller;
@@ -28,9 +29,9 @@ public class AppSettings : INotifyPropertyChanged
         }
     }
 
-    private double _deadzone = 0.05;
-    private int _cursorSpeed = 10;
-    private bool _variableCursorSpeed = true;
+    private double _deadzone = Convert.ToDouble(Properties.Settings.Default.Deadzone);
+    private int _cursorSpeed = Convert.ToInt32(Properties.Settings.Default.cursorSpeed);
+    private bool _variableCursorSpeed = Properties.Settings.Default.IncreaseCursorSpeed;
     private string _gameDetectLabel = "Not Running";
     private string _controllerDetectLabel = "Not Connected";
 
@@ -46,6 +47,8 @@ public class AppSettings : INotifyPropertyChanged
             {
                 // Update the static variable in ControllerInputs for backward compatibility
                 ControllerInputs.deadzone = value;
+                Properties.Settings.Default.Deadzone = value;
+                Properties.Settings.Default.Save();
             }
         }
     }
@@ -63,6 +66,9 @@ public class AppSettings : INotifyPropertyChanged
                 // Update the static variable in ControllerInputs for backward compatibility
                 ControllerInputs.mouseDistance = value;
                 ControllerInputs.mouseDistanceDefault = value;
+
+                Properties.Settings.Default.cursorSpeed = value;
+                Properties.Settings.Default.Save();
             }
         }
     }
@@ -73,7 +79,12 @@ public class AppSettings : INotifyPropertyChanged
     public bool VariableCursorSpeed
     {
         get => _variableCursorSpeed;
-        set => SetProperty(ref _variableCursorSpeed, value);
+        set
+        {
+            SetProperty(ref _variableCursorSpeed, value);
+            Properties.Settings.Default.IncreaseCursorSpeed = value;
+            Properties.Settings.Default.Save();
+        }
     }
 
     /// <summary>
