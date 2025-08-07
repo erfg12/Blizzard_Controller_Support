@@ -14,5 +14,8 @@
     <Setting Name="cursorSpeed" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">12</Value>
     </Setting>
+    <Setting Name="ButtonImages" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Xbox</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

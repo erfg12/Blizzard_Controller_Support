@@ -122,11 +122,13 @@
 
 			<!-- Right side buttons -->
 			<StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Top" Spacing="10">
-				<Button Content="Set Grid Layout for Terran and Protoss" Background="#008080" Foreground="White" Command="{Binding TerranGridLayoutButtonClickCommand}"/>
-				<TextBlock Text="- OR -" HorizontalAlignment="Center"/>
-				<Button Content="Set Grid Layout for Zerg" Background="#8B0000" Foreground="White" Command="{Binding ZergGridLayoutButtonClickCommand}"/>
+				<TextBlock Text="Button Images" HorizontalAlignment="Center" Width="190"/>
+				<ComboBox ItemsSource="{Binding ButtonImageItems}" SelectedItem="{Binding SelectedButtonImageItem}"  Width="190"/>
+				<Button Content="Set Grid Layout for Terran and Protoss" Background="#008080" Foreground="White" Command="{Binding TerranGridLayoutButtonClickCommand}" Width="190"/>
+				<TextBlock Text="- OR -" HorizontalAlignment="Center" Width="190"/>
+				<Button Content="Set Grid Layout for Zerg" Background="#8B0000" Foreground="White" Command="{Binding ZergGridLayoutButtonClickCommand}" Width="190"/>
 				<Separator/>
-				<Button Content="Restore Default Hotkeys" Command="{Binding RestoreDefaultHotkeysButtonClickCommand}"/>
+				<Button Content="Restore Default Hotkeys" Command="{Binding RestoreDefaultHotkeysButtonClickCommand}" Width="190"/>
 			</StackPanel>
 		</Grid>
 	</Grid>

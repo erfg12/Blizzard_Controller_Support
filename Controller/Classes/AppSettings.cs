@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
 
 namespace Blizzard_Controller;
 
@@ -34,6 +35,7 @@ public class AppSettings : INotifyPropertyChanged
     private bool _variableCursorSpeed = Properties.Settings.Default.IncreaseCursorSpeed;
     private string _gameDetectLabel = "Not Running";
     private string _controllerDetectLabel = "Not Connected";
+    private string _selectedButtonImageItem = Properties.Settings.Default.ButtonImages;
 
     /// <summary>
     /// Controller input deadzone (0.0 to 1.0)
@@ -119,6 +121,18 @@ public class AppSettings : INotifyPropertyChanged
     public void UpdateControllerStatus(bool connected)
     {
         ControllerDetectLabel = connected ? "Connected" : "Not Connected";
+    }
+
+    public string SelectedButtonImageItem
+    {
+        get => _selectedButtonImageItem;
+        set
+        {
+            SetProperty(ref _selectedButtonImageItem, value);
+            Properties.Settings.Default.ButtonImages = value;
+            OverlayWindow.overlayBtns = value;
+            Properties.Settings.Default.Save();
+        }
     }
 
     public event PropertyChangedEventHandler? PropertyChanged;

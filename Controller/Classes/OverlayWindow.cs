@@ -471,22 +471,14 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     int c = _cellColumns - (leftSide ? 1 : 2);
                     for (int i = 0; i < _cellColumns - 1; i++) // draw top row buttons
                     {
-                        if (overlayBtns.Equals("playstation"))
-                            DrawTexture(ps_btnList[i], _overlayWidth - cellWidth * c--, 0, customColor);
-                        else
-                        {
-                            var posX = _overlayWidth - cellWidth * c--;
-                            var posY = 0;
-                            //Console.WriteLine($"posY:{posY} posX:{posX}");
-                            DrawTexture(btnList[i], posX, posY, customColor);
-                        }
+                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_btnList[i] : btnList[i], _overlayWidth - cellWidth * c--, 0, customColor);
                     }
 
                     // side buttons
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 2), customColor);
-                    DrawTexture(overlayBtns.Equals("playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight, customColor);
+                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 2), customColor);
+                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight, customColor);
                     if (WC1Proc == null)
-                        DrawTexture(overlayBtns.Equals("playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight, customColor);
+                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight, customColor);
 
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))

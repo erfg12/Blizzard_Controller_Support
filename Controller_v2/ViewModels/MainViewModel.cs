@@ -4,6 +4,7 @@ using Blizzard_Controller;
 using MsBox.Avalonia;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using System.Collections.ObjectModel;
 
 namespace Controller_v2.ViewModels;
 
@@ -47,6 +48,12 @@ public partial class MainViewModel : ViewModelBase
         set => Settings.ControllerDetectLabel = value;
     }
 
+    public string SelectedButtonImageItem
+{
+    get => Settings.SelectedButtonImageItem;
+    set => Settings.SelectedButtonImageItem = value;
+}
+
     public MainViewModel()
     {
         // Subscribe to property changes from the shared settings to update the UI
@@ -69,9 +76,14 @@ public partial class MainViewModel : ViewModelBase
                 case nameof(AppSettings.ControllerDetectLabel):
                     OnPropertyChanged(nameof(ControllerDetectLabel));
                     break;
+                    case nameof(AppSettings.SelectedButtonImageItem):
+                    OnPropertyChanged(nameof(SelectedButtonImageItem));
+                    break;
             }
         };
     }
+
+    public ObservableCollection<string> ButtonImageItems { get; } = new() { "Xbox", "Playstation" };
 
     [RelayCommand]
     public void OnExitButtonClick()
