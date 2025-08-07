@@ -489,12 +489,12 @@ public class ControllerInputs
             }
 
             // if joystick is moving, move the cursor
-            // if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < currentDeadzone ||
-            //     GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < currentDeadzone)
-            // {
-            //     simulator.SimulateMouseMovement((short)cursorPos.X, (short)cursorPos.Y);
-            //     //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
-            // }
+            if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone ||
+                GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
+            {
+                simulator.SimulateMouseMovement((short)cursorPos.X, (short)cursorPos.Y);
+                //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
+            }
 
         }
 
