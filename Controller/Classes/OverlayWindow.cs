@@ -483,7 +483,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                         DrawRectangleLines(
-                                _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                                cellWidth,
                                 _overlayHeight - cellHeight * 2,
                                 _overlayWidth,
                                 cellHeight,
@@ -491,7 +491,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                             );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                         DrawRectangleLines(
-                            _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                            cellWidth,
                             _overlayHeight - cellHeight,
                             _overlayWidth,
                             cellHeight,
@@ -499,7 +499,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                         );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
                         DrawRectangleLines(
-                            _overlayWidth - cellWidth * (_cellColumns - (leftSide ? 1 : 2)) - 4,
+                            cellWidth,
                             _overlayHeight,
                             _overlayWidth,
                             cellHeight,
