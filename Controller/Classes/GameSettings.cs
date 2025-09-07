@@ -144,27 +144,28 @@ public class GameSettings
 
     public static bool startGame(string gameCode = "")
     {
+        var p1 = new Process();
+
+#if WINDOWS
         string bNetDir = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86) + "\\Battle.net";
+        p1.StartInfo.FileName = "Battle.net Launcher.exe";
         if (!Directory.Exists(bNetDir))
         {
+            Console.WriteLine($"Failed to find Battle.net directory at {bNetDir}");
             return false;
         }
-
-        var p1 = new Process();
         p1.StartInfo.WorkingDirectory = bNetDir;
-        p1.StartInfo.FileName = "Battle.net Launcher.exe";
         p1.StartInfo.UseShellExecute = true;
+#elif MACOS
+        p1.StartInfo.FileName = "/Applications/Battle.net.app/Contents/MacOS/Battle.net";
+        p1.StartInfo.UseShellExecute = false;
+#elif LINUX
+        p1.StartInfo.FileName = "wine";
+        p1.StartInfo.Arguments = "\"$HOME/.wine/drive_c/Program Files (x86)/Battle.net/Battle.net Launcher.exe\"";
+        p1.StartInfo.UseShellExecute = false;
+#endif
+
         p1.Start();
-
-        p1.WaitForInputIdle();
-
-        var p = new Process();
-        p.StartInfo.WorkingDirectory = bNetDir;
-        p.StartInfo.FileName = "Battle.net.exe";
-        if (!string.IsNullOrEmpty(gameCode))
-            p.StartInfo.Arguments = $"--exec=\"launch {gameCode}\"";
-        p.StartInfo.UseShellExecute = true;
-        p.Start();
 
         return true;
     }

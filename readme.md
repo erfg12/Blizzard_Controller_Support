@@ -9,7 +9,7 @@ NOTE: This does work for WarCraft III Classic and Original StarCraft, but they h
 ## System Requirements
 
 - [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- Windows 10, MacOS, Linux
+- Windows 10+, MacOS, Linux
 - StarCraft / StarCraft 2 / WarCraft II: Remastered / WarCraft III
 - Any game controller
 - Modify your game's settings using the instructions below. (click to open)
