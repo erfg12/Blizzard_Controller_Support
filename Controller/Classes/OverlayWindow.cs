@@ -285,6 +285,9 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
         int cellWidth = 0;
         int cellHeight = 0;
 
+        int overlayWidth = 0;
+        int overlayHeight = 0;
+
         int check = 0;
 
         while (!ControllerInputs.shuttingDown)
@@ -354,8 +357,14 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     var gameWidth = Math.Abs(gameWindowSize.Left - gameWindowSize.Right);
                     var gameHeight = Math.Abs(gameWindowSize.Top - gameWindowSize.Bottom);
 
-                    cellWidth = Convert.ToInt32(_overlayWidth) / _cellColumns;
-                    cellHeight = Convert.ToInt32(_overlayHeight) / 4; // cell count + 1
+                    float scaleX = gameWidth / 1280f;
+                    float scaleY = gameHeight / 720f;
+
+                    overlayWidth = (int)(_overlayWidth * scaleX);
+                    overlayHeight = (int)(_overlayHeight * scaleY);
+
+                    cellWidth = Convert.ToInt32(overlayWidth) / _cellColumns;
+                    cellHeight = Convert.ToInt32(overlayHeight) / 4; // cell count + 1
 
                     //Console.WriteLine($"GetRenderHeight:{_overlayHeight} GetRenderWidth:{_overlayWidth} _cellColumns:{_cellColumns} cellWidth:{cellWidth} cellHeight:{cellHeight}");
 
@@ -408,8 +417,8 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     }
 
                     // Calculate position BEFORE calling SetWindowSize
-                    int targetWidth = Convert.ToInt32(_overlayWidth);
-                    int targetHeight = Convert.ToInt32(_overlayHeight);
+                    int targetWidth = Convert.ToInt32(overlayWidth);
+                    int targetHeight = Convert.ToInt32(overlayHeight);
 
                     int posX;
                     int posY;
@@ -463,37 +472,37 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     int c = _cellColumns - (leftSide ? 0 : 1);
                     for (int i = 0; i < _cellColumns - 1; i++) // draw top row buttons
                     {
-                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_btnList[i] : btnList[i], _overlayWidth - cellWidth * c--, 0, customColor);
+                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_btnList[i] : btnList[i], overlayWidth - cellWidth * c--, 0, customColor);
                     }
 
                     // side buttons
-                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 3), customColor);
-                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - (cellHeight * 2), customColor);
+                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_r1Btn : rBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, overlayHeight - (cellHeight * 3), customColor);
+                    DrawTexture(overlayBtns.Equals("Playstation") ? ps_l1Btn : lBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, overlayHeight - (cellHeight * 2), customColor);
                     if (WC1Proc == null)
-                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, _overlayHeight - cellHeight, customColor);
+                        DrawTexture(overlayBtns.Equals("Playstation") ? ps_l2Btn : ltBtnImg, leftSide ? gameWindowSize.Left + cellWidth * (_cellColumns - 1) : 0, overlayHeight - cellHeight, customColor);
 
                     // row highlighting
                     if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
                         DrawRectangleLines(
                                         cellWidth,
-                                        _overlayHeight - cellHeight * 3 - 1,
-                                        _overlayWidth - cellWidth,
+                                        overlayHeight - cellHeight * 3 - 1,
+                                        overlayWidth - cellWidth,
                                         cellHeight,
                                         Raylib_cs.Color.Green
                                     );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
                         DrawRectangleLines(
                                     cellWidth,
-                                    _overlayHeight - cellHeight * 2 - 1,
-                                    _overlayWidth - cellWidth,
+                                    overlayHeight - cellHeight * 2 - 1,
+                                    overlayWidth - cellWidth,
                                     cellHeight,
                                     Raylib_cs.Color.Green
                                 );
                     if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2) && WC1Proc == null)
                         DrawRectangleLines(
                                     cellWidth,
-                                    _overlayHeight - cellHeight - 1,
-                                    _overlayWidth - cellWidth,
+                                    overlayHeight - cellHeight - 1,
+                                    overlayWidth - cellWidth,
                                     cellHeight,
                                     Raylib_cs.Color.Green
                                 );
