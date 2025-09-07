@@ -160,9 +160,10 @@ public class GameSettings
         p1.StartInfo.FileName = "/Applications/Battle.net.app/Contents/MacOS/Battle.net";
         p1.StartInfo.UseShellExecute = false;
 #elif LINUX
-        p1.StartInfo.FileName = "wine";
-        p1.StartInfo.Arguments = "\"$HOME/.wine/drive_c/Program Files (x86)/Battle.net/Battle.net Launcher.exe\"";
+        p1.StartInfo.FileName = "/bin/bash";
+        p1.StartInfo.Arguments = "-c \"/usr/bin/lutris lutris:rungameid/1\""; // this assumes its app id 1
         p1.StartInfo.UseShellExecute = false;
+
 #endif
 
         p1.Start();
