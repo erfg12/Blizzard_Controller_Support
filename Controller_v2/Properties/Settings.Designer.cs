@@ -8,93 +8,66 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Blizzard_Controller.Properties {
-
-
+namespace Controller_v2.Properties {
+    
+    
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.11.0.0")]
-    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase
-    {
-
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "17.13.0.0")]
+    internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
+        
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
-
-        public static Settings Default
-        {
-            get
-            {
+        
+        public static Settings Default {
+            get {
                 return defaultInstance;
-            }
-        }
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool IncreaseCursorSpeed
-        {
-            get
-            {
-                return ((bool)(this["IncreaseCursorSpeed"]));
-            }
-            set
-            {
-                this["IncreaseCursorSpeed"] = value;
-            }
-        }
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
-        public double Deadzone
-        {
-            get
-            {
-                return ((double)(this["Deadzone"]));
-            }
-            set
-            {
-                this["Deadzone"] = value;
-            }
-        }
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
-        public bool overlay
-        {
-            get
-            {
-                return ((bool)(this["overlay"]));
-            }
-            set
-            {
-                this["overlay"] = value;
-            }
-        }
-
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("12")]
-        public int cursorSpeed
-        {
-            get
-            {
-                return ((int)(this["cursorSpeed"]));
-            }
-            set
-            {
-                this["cursorSpeed"] = value;
             }
         }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Xbox")]
-        public string ButtonImages {
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool IncreaseCursorSpeed {
             get {
-                return ((string)(this["ButtonImages"]));
+                return ((bool)(this["IncreaseCursorSpeed"]));
             }
             set {
-                this["ButtonImages"] = value;
+                this["IncreaseCursorSpeed"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0.1")]
+        public double Deadzone {
+            get {
+                return ((double)(this["Deadzone"]));
+            }
+            set {
+                this["Deadzone"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool overlay {
+            get {
+                return ((bool)(this["overlay"]));
+            }
+            set {
+                this["overlay"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("12")]
+        public int cursorSpeed {
+            get {
+                return ((int)(this["cursorSpeed"]));
+            }
+            set {
+                this["cursorSpeed"] = value;
             }
         }
     }

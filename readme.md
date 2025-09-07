@@ -9,12 +9,11 @@ NOTE: This does work for WarCraft III Classic and Original StarCraft, but they h
 ## System Requirements
 
 - [.NET 8.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
-- [AutoIt Full Installation](https://www.autoitscript.com/site/autoit/downloads/)
-- Windows 10 or 11
+- Windows 10+, MacOS, Linux
 - StarCraft / StarCraft 2 / WarCraft II: Remastered / WarCraft III
-- Game controller
+- Any game controller
 - Modify your game's settings using the instructions below. (click to open)
-- Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases) and unzip the files into a folder and run the .exe program.
+- Download the pre-compiled program [here](https://github.com/erfg12/Blizzard_Controller_Support/releases)
 
 <details>
 <summary>StarCraft: Remastered Game Settings (click here to open)</summary>
@@ -91,9 +90,5 @@ The in-game overlay will help guide you to which command button you want to pres
 <summary>Compiling Source Code (click here to open)</summary>
 
 You need [Visual Studio 2022](https://visualstudio.microsoft.com/vs/), 
-[VS Installer Projects Extension](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects) 
-and [AutoIt Full Installation](https://www.autoitscript.com/site/autoit/downloads/)  
-
-The installer for AutoIt should be in a zip when downloaded, unzip the exe and let it sit in your downloads folder to make the Setup project. 
-The Setup project looks for `autoit-v3-setup.exe` in your `C:/users/(YOUR_USERNAME)/Downloads` directory.
+[VS Installer Projects Extension](https://marketplace.visualstudio.com/items?itemName=VisualStudioClient.MicrosoftVisualStudio2022InstallerProjects)
 </details>

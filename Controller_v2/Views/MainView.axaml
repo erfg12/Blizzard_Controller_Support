@@ -1,0 +1,136 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="clr-namespace:Controller_v2.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Controller_v2.Views.MainView"
+             x:DataType="vm:MainViewModel">
+  <Design.DataContext>
+    <!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+    <vm:MainViewModel />
+  </Design.DataContext>
+
+
+	<Grid Margin="10">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
+
+		<!-- Status -->
+		<StackPanel Orientation="Horizontal" Spacing="15">
+			<TextBlock Text="Controller:" FontWeight="Bold"/>
+			<TextBlock Foreground="BlueViolet" Text="{Binding ControllerDetectLabel}"/>
+		</StackPanel>
+
+		<StackPanel Orientation="Horizontal" Spacing="15">
+			<TextBlock Text="Game:" Margin="29,20,0,0" FontWeight="Bold"/>
+			<TextBlock Foreground="BlueViolet" Margin="0,20,0,0" Text="{Binding GameDetectLabel}"/>
+		</StackPanel>
+
+		<!-- Buttons -->
+		<StackPanel Orientation="Horizontal" Spacing="15" Grid.Row="0" HorizontalAlignment="Right" Margin="0,0,0,5">
+			<Button Content="EXIT APPLICATION" Background="#B5655E" Foreground="White" Width="150" Height="30" Command="{Binding ExitButtonClickCommand}"/>
+			<Button Content="START BATTLE.NET" Background="#5EB565" Foreground="White" Width="150" Height="30" Command="{Binding StartBattleNetButtonClickCommand}"/>
+		</StackPanel>
+
+		<!-- Settings -->
+		<Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" Margin="0,10,0,10" Padding="10">
+			<StackPanel Orientation="Horizontal" Spacing="30">
+				<StackPanel>
+					
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<TextBlock Text="Deadzone:" VerticalAlignment="Center"/>
+						<TextBox Width="50" Margin="5,0,0,0" Text="{Binding Deadzone}"/>
+					</StackPanel>
+				</StackPanel>
+
+				<StackPanel>
+					<StackPanel Orientation="Horizontal" Margin="0,5,0,0">
+						<TextBlock Text="Cursor Speed:" VerticalAlignment="Center"/>
+						<TextBox Width="50" Margin="5,0,0,0" Text="{Binding CursorSpeed}"/>
+					</StackPanel>
+					<CheckBox Content="Variable Cursor Speed" IsChecked="{Binding VariableCursorSpeed}"/>
+				</StackPanel>
+			</StackPanel>
+		</Border>
+
+		<!-- Tabs and instructions -->
+		<Grid Grid.Row="2">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="200"/>
+			</Grid.ColumnDefinitions>
+
+			<!-- TabControl -->
+			<TabControl>
+				<TabControl.Styles>
+					<Style Selector="TabItem">
+						<Setter Property="FontSize" Value="12"/>
+					</Style>
+				</TabControl.Styles>
+				<TabItem Header="StarCraft I">
+						<TextBlock TextWrapping="Wrap" Margin="5">
+							Fullscreen Window Display Mode
+						<LineBreak/>
+							[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+						<LineBreak/><LineBreak/>
+							Click on one of the buttons to the right to modify your CSettings.json file for you. >>
+						</TextBlock>
+				</TabItem>
+				<TabItem Header="StarCraft II">
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [HOTKEYS] > Selected Profile: Grid > Click Accept Button
+						<LineBreak/><LineBreak/>
+						Enable Fullscreen Window Display Mode
+						<LineBreak/>
+						[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+					</TextBlock>
+				</TabItem>
+				<TabItem Header="WarCraft II">
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [Gameplay] > [Grid layout hot keys] > Click to check this box
+						<LineBreak/><LineBreak/>
+						Enable Classic UI:
+						<LineBreak/>
+						[OPTIONS] > [Preferences] > UI Scale > Classic > Click to check the radio button
+						<LineBreak/><LineBreak/>
+						Fullscreen Window Display Mode:
+						<LineBreak/>
+						[OPTIONS] > [Preferences] > Display Mode: Windowed > Click to check this box > Click Ok Button
+					</TextBlock>
+				</TabItem>
+				<TabItem Header="WarCraft III">
+					<TextBlock TextWrapping="Wrap" Margin="5">
+						Enable Grid Hotkeys:
+						<LineBreak/>
+						[OPTIONS] > [INPUT] > Preset Keybindings > [GRID]
+						<LineBreak/><LineBreak/>
+						Enable Fullscreen Window Display Mode:
+						<LineBreak/>
+						[OPTIONS] > [Graphics] > Display Mode: Windowed(Fullscreen) > Click Accept Button
+					</TextBlock>
+				</TabItem>
+			</TabControl>
+
+			<!-- Right side buttons -->
+			<StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Top" Spacing="10">
+				<TextBlock Text="Button Images" HorizontalAlignment="Center" Width="190"/>
+				<ComboBox ItemsSource="{Binding ButtonImageItems}" SelectedItem="{Binding SelectedButtonImageItem}"  Width="190"/>
+				<Button Content="Set Grid Layout for Terran and Protoss" Background="#008080" Foreground="White" Command="{Binding TerranGridLayoutButtonClickCommand}" Width="190"/>
+				<TextBlock Text="- OR -" HorizontalAlignment="Center" Width="190"/>
+				<Button Content="Set Grid Layout for Zerg" Background="#8B0000" Foreground="White" Command="{Binding ZergGridLayoutButtonClickCommand}" Width="190"/>
+				<Separator/>
+				<Button Content="Restore Default Hotkeys" Command="{Binding RestoreDefaultHotkeysButtonClickCommand}" Width="190"/>
+			</StackPanel>
+		</Grid>
+	</Grid>
+	
+</UserControl>
