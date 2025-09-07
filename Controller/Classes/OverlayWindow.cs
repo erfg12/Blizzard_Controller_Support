@@ -414,6 +414,10 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                         {
                             _sideOffset = Convert.ToInt32(0.095 * gameWidth);
                         }
+                        else if (test == 1.5)
+                        {
+                            _sideOffset = Convert.ToInt32(0.080 * gameWidth);
+                        }
                     }
 
                     // Calculate position BEFORE calling SetWindowSize

@@ -43,8 +43,8 @@ public class GameSettings
     }
     public class WarCraft3
     {
-        public static readonly int overlayWidth = 280;
-        public static readonly int overlayHeight = 225;
+        public static readonly int overlayWidth = 300;
+        public static readonly int overlayHeight = 205;
         public static readonly int cellColumns = 5;
         public static readonly int sideOffset = 10; // changes per aspect ratio
         public static readonly int bottomOffset = 10;
