@@ -98,7 +98,7 @@ public class ControllerInputs
             else if (OverlayWindow.SC1Proc != null)
             {
                 pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
-                newGameStatus = "StarCraft: Remastered";
+                newGameStatus = "StarCraft Running";
             }
             else if (OverlayWindow.WC3Proc != null)
             {

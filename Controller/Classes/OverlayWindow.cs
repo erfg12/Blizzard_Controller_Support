@@ -303,7 +303,17 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                 WC1Proc = GetProcess(GameSettings.ProcessNames.WC1ProcName);
                 if (SC2Proc != null || SC1Proc != null || WC3Proc != null || WC1Proc != null || WC2Proc != null)
                 {
-                    if (SC1Proc != null)
+                    if (SC2Proc != null)
+                    {
+                        gameWindowSize = GetWindowSize(SC2Proc);
+                        _overlayWidth = GameSettings.StarCraft2.overlayWidth;
+                        _overlayHeight = GameSettings.StarCraft2.overlayHeight;
+                        _cellColumns = GameSettings.StarCraft2.cellColumns;
+                        _bottomOffset = GameSettings.StarCraft2.bottomOffset;
+                        _sideOffset = GameSettings.StarCraft2.sideOffset;
+                        Console.WriteLine("sc2 detected");
+                    }
+                    else if (SC1Proc != null)
                     {
                         gameWindowSize = GetWindowSize(SC1Proc);
                         _overlayWidth = GameSettings.StarCraft1.overlayWidth;
@@ -314,16 +324,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
 
                         //Console.WriteLine($"_overlayWidth:{_overlayWidth} _overlayHeight:{_overlayHeight} _cellColumns:{_cellColumns} _bottomOffset:{_bottomOffset} _sideOffset:{_sideOffset}");
                         //Console.WriteLine($"gameWindowSize.Left:{gameWindowSize.Left} gameWindowSize.Top:{gameWindowSize.Top} gameWindowSize.Right:{gameWindowSize.Right} gameWindowSize.Bottom:{gameWindowSize.Bottom}");
-
-                    }
-                    else if (SC2Proc != null)
-                    {
-                        gameWindowSize = GetWindowSize(SC2Proc);
-                        _overlayWidth = GameSettings.StarCraft2.overlayWidth;
-                        _overlayHeight = GameSettings.StarCraft2.overlayHeight;
-                        _cellColumns = GameSettings.StarCraft2.cellColumns;
-                        _bottomOffset = GameSettings.StarCraft2.bottomOffset;
-                        _sideOffset = GameSettings.StarCraft2.sideOffset;
+                        Console.WriteLine("sc1 detected");
                     }
                     else if (WC3Proc != null)
                     {
@@ -333,6 +334,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                         _cellColumns = GameSettings.WarCraft3.cellColumns;
                         _bottomOffset = GameSettings.WarCraft3.bottomOffset;
                         _sideOffset = GameSettings.WarCraft3.sideOffset;
+                        Console.WriteLine("wc3 detected");
                     }
                     // these games have their command grid on the left side of the window
                     else if (WC1Proc != null)
@@ -343,6 +345,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                         _cellColumns = GameSettings.WarCraft1.cellColumns;
                         _bottomOffset = GameSettings.WarCraft1.bottomOffset;
                         _sideOffset = GameSettings.WarCraft1.sideOffset;
+                        Console.WriteLine("wc1 detected");
                     }
                     else if (WC2Proc != null)
                     {
@@ -352,6 +355,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                         _cellColumns = GameSettings.WarCraft2.cellColumns;
                         _bottomOffset = GameSettings.WarCraft2.bottomOffset;
                         _sideOffset = GameSettings.WarCraft2.sideOffset;
+                        Console.WriteLine("wc2 detected");
                     }
 
                     var gameWidth = Math.Abs(gameWindowSize.Left - gameWindowSize.Right);
@@ -366,7 +370,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
                     cellWidth = Convert.ToInt32(overlayWidth) / _cellColumns;
                     cellHeight = Convert.ToInt32(overlayHeight) / 4; // cell count + 1
 
-                    //Console.WriteLine($"GetRenderHeight:{_overlayHeight} GetRenderWidth:{_overlayWidth} _cellColumns:{_cellColumns} cellWidth:{cellWidth} cellHeight:{cellHeight}");
+                    Console.WriteLine($"GetRenderHeight:{_overlayHeight} GetRenderWidth:{_overlayWidth} _cellColumns:{_cellColumns} cellWidth:{cellWidth} cellHeight:{cellHeight}");
 
                     aBtnImg.Width = cellWidth;
                     aBtnImg.Height = cellHeight;
