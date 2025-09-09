@@ -53,6 +53,22 @@ jobs:
 
       # ---------------- PACKAGE ----------------
       - name: Package
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $tag = "${GITHUB_REF#refs/tags/}"
+          if (-not $tag) { $tag = "manual-$(Get-Date -Format yyyyMMddHHmmss)" }
+      
+          $outDir = "bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop"
+          Set-Location $outDir
+      
+          if ("${{ matrix.ext }}" -eq "zip") {
+            Compress-Archive -Path * -DestinationPath ../../../../MyApp-$tag-${{ matrix.rid }}.zip
+          } else {
+            tar -czf ../../../../MyApp-$tag-${{ matrix.rid }}.tar.gz *
+          }
+      - name: Package
+        if: runner.os != 'Windows'
         run: |
           tag=${GITHUB_REF##*/}
           if [ -z "$tag" ]; then
