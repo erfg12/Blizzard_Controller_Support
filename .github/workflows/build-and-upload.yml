@@ -29,7 +29,7 @@ jobs:
       - name: Setup .NET 8.0.413
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.x
+          dotnet-version: 8.0
 
       # ---------------- RESTORE ----------------
       - name: Restore (Windows)
@@ -38,7 +38,7 @@ jobs:
 
       - name: Restore (Linux/macOS)
         if: runner.os != 'Windows'
-        run: dotnet restore Blizzard_Controller_Support.sln
+        run: dotnet restore Controller.sln
 
       # ---------------- PUBLISH ----------------
       - name: Publish (Windows)
