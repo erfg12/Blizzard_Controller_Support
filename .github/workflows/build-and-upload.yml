@@ -52,41 +52,20 @@ jobs:
         run: dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
 
       # ---------------- PACKAGE ----------------
-      - name: Package (Windows)
-        if: runner.os == 'Windows'
+      - name: Package
         run: |
-          $tag = "${GITHUB_REF##*/}"
-          if (-not $tag) { $tag = "manual-" + (Get-Date -Format "yyyyMMddHHmmss") }
-          $outDir = "bin\PublishOutputs\win-x64\Controller_v2.Desktop"
-          Set-Location $outDir
-          Compress-Archive -Path * -DestinationPath "..\..\..\..\MyApp-$tag-win-x64.zip"
-
-      - name: Package (Linux/macOS)
-        if: runner.os != 'Windows'
-        run: |
-          #!/bin/bash
-          set -e
-          shopt -s nullglob
-
-          # Determine tag
-          tag="${GITHUB_REF##*/}"
+          tag=${GITHUB_REF##*/}
           if [ -z "$tag" ]; then
-            tag="manual-$(date +%Y%m%d%H%M%S)"
+            tag=manual-$(date +%Y%m%d%H%M%S)
           fi
 
-          OUT_DIR="bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop"
-          cd "$OUT_DIR"
-
-          FILES=(*)
-          if [ ${#FILES[@]} -eq 0 ]; then
-            echo "Error: no files to package in $OUT_DIR"
-            exit 1
-          fi
-
+          OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
+          cd $OUT_DIR
           if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../../../../MyApp-"$tag"-${{ matrix.rid }}.zip "${FILES[@]}"
+            zip -r ../../../../MyApp-${tag}-${{ matrix.rid }}.zip *
           else
-            tar -czf ../../../../MyApp-"$tag"-${{ matrix.rid }}.tar.gz "${FILES[@]}"
+            tar -czf ../../../../MyApp-${tag}-${{ matrix.rid }}.tar.gz *
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
