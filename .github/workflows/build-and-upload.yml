@@ -64,18 +64,21 @@ jobs:
       - name: Package (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          tag=${GITHUB_REF##*/}
+          #!/bin/bash
+          set -e
+
+          tag="${GITHUB_REF##*/}"
           if [ -z "$tag" ]; then
-            tag=manual-$(date +%Y%m%d%H%M%S)
+            tag="manual-$(date +%Y%m%d%H%M%S)"
           fi
 
-          OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
-          cd $OUT_DIR
+          OUT_DIR="bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop"
+          cd "$OUT_DIR"
 
           if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../../../../MyApp-${tag}-${{ matrix.rid }}.zip *
+            zip -r ../../../../MyApp-"$tag"-${{ matrix.rid }}.zip *
           else
-            tar -czf ../../../../MyApp-${tag}-${{ matrix.rid }}.tar.gz *
+            tar -czf ../../../../MyApp-"$tag"-${{ matrix.rid }}.tar.gz *
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
