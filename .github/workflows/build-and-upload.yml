@@ -17,7 +17,7 @@ jobs:
             rid: linux-x64
             ext: tar.gz
           - os: macos-latest
-            rid: osx-x64
+            rid: osx-arm64
             ext: tar.gz
           - os: windows-latest
             rid: win-x64
