@@ -32,11 +32,28 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
+        run: |
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            dotnet restore Controller_v2.Desktop\Controller_v2.Desktop.csproj
+          else
+            dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
+          fi
 
       - name: Publish
         run: |
-          if [ "${{ matrix.rid }}" = "win-x64" ]; then
+          tag=${GITHUB_REF##*/}
+          if [ -z "$tag" ]; then
+            tag=manual-$(date +%Y%m%d%H%M%S)
+          fi
+
+          if [ "${{ runner.os }}" = "Windows" ]; then
+            dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj `
+              -c Release -r win-x64 `
+              -p:PublishSingleFile=true `
+              -p:IncludeNativeLibrariesForSelfExtract=true `
+              --self-contained true -o out
+          elif [ "${{ matrix.rid }}" = "win-x64" ]; then
+            # fallback just in case Windows logic didn’t trigger
             dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj \
               -c Release -r win-x64 \
               -p:PublishSingleFile=true \
@@ -48,14 +65,7 @@ jobs:
               --self-contained true -o out
           fi
 
-      - name: Package
-        run: |
           cd out
-          tag=${GITHUB_REF##*/}
-          # fallback tag for manual runs
-          if [ -z "$tag" ]; then
-            tag=manual-$(date +%Y%m%d%H%M%S)
-          fi
           if [ "${{ matrix.ext }}" = "zip" ]; then
             zip -r ../MyApp-${tag}-${{ matrix.rid }}.zip *
           else
