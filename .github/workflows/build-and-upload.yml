@@ -68,8 +68,10 @@ jobs:
           if [ -z "$tag" ]; then
             tag=manual-$(date +%Y%m%d%H%M%S)
           fi
+
           OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
           cd $OUT_DIR
+
           if [ "${{ matrix.ext }}" = "zip" ]; then
             zip -r ../../../../MyApp-${tag}-${{ matrix.rid }}.zip *
           else
