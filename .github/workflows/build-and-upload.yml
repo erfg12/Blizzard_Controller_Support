@@ -44,14 +44,12 @@ jobs:
       - name: Publish (Windows)
         if: runner.os == 'Windows'
         run: |
-          Remove-Item -Recurse -Force bin\PublishOutputs\win-x64\Controller_v2.Desktop
+          Remove-Item -Recurse -Force bin\PublishOutputs\win-x64\Controller_v2.Desktop -ErrorAction SilentlyContinue
           dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o bin\PublishOutputs\win-x64\Controller_v2.Desktop
 
       - name: Publish (Linux/macOS)
         if: runner.os != 'Windows'
-        run: |
-          rm -rf bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
-          dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
+        run: dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
 
       # ---------------- PACKAGE ----------------
       - name: Package
