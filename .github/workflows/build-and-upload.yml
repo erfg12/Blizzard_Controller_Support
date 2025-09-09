@@ -1,95 +1,65 @@
-name: Build & Release
+name: Build and Release
 
 on:
-  workflow_dispatch:   # manual trigger
-  push:
-    tags:
-      - 'v*'          # auto trigger on version tags like v1.0.0
+  workflow_dispatch:
 
 jobs:
   build:
-    name: Build ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        include:
-          - os: ubuntu-latest
-            rid: linux-x64
-            ext: tar.gz
-          - os: macos-latest
-            rid: osx-x64
-            ext: tar.gz
-          - os: windows-latest
-            rid: win-x64
-            ext: zip
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup .NET
+      - name: Setup .NET 8.0.403
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0.x
+          dotnet-version: 8.0.403
+          cache: true
 
-      # ---------------- RESTORE ----------------
-      - name: Restore (Windows)
-        if: runner.os == 'Windows'
-        run: dotnet restore Controller_v2.Desktop\Controller_v2.Desktop.csproj
-
-      - name: Restore (Linux/macOS)
-        if: runner.os != 'Windows'
-        run: dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
-
-      # ---------------- PUBLISH ----------------
-      - name: Publish (Windows)
-        if: runner.os == 'Windows'
+      - name: Restore
         run: |
-          dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj `
-            -c Release -r win-x64 `
-            -p:PublishSingleFile=true `
-            -p:IncludeNativeLibrariesForSelfExtract=true `
-            --self-contained true -o out
+          if ($env:OS -eq "Windows_NT") {
+            dotnet restore Controller_v2.Desktop\Controller_v2.Desktop.csproj
+          } else {
+            dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
+          }
 
-      - name: Publish (Linux/macOS)
-        if: runner.os != 'Windows'
+      - name: Publish
         run: |
-          dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj \
-            -c Release -r ${{ matrix.rid }} \
-            --self-contained true -o out
+          if ($env:OS -eq "Windows_NT") {
+            dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o out
+          } elseif [ "$(uname)" = "Darwin" ]; then
+            dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -o out
+          else
+            dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o out
+          fi
 
-      # ---------------- PACKAGE ----------------
-      - name: Package
+      - name: Archive output
         run: |
           cd out
-          tag=${GITHUB_REF##*/}
-          # fallback tag for manual runs
-          if [ -z "$tag" ]; then
-            tag=manual-$(date +%Y%m%d%H%M%S)
-          fi
-          if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../MyApp-${tag}-${{ matrix.rid }}.zip *
-          else
-            tar -czf ../MyApp-${tag}-${{ matrix.rid }}.tar.gz *
-          fi
+          zip -r ../${{ runner.os }}.zip .
+        shell: bash
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyApp-${{ matrix.rid }}
-          path: MyApp-*.${{ matrix.ext }}
+          name: build-${{ runner.os }}
+          path: ${{ runner.os }}.zip
 
-  # ---------------- RELEASE ----------------
   release:
-    if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Download all artifacts
+      - name: Download artifacts
         uses: actions/download-artifact@v4
         with:
-          path: ./dist
+          path: ./artifacts
 
-      - name: Create GitHub Release
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ./dist/**/*
+          files: artifacts/**/*.zip
