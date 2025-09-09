@@ -17,6 +17,9 @@ jobs:
             rid: linux-x64
             ext: tar.gz
           - os: macos-latest
+            rid: osx-x64
+            ext: tar.gz
+          - os: macos-latest
             rid: osx-arm64
             ext: tar.gz
           - os: windows-latest
@@ -26,15 +29,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup .NET 8.0.413
+      - name: Setup .NET latest 8.0
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 8.0
+          channel: 8.0
+          cache: true
 
       # ---------------- RESTORE ----------------
       - name: Restore (Windows)
         if: runner.os == 'Windows'
-        run: dotnet restore Controller_v2.Desktop\Controller_v2.Desktop.csproj
+        run: dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
 
       - name: Restore (Linux/macOS)
         if: runner.os != 'Windows'
@@ -43,17 +47,15 @@ jobs:
       # ---------------- PUBLISH ----------------
       - name: Publish (Windows)
         if: runner.os == 'Windows'
-        run: dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj `
-            -c Release -r win-x64 `
-            --self-contained true `
-            -p:PublishSingleFile=true `
-            -o bin/Release/net8.0/win-x64/Controller_v2.Desktop
+        run: |
+          Remove-Item -Recurse -Force bin\PublishOutputs\win-x64\Controller_v2.Desktop
+          dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o bin\PublishOutputs\win-x64\Controller_v2.Desktop
 
       - name: Publish (Linux/macOS)
         if: runner.os != 'Windows'
         run: |
-          rm -rf bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
-          dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
+          rm -rf bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
+          dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
 
       # ---------------- PACKAGE ----------------
       - name: Package
@@ -63,7 +65,7 @@ jobs:
             tag=manual-$(date +%Y%m%d%H%M%S)
           fi
 
-          OUT_DIR=bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
+          OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
           cd $OUT_DIR
           if [ "${{ matrix.ext }}" = "zip" ]; then
             zip -r ../../../../MyApp-${tag}-${{ matrix.rid }}.zip *
