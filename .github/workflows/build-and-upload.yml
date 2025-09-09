@@ -51,7 +51,9 @@ jobs:
 
       - name: Publish (Linux/macOS)
         if: runner.os != 'Windows'
-        run: dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
+        run: |
+          rm -rf bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
+          dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/Release/net8.0/${{ matrix.rid }}/Controller_v2.Desktop
 
       # ---------------- PACKAGE ----------------
       - name: Package
