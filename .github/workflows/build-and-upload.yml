@@ -1,9 +1,10 @@
-name: Build & Upload
+name: Build & Release
 
 on:
+  workflow_dispatch:   # manual trigger
   push:
     tags:
-      - 'v*'
+      - 'v*'          # auto trigger on version tags like v1.0.0
 
 jobs:
   build:
@@ -31,18 +32,19 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore
+        run: dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
 
       - name: Publish
         run: |
           if [ "${{ matrix.rid }}" = "win-x64" ]; then
-            dotnet publish -c Release -r win-x64 \
+            dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj \
+              -c Release -r win-x64 \
               -p:PublishSingleFile=true \
               -p:IncludeNativeLibrariesForSelfExtract=true \
               --self-contained true -o out
           else
-            dotnet publish -c Release -r ${{ matrix.rid }} \
-              -p:PublishSingleFile=true \
+            dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj \
+              -c Release -r ${{ matrix.rid }} \
               --self-contained true -o out
           fi
 
@@ -50,6 +52,10 @@ jobs:
         run: |
           cd out
           tag=${GITHUB_REF##*/}
+          # fallback tag for manual runs
+          if [ -z "$tag" ]; then
+            tag=manual-$(date +%Y%m%d%H%M%S)
+          fi
           if [ "${{ matrix.ext }}" = "zip" ]; then
             zip -r ../MyApp-${tag}-${{ matrix.rid }}.zip *
           else
@@ -60,9 +66,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: MyApp-${{ matrix.rid }}
-          path: MyApp-${{ github.ref_name }}-${{ matrix.rid }}.*
-          
+          path: MyApp-*.${{ matrix.ext }}
+
   release:
+    if: startsWith(github.ref, 'refs/tags/')
     needs: build
     runs-on: ubuntu-latest
     steps:
