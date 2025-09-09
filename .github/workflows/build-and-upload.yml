@@ -66,7 +66,9 @@ jobs:
         run: |
           #!/bin/bash
           set -e
+          shopt -s nullglob
 
+          # Determine tag
           tag="${GITHUB_REF##*/}"
           if [ -z "$tag" ]; then
             tag="manual-$(date +%Y%m%d%H%M%S)"
@@ -75,10 +77,16 @@ jobs:
           OUT_DIR="bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop"
           cd "$OUT_DIR"
 
+          FILES=(*)
+          if [ ${#FILES[@]} -eq 0 ]; then
+            echo "Error: no files to package in $OUT_DIR"
+            exit 1
+          fi
+
           if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../../../../MyApp-"$tag"-${{ matrix.rid }}.zip *
+            zip -r ../../../../MyApp-"$tag"-${{ matrix.rid }}.zip "${FILES[@]}"
           else
-            tar -czf ../../../../MyApp-"$tag"-${{ matrix.rid }}.tar.gz *
+            tar -czf ../../../../MyApp-"$tag"-${{ matrix.rid }}.tar.gz "${FILES[@]}"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
