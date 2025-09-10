@@ -19,7 +19,9 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-    <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+	  <TargetFramework>net8.0-windows</TargetFramework>
+	  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+	  <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
 
   <ItemGroup>

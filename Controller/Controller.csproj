@@ -1,48 +1,38 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <!-- Target plain net8.0 (cross‑platform) -->
-    <TargetFramework>net8.0</TargetFramework>
-    <OutputType>Exe</OutputType>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<OutputType>Exe</OutputType>
+		<RootNamespace>Controller</RootNamespace>
+		<AssemblyName>Controller</AssemblyName>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<BaseOutputPath>../bin</BaseOutputPath>
+	</PropertyGroup>
 
-    <!-- Keep name consistent -->
-    <RootNamespace>Controller</RootNamespace>
-    <AssemblyName>Controller</AssemblyName>
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
+		<UseWindowsForms>true</UseWindowsForms>
+	</PropertyGroup>
 
-    <!-- Remove Windows‑only settings -->
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <UseWindowsForms>false</UseWindowsForms>
-    <BaseOutputPath>../bin</BaseOutputPath>
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
+		<DefineConstants>$(DefineConstants);MACOS</DefineConstants>
+	</PropertyGroup>
 
-    <!-- Remove Windows‑only manifest and platform target -->
-    <!--<ApplicationManifest>app.manifest</ApplicationManifest>-->
-    <!--<PlatformTarget>x86</PlatformTarget>-->
-  </PropertyGroup>
+	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
+		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
+	</PropertyGroup>
 
-  <!-- Remove .nuget clean section (not needed cross‑platform) -->
+	<ItemGroup>
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />
+		<PackageReference Include="Raylib-cs" Version="7.0.1" />
+		<PackageReference Include="SharpHook" Version="6.2.0" />
+		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
+		<PackageReference Include="System.Resources.Extensions" Version="9.0.7" />
+	</ItemGroup>
 
-<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
-  <DefineConstants>$(DefineConstants);MACOS</DefineConstants>
-</PropertyGroup>
-
-<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Linux'))">
-  <DefineConstants>$(DefineConstants);LINUX</DefineConstants>
-</PropertyGroup>
-
-<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-  <DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-</PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Raylib-cs" Version="7.0.1" />
-    <PackageReference Include="SharpHook" Version="6.2.0" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
-    <PackageReference Include="System.Resources.Extensions" Version="9.0.7" />
-  </ItemGroup>
-
-  <!-- Keep resources -->
-  <ItemGroup>
-  <Content Include="Resources\**\*.*">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </Content>
-</ItemGroup>
+	<ItemGroup>
+		<Content Include="Resources\**\*.*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 </Project>

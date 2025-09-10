@@ -52,8 +52,13 @@ public partial class App : Application
 #else // macos, windows
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    var ow = new OverlayWindow();
-                    ow.Initialize();
+#if WINDOWS
+                    var game = new OverlayWindowMonoGame();
+                    game.Run();
+#else
+                    var form = new OverlayWindow();
+                    form.Initialize();
+#endif
                 });
 #endif
             }
