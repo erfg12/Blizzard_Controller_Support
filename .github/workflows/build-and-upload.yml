@@ -63,9 +63,9 @@ jobs:
           Set-Location $outDir
       
           if ("${{ matrix.ext }}" -eq "zip") {
-            Compress-Archive -Path * -DestinationPath ../../../../MyApp-$tag-${{ matrix.rid }}.zip
+            Compress-Archive -Path * -DestinationPath ../../../../Blizzard_Controller_Support-$tag-${{ matrix.rid }}.zip
           } else {
-            tar -czf ../../../../MyApp-$tag-${{ matrix.rid }}.tar.gz *
+            tar -czf ../../../../Blizzard_Controller_Support-$tag-${{ matrix.rid }}.tar.gz *
           }
       - name: Package
         if: runner.os != 'Windows'
@@ -78,16 +78,16 @@ jobs:
           OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
           cd $OUT_DIR
           if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../../../../MyApp-${tag}-${{ matrix.rid }}.zip *
+            zip -r ../../../../Blizzard_Controller_Support-${tag}-${{ matrix.rid }}.zip *
           else
-            tar -czf ../../../../MyApp-${tag}-${{ matrix.rid }}.tar.gz *
+            tar -czf ../../../../Blizzard_Controller_Support-${tag}-${{ matrix.rid }}.tar.gz *
           fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: MyApp-${{ matrix.rid }}
-          path: MyApp-*.${{ matrix.ext }}
+          name: Blizzard_Controller_Support-${{ matrix.rid }}
+          path: Blizzard_Controller_Support-*.${{ matrix.ext }}
 
   # ---------------- RELEASE ----------------
   release:
