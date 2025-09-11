@@ -11,7 +11,6 @@
 	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
 		<TargetFramework>net8.0-windows</TargetFramework>
 		<DefineConstants>$(DefineConstants);WINDOWS</DefineConstants>
-		<UseWindowsForms>true</UseWindowsForms>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
