@@ -1,6 +1,4 @@
-﻿using SharpDX.XInput;
-
-namespace Blizzard_Controller;
+﻿namespace Blizzard_Controller;
 
 static class Program
 {
