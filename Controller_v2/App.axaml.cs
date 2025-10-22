@@ -40,7 +40,6 @@ public partial class App : Application
                     Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
 #endif
                 Task.Run(ControllerInputs.CheckGameProc);
-                Task.Run(ControllerInputs.CheckControllerStatus);
 #if LINUX
 
                 Task.Run(() =>

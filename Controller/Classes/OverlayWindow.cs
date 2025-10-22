@@ -458,9 +458,10 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
 
             bool leftSide = WC1Proc != null || WC2Proc != null;
 
+            AppSettings.Instance.UpdateControllerStatus(IsGamepadAvailable(gamepad));
+
             if (IsGamepadAvailable(gamepad))
             {
-
                 //draw overlay buttons only if we're holding trigger buttons
                 if (
                     IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1) ||

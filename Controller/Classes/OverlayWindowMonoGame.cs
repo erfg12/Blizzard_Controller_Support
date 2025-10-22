@@ -1,8 +1,9 @@
 ﻿#if WINDOWS
-using System.Windows.Forms;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using SharpDX.XInput;
+using System.Windows.Forms;
 using ButtonState = Microsoft.Xna.Framework.Input.ButtonState;
 using SpriteBatch = Microsoft.Xna.Framework.Graphics.SpriteBatch;
 using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
@@ -154,6 +155,8 @@ public class OverlayWindowMonoGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        AppSettings.Instance.UpdateControllerStatus(GamePad.GetState(0).IsConnected);
+
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
             Exit();
 

@@ -1,4 +1,6 @@
-﻿using SharpHook;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using SharpHook;
 using SharpHook.Data;
 using SharpHook.Native;
 
@@ -15,7 +17,7 @@ public class ControllerInputs
 
     public static Process pname = null;
 
-    public static Point cursorPos = new Point(0,0);
+    public static System.Drawing.Point cursorPos = new System.Drawing.Point(0,0);
 
     public static bool holdingA = false;
     public static bool holdingRT = false;
@@ -27,30 +29,9 @@ public class ControllerInputs
     public static bool holdingRJoyDirDown = false;
 
     public static string gameProcStatus = "Not Running";
-    public static bool controller = false;
     public static int gamepad = 0;
 
     public static EventSimulator simulator = new EventSimulator();
-
-    /// <summary>
-    /// Check if controller is connected and update the shared settings
-    /// </summary>
-    public static void CheckControllerStatus()
-    {
-        while (!shuttingDown)
-        {
-            bool isConnected = IsGamepadAvailable(gamepad);
-            ControllerInputs.controller = isConnected;
-
-            if (controller != isConnected)
-            {
-                controller = isConnected;
-                AppSettings.Instance.UpdateControllerStatus(isConnected);
-            }
-            
-            Thread.Sleep(1000); // Check every second
-        }
-    }
 
     private const int SW_MAXIMIZE = 3;
 
@@ -213,22 +194,22 @@ public class ControllerInputs
             simulator.SimulateKeyRelease(KeyCode.VcLeftControl);
         }
 
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
+        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp) || GamePad.GetState(PlayerIndex.One).DPad.Up == ButtonState.Pressed)
         {
             simulator.SimulateKeyPress(KeyCode.Vc1);
             simulator.SimulateKeyRelease(KeyCode.Vc1);
         }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
+        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight) || GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
         {
             simulator.SimulateKeyPress(KeyCode.Vc2);
             simulator.SimulateKeyRelease(KeyCode.Vc2);
         }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
+        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown) || GamePad.GetState(PlayerIndex.One).DPad.Down == ButtonState.Pressed)
         {
             simulator.SimulateKeyPress(KeyCode.Vc3);
             simulator.SimulateKeyRelease(KeyCode.Vc3);
         }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
+        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft) || GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
         {
             simulator.SimulateKeyPress(KeyCode.Vc4);
             simulator.SimulateKeyRelease(KeyCode.Vc4);
@@ -274,7 +255,12 @@ public class ControllerInputs
         }
 
         // Not holding RB, RT, LB, LT and pressing buttons
-        if (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger1) && IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger2) && IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger1) && IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2))
+        if (
+            (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger1) || GamePad.GetState(PlayerIndex.One).Buttons.LeftShoulder == ButtonState.Released) &&
+            (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger2) || GamePad.GetState(PlayerIndex.One).Triggers.Left <= 0.1f) &&
+            (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger1) || GamePad.GetState(PlayerIndex.One).Buttons.RightShoulder == ButtonState.Released) &&
+            (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) || GamePad.GetState(PlayerIndex.One).Triggers.Right <= 0.1f)
+        )
         {
             if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
             {
