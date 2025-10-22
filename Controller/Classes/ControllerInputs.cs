@@ -40,7 +40,8 @@ public class ControllerInputs
         while (!shuttingDown)
         {
             bool isConnected = IsGamepadAvailable(gamepad);
-            
+            ControllerInputs.controller = isConnected;
+
             if (controller != isConnected)
             {
                 controller = isConnected;
@@ -90,7 +91,6 @@ public class ControllerInputs
         {
             string newGameStatus;
 
-            ControllerInputs.controller = IsGamepadAvailable(gamepad);
             OverlayWindow.SC2Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
             OverlayWindow.SC1Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
             OverlayWindow.WC3Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);

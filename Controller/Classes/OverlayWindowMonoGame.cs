@@ -13,9 +13,6 @@ public class OverlayWindowMonoGame : Game
     GraphicsDeviceManager graphics;
     SpriteBatch spriteBatch;
 
-    // Processes
-    Process SC2Proc, SC1Proc, WC3Proc, WC1Proc, WC2Proc;
-
     // Overlay settings (populated from your GameSettings in the original)
     int _overlayWidth = 0;
     int _overlayHeight = 0;
@@ -164,53 +161,47 @@ public class OverlayWindowMonoGame : Game
         if (check++ >= 100)
         {
             // detect game processes (use your GameSettings.* names)
-            SC2Proc = GetProcess(GameSettings.ProcessNames.SC2ProcName);
-            SC1Proc = GetProcess(GameSettings.ProcessNames.SC1ProcName);
-            WC3Proc = GetProcess(GameSettings.ProcessNames.WC3ProcName);
-            WC2Proc = GetProcess(GameSettings.ProcessNames.WC2ProcName);
-            WC1Proc = GetProcess(GameSettings.ProcessNames.WC1ProcName);
-
-            if (SC2Proc != null || SC1Proc != null || WC3Proc != null || WC1Proc != null || WC2Proc != null)
+            if (OverlayWindow.SC2Proc != null || OverlayWindow.SC1Proc != null || OverlayWindow.WC3Proc != null || OverlayWindow.WC1Proc != null || OverlayWindow.WC2Proc != null)
             {
-                if (SC2Proc != null)
+                if (OverlayWindow.SC2Proc != null)
                 {
-                    gameWindowSize = GetWindowSize(SC2Proc);
+                    gameWindowSize = GetWindowSize(OverlayWindow.SC2Proc);
                     _overlayWidth = GameSettings.StarCraft2.overlayWidth;
                     _overlayHeight = GameSettings.StarCraft2.overlayHeight;
                     _cellColumns = GameSettings.StarCraft2.cellColumns;
                     _bottomOffset = GameSettings.StarCraft2.bottomOffset;
                     _sideOffset = GameSettings.StarCraft2.sideOffset;
                 }
-                else if (SC1Proc != null)
+                else if (OverlayWindow.SC1Proc != null)
                 {
-                    gameWindowSize = GetWindowSize(SC1Proc);
+                    gameWindowSize = GetWindowSize(OverlayWindow.SC1Proc);
                     _overlayWidth = GameSettings.StarCraft1.overlayWidth;
                     _overlayHeight = GameSettings.StarCraft1.overlayHeight;
                     _cellColumns = GameSettings.StarCraft1.cellColumns;
                     _bottomOffset = GameSettings.StarCraft1.bottomOffset;
                     _sideOffset = GameSettings.StarCraft1.sideOffset;
                 }
-                else if (WC3Proc != null)
+                else if (OverlayWindow.WC3Proc != null)
                 {
-                    gameWindowSize = GetWindowSize(WC3Proc);
+                    gameWindowSize = GetWindowSize(OverlayWindow.WC3Proc);
                     _overlayWidth = GameSettings.WarCraft3.overlayWidth;
                     _overlayHeight = GameSettings.WarCraft3.overlayHeight;
                     _cellColumns = GameSettings.WarCraft3.cellColumns;
                     _bottomOffset = GameSettings.WarCraft3.bottomOffset;
                     _sideOffset = GameSettings.WarCraft3.sideOffset;
                 }
-                else if (WC1Proc != null)
+                else if (OverlayWindow.WC1Proc != null)
                 {
-                    gameWindowSize = GetWindowSize(WC1Proc);
+                    gameWindowSize = GetWindowSize(OverlayWindow.WC1Proc);
                     _overlayWidth = GameSettings.WarCraft1.overlayWidth;
                     _overlayHeight = GameSettings.WarCraft1.overlayHeight;
                     _cellColumns = GameSettings.WarCraft1.cellColumns;
                     _bottomOffset = GameSettings.WarCraft1.bottomOffset;
                     _sideOffset = GameSettings.WarCraft1.sideOffset;
                 }
-                else if (WC2Proc != null)
+                else if (OverlayWindow.WC2Proc != null)
                 {
-                    gameWindowSize = GetWindowSize(WC2Proc);
+                    gameWindowSize = GetWindowSize(OverlayWindow.WC2Proc);
                     _overlayWidth = GameSettings.WarCraft2.overlayWidth;
                     _overlayHeight = GameSettings.WarCraft2.overlayHeight;
                     _cellColumns = GameSettings.WarCraft2.cellColumns;
@@ -234,7 +225,7 @@ public class OverlayWindowMonoGame : Game
                 // Simpler: draw them scaled during Draw using dest rectangles computed from cellWidth/cellHeight.
 
                 // WC3 special aspect offsets
-                if (WC3Proc != null)
+                if (OverlayWindow.WC3Proc != null)
                 {
                     var test = GetAspectRatio(gameWidth, gameHeight);
                     if (test == 1.8) _sideOffset = Convert.ToInt32(0.135 * gameWidth);
@@ -248,7 +239,7 @@ public class OverlayWindowMonoGame : Game
                 int posX;
                 int posY;
 
-                if (WC1Proc != null || WC2Proc != null) // left side
+                if (OverlayWindow.WC1Proc != null || OverlayWindow.WC2Proc != null) // left side
                 {
                     posX = gameWindowSize.Left - _sideOffset;
                     posY = gameWindowSize.Bottom - targetHeight - _bottomOffset;
@@ -278,14 +269,14 @@ public class OverlayWindowMonoGame : Game
         GraphicsDevice.Clear(new Microsoft.Xna.Framework.Color(0,0,0));
 
         // If no game found, skip drawing
-        if ((SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null) ||
+        if ((OverlayWindow.SC2Proc == null && OverlayWindow.SC1Proc == null && OverlayWindow.WC3Proc == null && OverlayWindow.WC1Proc == null && OverlayWindow.WC2Proc == null) ||
              Math.Abs(gameWindowSize.Left - gameWindowSize.Right) == 0)
         {
             base.Draw(gameTime);
             return;
         }
 
-        bool leftSide = WC1Proc != null || WC2Proc != null;
+        bool leftSide = OverlayWindow.WC1Proc != null || OverlayWindow.WC2Proc != null;
         var pad = GamePad.GetState(PlayerIndex.One);
         bool anyTrigger = pad.Triggers.Left > 0.5f || pad.Triggers.Right > 0.5f || pad.IsButtonDown(Buttons.LeftTrigger);
 
@@ -322,7 +313,7 @@ public class OverlayWindowMonoGame : Game
                 spriteBatch.Draw(rTex, new Microsoft.Xna.Framework.Rectangle(sideX, overlayHeight - (cellHeight * 3), cellWidth, cellHeight), tint);
             if (lTex != null)
                 spriteBatch.Draw(lTex, new Microsoft.Xna.Framework.Rectangle(sideX, overlayHeight - (cellHeight * 2), cellWidth, cellHeight), tint);
-            if (WC1Proc == null && ltTex != null)
+            if (OverlayWindow.WC1Proc == null && ltTex != null)
                 spriteBatch.Draw(ltTex, new Microsoft.Xna.Framework.Rectangle(sideX, overlayHeight - cellHeight, cellWidth, cellHeight), tint);
 
             // row highlighting (green outlines) for triggers
@@ -330,7 +321,7 @@ public class OverlayWindowMonoGame : Game
                 DrawRectangleLines(spriteBatch, new Microsoft.Xna.Framework.Rectangle(cellWidth, overlayHeight - cellHeight * 3 - 1, overlayWidth - cellWidth, cellHeight), 2, Microsoft.Xna.Framework.Color.Green);
             if (pad.Triggers.Left > 0.5f)
                 DrawRectangleLines(spriteBatch, new Microsoft.Xna.Framework.Rectangle(cellWidth, overlayHeight - cellHeight * 2 - 1, overlayWidth - cellWidth, cellHeight), 2, Microsoft.Xna.Framework.Color.Green);
-            if (pad.IsButtonDown(Buttons.LeftShoulder) && WC1Proc == null) // approximate LeftTrigger2
+            if (pad.IsButtonDown(Buttons.LeftShoulder) && OverlayWindow.WC1Proc == null) // approximate LeftTrigger2
                 DrawRectangleLines(spriteBatch, new Microsoft.Xna.Framework.Rectangle(cellWidth, overlayHeight - cellHeight - 1, overlayWidth - cellWidth, cellHeight), 2, Microsoft.Xna.Framework.Color.Green);
 
             spriteBatch.End();
