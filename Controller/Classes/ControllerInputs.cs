@@ -89,7 +89,14 @@ public class ControllerInputs
         while (!shuttingDown)
         {
             string newGameStatus;
-            
+
+            ControllerInputs.controller = IsGamepadAvailable(gamepad);
+            OverlayWindow.SC2Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
+            OverlayWindow.SC1Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
+            OverlayWindow.WC3Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);
+            OverlayWindow.WC2Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC2ProcName);
+            OverlayWindow.WC1Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC1ProcName);
+
             if (OverlayWindow.SC2Proc != null)
             {
                 pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);

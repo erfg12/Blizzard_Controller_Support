@@ -295,12 +295,7 @@ public static (int x, int y, int width, int height) GetWindowInfo(IntPtr window)
             // check if game died. do these operations every 100ms or so
             if (check >= 100)
             {
-                ControllerInputs.controller = IsGamepadAvailable(gamepad);
-                SC2Proc = GetProcess(GameSettings.ProcessNames.SC2ProcName);
-                SC1Proc = GetProcess(GameSettings.ProcessNames.SC1ProcName);
-                WC3Proc = GetProcess(GameSettings.ProcessNames.WC3ProcName);
-                WC2Proc = GetProcess(GameSettings.ProcessNames.WC2ProcName);
-                WC1Proc = GetProcess(GameSettings.ProcessNames.WC1ProcName);
+                
                 if (SC2Proc != null || SC1Proc != null || WC3Proc != null || WC1Proc != null || WC2Proc != null)
                 {
                     if (SC2Proc != null)
