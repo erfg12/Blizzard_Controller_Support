@@ -1,577 +1,91 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using SharpHook;
-using SharpHook.Data;
-using SharpHook.Native;
+using System;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using Blizzard_Controller.Configuration;
+using Blizzard_Controller.UI.Overlay;
 
-namespace Blizzard_Controller;
-public class ControllerInputs
+namespace Blizzard_Controller.Input
 {
-    // Settings that can be updated by the UI
-    public static double deadzone = 0.05;
-    public static int mouseDistance = 10;
-    public static int mouseDistanceDefault = 10;
-    public static double faster = 0.8; // increase mouse speed once it goes past this
-    public static double slower = 0.4;
-    public static bool shuttingDown = false;
-
-    public static Process pname = null;
-
-    public static System.Drawing.Point cursorPos = new System.Drawing.Point(0,0);
-
-    public static bool holdingA = false;
-    public static bool holdingRT = false;
-    public static bool holdingRJoy = false;
-    public static bool holdingLJoy = false;
-    public static bool holdingRJoyDirLeft = false;
-    public static bool holdingRJoyDirRight = false;
-    public static bool holdingRJoyDirUp = false;
-    public static bool holdingRJoyDirDown = false;
-
-    public static string gameProcStatus = "Not Running";
-    public static int gamepad = 0;
-
-    public static EventSimulator simulator = new EventSimulator();
-
-    private const int SW_MAXIMIZE = 3;
-
-    public static bool IsWindowedMode(IntPtr hWnd)
+    public static class ControllerInputs
     {
-        bool retVal = false;
+        // Backwards-compatible public static fields
+        public static double deadzone = 0.1;
+        public static int mouseDistance = 20;
+        public static int mouseDistanceDefault = 20;
+        public static bool shuttingDown = false;
 
-#if WINDOWS
-        int style = Invoke.GetWindowLong(hWnd, Invoke.GWL_STYLE);
-        retVal = (style & Invoke.WS_OVERLAPPEDWINDOW) == Invoke.WS_OVERLAPPEDWINDOW;
-#elif LINUX
-        // to-do
-#elif MACOS
-        // to-do
-#endif
-
-        return retVal;
-    }
-
-    public static void MaximizeWindow(IntPtr handle)
-    {
-#if WINDOWS
-        Invoke.ShowWindow(handle, SW_MAXIMIZE);
-#elif LINUX
-        // to-do
-#elif MACOS
-        // to-do
-#endif
-    }
-
-    /// <summary>
-    /// Check if game is running. If not, change public variable (gameProcStatus) to false to stop BGWorkers till a new game is launched.
-    /// Updates the shared AppSettings instance to keep UI synchronized.
-    /// </summary>
-    public static void CheckGameProc()
-    {
-        while (!shuttingDown)
+        public static async Task CheckGameProc()
         {
-            string newGameStatus;
-
-            OverlayWindow.SC2Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
-            OverlayWindow.SC1Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
-            OverlayWindow.WC3Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);
-            OverlayWindow.WC2Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC2ProcName);
-            OverlayWindow.WC1Proc = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC1ProcName);
-
-            if (OverlayWindow.SC2Proc != null)
+            while (!shuttingDown)
             {
-                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
-                newGameStatus = "StarCraft 2 Running";
-            }
-            else if (OverlayWindow.SC1Proc != null)
-            {
-                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
-                newGameStatus = "StarCraft Running";
-            }
-            else if (OverlayWindow.WC3Proc != null)
-            {
-                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);
-                newGameStatus = "WarCraft III: Reforged";
-            }
-            else if (OverlayWindow.WC1Proc != null)
-            {
-                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC1ProcName);
-                //if (pname == null) continue;
-                newGameStatus = "WarCraft I: Remastered";
-                #if WINDOWS
-                if (IsWindowedMode(pname.MainWindowHandle)) // maximize windowed mode
-                    MaximizeWindow(pname.MainWindowHandle);
-                    #endif
-            }
-            else if (OverlayWindow.WC2Proc != null)
-            {
-                pname = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC2ProcName);
-                //if (pname == null) continue;
-                newGameStatus = "WarCraft II: Remastered";
-                #if WINDOWS
-                if (IsWindowedMode(pname.MainWindowHandle)) // maximize windowed mode
-                    MaximizeWindow(pname.MainWindowHandle);
-                    #endif
-            }
-            else
-            {
-                pname = null;
-                newGameStatus = "Not Running";
-            }
-
-            // Update both the static variable and the shared settings
-            if (gameProcStatus != newGameStatus)
-            {
-                gameProcStatus = newGameStatus;
-                AppSettings.Instance.UpdateGameStatus(newGameStatus);
-            }
-
-            Thread.Sleep(500);
-        }
-    }
-
-    /// <summary>
-    /// Mouse click. x, y coords with button.
-    /// </summary>
-    /// <param name="x">cursor X position</param>
-    /// <param name="y">cursor Y position</param>
-    /// <param name="btn">Button to press. See MouseClicks enum.</param>
-    public static void globalMouseClick(Invoke.MouseClicks btn, int x = 0, int y = 0)
-    {
-        if (btn == Invoke.MouseClicks.left_down)
-            simulator.SimulateMousePress(MouseButton.Button1);
-        else if (btn == Invoke.MouseClicks.left_up)
-            simulator.SimulateMouseRelease(MouseButton.Button1);
-
-        if (btn == Invoke.MouseClicks.right_BLCLK)
-        {
-            simulator.SimulateMousePress(MouseButton.Button3);
-            simulator.SimulateMouseRelease(MouseButton.Button3);
-        }
-
-        if (btn == Invoke.MouseClicks.middle_down)
-            simulator.SimulateMousePress(MouseButton.Button2);
-        else if (btn == Invoke.MouseClicks.middle_up)
-            simulator.SimulateMouseRelease(MouseButton.Button2);
-        Thread.Sleep(150); // prevent double press
-    }
-
-    /// <summary>
-    /// Process all controller button presses. This function loops endlessly.
-    /// </summary>
-    public static void processButtons()
-    {
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp))
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeftControl);
-            simulator.SimulateKeyPress(KeyCode.Vc1);
-
-            simulator.SimulateKeyRelease(KeyCode.Vc1);
-            simulator.SimulateKeyRelease(KeyCode.VcLeftControl);
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight))
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeftControl);
-            simulator.SimulateKeyPress(KeyCode.Vc2);
-
-            simulator.SimulateKeyRelease(KeyCode.Vc2);
-            simulator.SimulateKeyRelease(KeyCode.VcLeftControl);
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown))
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeftControl);
-            simulator.SimulateKeyPress(KeyCode.Vc3);
-
-            simulator.SimulateKeyRelease(KeyCode.Vc3);
-            simulator.SimulateKeyRelease(KeyCode.VcLeftControl);
-        }
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft))
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeftControl);
-            simulator.SimulateKeyPress(KeyCode.Vc4);
-
-            simulator.SimulateKeyRelease(KeyCode.Vc4);
-            simulator.SimulateKeyRelease(KeyCode.VcLeftControl);
-        }
-
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceUp) || GamePad.GetState(PlayerIndex.One).DPad.Up == ButtonState.Pressed)
-        {
-            simulator.SimulateKeyPress(KeyCode.Vc1);
-            simulator.SimulateKeyRelease(KeyCode.Vc1);
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceRight) || GamePad.GetState(PlayerIndex.One).DPad.Right == ButtonState.Pressed)
-        {
-            simulator.SimulateKeyPress(KeyCode.Vc2);
-            simulator.SimulateKeyRelease(KeyCode.Vc2);
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceDown) || GamePad.GetState(PlayerIndex.One).DPad.Down == ButtonState.Pressed)
-        {
-            simulator.SimulateKeyPress(KeyCode.Vc3);
-            simulator.SimulateKeyRelease(KeyCode.Vc3);
-        }
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.LeftFaceLeft) || GamePad.GetState(PlayerIndex.One).DPad.Left == ButtonState.Pressed)
-        {
-            simulator.SimulateKeyPress(KeyCode.Vc4);
-            simulator.SimulateKeyRelease(KeyCode.Vc4);
-        }
-
-        if (IsGamepadButtonDown(gamepad, GamepadButton.LeftThumb) && holdingLJoy == false)
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeftShift);
-            holdingLJoy = true;
-        }
-        else if (IsGamepadButtonUp(gamepad, GamepadButton.LeftThumb) && holdingLJoy == true)
-        {
-            simulator.SimulateKeyRelease(KeyCode.VcLeftShift);
-            holdingLJoy = false;
-        }
-
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightThumb) && holdingRJoy == false)
-        {
-            holdingRJoy = true;
-        }
-        else if (IsGamepadButtonUp(gamepad, GamepadButton.RightThumb) && holdingRJoy == true)
-        {
-            holdingRJoy = false;
-        }
-
-        if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger2) && holdingRT == false) // hold down if not already
-        {
-            globalMouseClick(Invoke.MouseClicks.middle_down); // middle mouse btn
-            //mouseDistance = mouseDistanceDefault;
-            holdingRT = true;
-        }
-        else if (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) && holdingRT == true) // release
-        {
-            globalMouseClick(Invoke.MouseClicks.middle_up); // middle mouse btn
-            //mouseDistance = mouseDistanceDefault;
-            holdingRT = false;
-        }
-
-        if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleRight))
-        {
-            simulator.SimulateKeyPress(KeyCode.VcF10);
-            simulator.SimulateKeyRelease(KeyCode.VcF10);
-        }
-
-        // Not holding RB, RT, LB, LT and pressing buttons
-        if (
-            (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger1) || GamePad.GetState(PlayerIndex.One).Buttons.LeftShoulder == ButtonState.Released) &&
-            (IsGamepadButtonUp(gamepad, GamepadButton.LeftTrigger2) || GamePad.GetState(PlayerIndex.One).Triggers.Left <= 0.1f) &&
-            (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger1) || GamePad.GetState(PlayerIndex.One).Buttons.RightShoulder == ButtonState.Released) &&
-            (IsGamepadButtonUp(gamepad, GamepadButton.RightTrigger2) || GamePad.GetState(PlayerIndex.One).Triggers.Right <= 0.1f)
-        )
-        {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcF1);
-                simulator.SimulateKeyRelease(KeyCode.VcF1);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcF2);
-                simulator.SimulateKeyRelease(KeyCode.VcF2);
-            }
-            //if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-            //{
-            //    globalMouseClick(Invoke.MouseClicks.right_BLCLK); // right mouse btn
-            //}
-            if (IsGamepadButtonDown(gamepad, GamepadButton.RightFaceDown) && holdingA == false)
-            {
-                globalMouseClick(Invoke.MouseClicks.left_down);
-                holdingA = true;
-            }
-            else if (IsGamepadButtonUp(gamepad, GamepadButton.RightFaceDown) && holdingA == true)
-            {
-                globalMouseClick(Invoke.MouseClicks.left_up); // l mouse click up
-                holdingA = false;
-            }
-        }
-        // Holding RB down.
-        else if (IsGamepadButtonDown(gamepad, GamepadButton.RightTrigger1))
-        {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcQ);
-                simulator.SimulateKeyRelease(KeyCode.VcQ);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcW);
-                simulator.SimulateKeyRelease(KeyCode.VcW);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcE);
-                simulator.SimulateKeyRelease(KeyCode.VcE);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcR);
-                simulator.SimulateKeyRelease(KeyCode.VcR);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcT);
-                simulator.SimulateKeyRelease(KeyCode.VcT);
-            }
-        }
-        // Holding LB down.
-        else if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger1))
-        {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcA);
-                simulator.SimulateKeyRelease(KeyCode.VcA);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-            {
-                //aix3c.Send("{s}"); //S
-                simulator.SimulateKeyPress(KeyCode.VcS);
-                simulator.SimulateKeyRelease(KeyCode.VcD);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcD);
-                simulator.SimulateKeyRelease(KeyCode.VcD);
-                simulator.SimulateKeyPress(KeyCode.VcK); // K for SC1 (works for Terran, not Zerg. Need to find class offset and read value in memory)
-                simulator.SimulateKeyRelease(KeyCode.VcK);
-                simulator.SimulateKeyPress(KeyCode.VcL); // L for SC1
-                simulator.SimulateKeyRelease(KeyCode.VcL);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcF);
-                simulator.SimulateKeyRelease(KeyCode.VcF);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcG);
-                simulator.SimulateKeyRelease(KeyCode.VcG);
-            }
-        }
-        // Holding LT down.
-        else if (IsGamepadButtonDown(gamepad, GamepadButton.LeftTrigger2))
-        {
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceDown))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcZ);
-                simulator.SimulateKeyRelease(KeyCode.VcZ);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceLeft))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcX);
-                simulator.SimulateKeyRelease(KeyCode.VcX);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceUp))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcC);
-                simulator.SimulateKeyRelease(KeyCode.VcC);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.RightFaceRight))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcV);
-                simulator.SimulateKeyRelease(KeyCode.VcV);
-            }
-            if (IsGamepadButtonPressed(gamepad, GamepadButton.MiddleLeft))
-            {
-                simulator.SimulateKeyPress(KeyCode.VcB);
-                simulator.SimulateKeyRelease(KeyCode.VcB);
-            }
-        }
-        Thread.Sleep(10);
-    }
-
-    /// <summary>
-    /// Process all controller joystick movements. This function loops endlessly.
-    /// Uses the shared AppSettings for deadzone and cursor speed values.
-    /// </summary>
-    public static void processJoysticks()
-    {
-        // Use the shared settings for deadzone (with fallback to static variable for compatibility)
-        double currentDeadzone = AppSettings.Instance.Deadzone;
-
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < currentDeadzone
-            || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < currentDeadzone)
-        {
-            if (AppSettings.Instance.VariableCursorSpeed)
-            {
-                // Use the shared settings for cursor speed
-                int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
-
-                // left/right slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone)
+                try
                 {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > faster)
+                    // Use GameSettings to get platform-appropriate process names
+                    var sc2 = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC2ProcName);
+                    var sc1 = OverlayWindow.GetProcess(GameSettings.ProcessNames.SC1ProcName);
+                    var wc3 = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC3ProcName);
+                    var wc1 = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC1ProcName);
+                    var wc2 = OverlayWindow.GetProcess(GameSettings.ProcessNames.WC2ProcName);
+
+                    // Update OverlayWindow static fields (shared with overlay rendering code)
+                    OverlayWindow.SC2Proc = sc2;
+                    OverlayWindow.SC1Proc = sc1;
+                    OverlayWindow.WC3Proc = wc3;
+                    OverlayWindow.WC1Proc = wc1;
+                    OverlayWindow.WC2Proc = wc2;
+
+                    // Update the UI-facing game status label if AppSettings is available
+                    string status = "Not Running";
+                    if (sc2 != null) status = "StarCraft II";
+                    else if (sc1 != null) status = "StarCraft";
+                    else if (wc3 != null) status = "Warcraft III";
+                    else if (wc1 != null) status = "Warcraft I";
+                    else if (wc2 != null) status = "Warcraft II";
+
+                    try
                     {
-                        cursorPos.X += currentCursorSpeed / 2;
+                        AppSettings.Instance.UpdateGameStatus(status);
                     }
+                    catch { /* best-effort update; ignore if AppSettings unavailable */ }
                 }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -slower)
-                    {
-                        cursorPos.X -= currentCursorSpeed / 2;
-                    }
-                }
+                catch { }
 
-                // up/down slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < slower)
-                    {
-                        cursorPos.Y += currentCursorSpeed / 2;
-                    }
-                }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -slower)
-                    {
-                        cursorPos.Y -= currentCursorSpeed / 2;
-                    }
-                }
-
-                // left/right normal
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > slower)
-                        cursorPos.X += currentCursorSpeed;
-                }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -slower)
-                        cursorPos.X -= currentCursorSpeed;
-                }
-
-                // up/down normal
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > slower)
-                        cursorPos.Y += currentCursorSpeed;
-                }
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
-                {
-                    if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > -faster && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -slower)
-                        cursorPos.Y -= currentCursorSpeed;
-                }
-
-                // left/right faster
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > faster)
-                    cursorPos.X += currentCursorSpeed * 2;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -faster)
-                    cursorPos.X -= currentCursorSpeed * 2;
-
-                // up/down faster
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > faster)
-                    cursorPos.Y += currentCursorSpeed * 2;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -faster)
-                    cursorPos.Y -= currentCursorSpeed * 2;
+                await Task.Delay(1000);
             }
-            else
-            {
-                // Use the shared settings for cursor speed
-                int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
-
-                // left/right slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone) cursorPos.X += currentCursorSpeed;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone) cursorPos.X -= currentCursorSpeed;
-
-                // up/down slower
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone) cursorPos.Y += currentCursorSpeed;
-                if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone) cursorPos.Y -= currentCursorSpeed;
-            }
-
-            // if joystick is moving, move the cursor
-            if (GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftX) < -currentDeadzone ||
-                GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) > currentDeadzone || GetGamepadAxisMovement(gamepad, GamepadAxis.LeftY) < -currentDeadzone)
-            {
-                simulator.SimulateMouseMovement((short)cursorPos.X, (short)cursorPos.Y);
-                //Debug.WriteLine("mX:" + mX + " mY:" + mY + " myTime:" + myTime); // DEBUG
-            }
-
         }
 
-        // move camera
-        // Right Joystick UP -1
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) < -currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
+        // Track button states to detect press and release
+        private static readonly System.Collections.Generic.Dictionary<string, bool> _lastButtonState = new();
+
+        public static void processButtons()
         {
-            holdingRJoyDirUp = true;
-            if (holdingRT)
+            // Verify controller is connected before processing
+            if (!ControllerState.IsGamepadConnected())
             {
-                simulator.SimulateKeyPress(KeyCode.VcPageUp); //PGUP
-                simulator.SimulateKeyRelease(KeyCode.VcPageUp);
+                _lastButtonState.Clear(); // Reset state if controller disconnected
+                return;
             }
-            else
+
+            // Only process player 0 by default (primary controller)
+            int player = 0;
+            try
             {
-                simulator.SimulateKeyPress(KeyCode.VcUp);
-                if (holdingRJoyDirDown)
-                {
-                    simulator.SimulateKeyRelease(KeyCode.VcDown);
-                    holdingRJoyDirDown = false;
-                }
+                // to-do program the buttons
             }
-        }
-        // Right Joystick DOWN 1
-        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) > currentDeadzone && GetGamepadAxisMovement(gamepad, GamepadAxis.RightY) != 0.0 && !holdingRT)
-        {
-            holdingRJoyDirDown = true;
-            if (holdingRT)
+            catch (Exception ex)
             {
-                simulator.SimulateKeyPress(KeyCode.VcPageDown); //PGDN
-                simulator.SimulateKeyRelease(KeyCode.VcPageDown);
-            }
-            else
-            {
-                if (holdingRJoyDirUp)
-                {
-                    simulator.SimulateKeyRelease(KeyCode.VcUp);
-                    holdingRJoyDirUp = false;
-                }
-                simulator.SimulateKeyPress(KeyCode.VcDown);
-            }
-        }
-        else
-        {
-            if (holdingRJoyDirUp || holdingRJoyDirDown)
-            {
-                simulator.SimulateKeyRelease(KeyCode.VcUp);
-                simulator.SimulateKeyRelease(KeyCode.VcDown);
-                holdingRJoyDirUp = false;
-                holdingRJoyDirDown = false;
+                Debug.WriteLine($"Error processing buttons: {ex.Message}");
             }
         }
 
-        if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) > currentDeadzone && !holdingRT)
+        public static void processJoysticks()
         {
-            if (holdingRJoyDirLeft)
+            int player = 0;
+            try
             {
-                simulator.SimulateKeyRelease(KeyCode.VcLeft);
-                holdingRJoyDirLeft = false;
+                // To-Do: program this
             }
-            simulator.SimulateKeyPress(KeyCode.VcRight);
-            holdingRJoyDirRight = true;
+            catch { }
         }
-        else if (GetGamepadAxisMovement(gamepad, GamepadAxis.RightX) < -currentDeadzone && !holdingRT && !holdingRT)
-        {
-            simulator.SimulateKeyPress(KeyCode.VcLeft);
-            if (holdingRJoyDirRight)
-            {
-                simulator.SimulateKeyRelease(KeyCode.VcRight);
-                holdingRJoyDirRight = false;
-            }
-            holdingRJoyDirLeft = true;
-        }
-        else
-        {
-            if (holdingRJoyDirRight || holdingRJoyDirLeft)
-            {
-                simulator.SimulateKeyRelease(KeyCode.VcLeft);
-                simulator.SimulateKeyRelease(KeyCode.VcRight);
-                holdingRJoyDirRight = false;
-                holdingRJoyDirLeft = false;
-            }
-        }
-
-        Thread.Sleep(10);
     }
 }

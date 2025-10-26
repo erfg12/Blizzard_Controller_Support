@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Blizzard_Controller;
+using Blizzard_Controller.Configuration;
+using Blizzard_Controller.Input;
 using MsBox.Avalonia;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;

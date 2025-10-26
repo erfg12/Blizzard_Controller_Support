@@ -3,12 +3,10 @@ global using System.Runtime.InteropServices;
 global using System.Threading;
 global using System;
 global using System.Drawing;
-global using Raylib_cs;
-global using static Raylib_cs.Raylib;
+// Raylib removed: not used by Avalonia UI
 global using System.Linq;
 global using System.Collections.Generic;
-global using Color = Raylib_cs.Color;
-global using Rectangle = Raylib_cs.Rectangle;
+// Color/Rectangle now from System.Drawing when needed; overlay uses MonoGame textures
 global using System.Threading.Tasks;
 global using System.IO;
 global using System.Text.Json;

@@ -1,6 +1,12 @@
-﻿
-            // if joystick is moving, move the cursor
-namespace Blizzard_Controller;
+using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+
+namespace Blizzard_Controller.Configuration;
+
+/// <summary>
+/// Contains settings for supported games including overlay dimensions, process names, and platform-specific paths
+/// </summary>
 public class GameSettings
 {
     public class ProcessNames
@@ -25,6 +31,7 @@ public class GameSettings
         public static readonly string WC2ProcName = "unknown";
 #endif
     }
+
     public class StarCraft1
     {
         public static readonly int overlayWidth = 340;
@@ -33,6 +40,7 @@ public class GameSettings
         public static readonly int sideOffset = 5;
         public static readonly int bottomOffset = 10;
     }
+
     public class StarCraft2
     {
         public static readonly int overlayWidth = 300;
@@ -41,6 +49,7 @@ public class GameSettings
         public static readonly int sideOffset = 20;
         public static readonly int bottomOffset = 10;
     }
+
     public class WarCraft3
     {
         public static readonly int overlayWidth = 300;
@@ -49,6 +58,7 @@ public class GameSettings
         public static readonly int sideOffset = 10; // changes per aspect ratio
         public static readonly int bottomOffset = 10;
     }
+
     public class WarCraft2
     {
         public static readonly int overlayWidth = 400;
@@ -57,6 +67,7 @@ public class GameSettings
         public static readonly int sideOffset = 0;
         public static readonly int bottomOffset = 0;
     }
+
     public class WarCraft1
     {
         public static readonly int overlayWidth = 420;
@@ -68,7 +79,6 @@ public class GameSettings
 
     public static bool writeToCSettingsFile(string stringToWrite)
     {
-        // To-Do: make this cross platform!
 #if WINDOWS
         string cloudPath = Path.Combine(Environment.GetEnvironmentVariable("HOMEDRIVE"), Environment.GetEnvironmentVariable("HOMEPATH"), "\\AppData\\Roaming\\Blizzard\\StarCraft\\Cloud");
         string localFile = Path.Combine(Environment.GetEnvironmentVariable("HOMEDRIVE"), Environment.GetEnvironmentVariable("HOMEPATH"), "\\Documents\\StarCraft\\CSettings.json");
@@ -163,11 +173,9 @@ public class GameSettings
         p1.StartInfo.FileName = "/bin/bash";
         p1.StartInfo.Arguments = "-c \"/usr/bin/lutris lutris:rungameid/1\""; // this assumes its app id 1
         p1.StartInfo.UseShellExecute = false;
-
 #endif
 
         p1.Start();
-
         return true;
     }
 }

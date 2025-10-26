@@ -1,9 +1,8 @@
 using System.ComponentModel;
 using System.Configuration;
 using System.Runtime.CompilerServices;
-using System.Collections.ObjectModel;
 
-namespace Blizzard_Controller;
+namespace Blizzard_Controller.Configuration;
 
 /// <summary>
 /// Shared settings class that provides data binding support and synchronization
@@ -48,7 +47,7 @@ public class AppSettings : INotifyPropertyChanged
             if (SetProperty(ref _deadzone, value))
             {
                 // Update the static variable in ControllerInputs for backward compatibility
-                ControllerInputs.deadzone = value;
+                Input.ControllerInputs.deadzone = value;
                 Properties.Settings.Default.Deadzone = value;
                 Properties.Settings.Default.Save();
             }
@@ -66,8 +65,8 @@ public class AppSettings : INotifyPropertyChanged
             if (SetProperty(ref _cursorSpeed, value))
             {
                 // Update the static variable in ControllerInputs for backward compatibility
-                ControllerInputs.mouseDistance = value;
-                ControllerInputs.mouseDistanceDefault = value;
+                Input.ControllerInputs.mouseDistance = value;
+                Input.ControllerInputs.mouseDistanceDefault = value;
 
                 Properties.Settings.Default.cursorSpeed = value;
                 Properties.Settings.Default.Save();
@@ -130,7 +129,7 @@ public class AppSettings : INotifyPropertyChanged
         {
             SetProperty(ref _selectedButtonImageItem, value);
             Properties.Settings.Default.ButtonImages = value;
-            OverlayWindow.overlayBtns = value;
+            UI.Overlay.OverlayWindow.overlayBtns = value;
             Properties.Settings.Default.Save();
         }
     }

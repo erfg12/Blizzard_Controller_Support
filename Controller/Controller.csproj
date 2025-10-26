@@ -1,11 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<OutputType>WinExe</OutputType>
-		<RootNamespace>Controller</RootNamespace>
+		<RootNamespace>Blizzard_Controller</RootNamespace>
 		<AssemblyName>Controller</AssemblyName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<BaseOutputPath>../bin</BaseOutputPath>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
@@ -21,17 +24,25 @@
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 	</PropertyGroup>
 
+	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+		<ProjectReference Include="..\Controller.Windows\Controller.Windows.csproj" />
+	</ItemGroup>
+
+	<ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
+		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4" />
+	</ItemGroup>
+
 	<ItemGroup>
-		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.4" />
-		<PackageReference Include="Raylib-cs" Version="7.0.1" />
 		<PackageReference Include="SharpHook" Version="6.2.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
 		<PackageReference Include="System.Resources.Extensions" Version="9.0.7" />
 	</ItemGroup>
 
+	<!-- Copy resources preserving folder structure -->
 	<ItemGroup>
-		<Content Include="Resources\**\*.*">
+		<Content Include="UI\Resources\**\*.*">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
+
 </Project>

@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using Avalonia.Markup.Xaml;
 using Blizzard_Controller;
+using Blizzard_Controller.Input;
 using Controller_v2.ViewModels;
 using Controller_v2.Views;
 
@@ -39,15 +40,31 @@ public partial class App : Application
                 if (!Invoke.AXIsProcessTrusted())
                     Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
 #endif
-                Task.Run(ControllerInputs.CheckGameProc);
-#if LINUX
-
-                Task.Run(() =>
-                {
-                    OverlayWindow ow = new OverlayWindow();
-                    ow.Initialize();
+                Task.Run(async () => {
+                    await Task.WhenAll(
+                        ControllerInputs.CheckGameProc(),
+                        Task.Run(async () => {
+                            while (!ControllerInputs.shuttingDown)
+                            {
+                                ControllerState.IsGamepadConnected();
+                                await Task.Delay(1000); // Check every second
+                            }
+                        }),
+                        Task.Run(async () => {
+                            while (!ControllerInputs.shuttingDown)
+                            {
+                                // Process input at a higher frequency for responsiveness
+                                if (ControllerState.IsGamepadConnected())
+                                {
+                                    ControllerInputs.processButtons();
+                                    ControllerInputs.processJoysticks();
+                                }
+                                await Task.Delay(16); // ~60Hz for smooth input
+                            }
+                        })
+                    );
                 });
-#elif WINDOWS
+#if LINUX || WINDOWS
                 Task.Run(() =>
                 {
                     var game = new OverlayWindowMonoGame();
@@ -57,8 +74,8 @@ public partial class App : Application
 #else // macos
                 Avalonia.Threading.Dispatcher.UIThread.Post(() =>
                 {
-                    var form = new OverlayWindow();
-                    form.Initialize();
+                    var game = new OverlayWindowMonoGame();
+                    game.Run();
                 });
 #endif
             }
