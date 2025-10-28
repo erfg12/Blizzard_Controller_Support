@@ -43,4 +43,27 @@ public static class NativeInvoke
 
     [DllImport("/System/Library/Frameworks/ApplicationServices.framework/ApplicationServices")]
     public static extern IntPtr AXUIElementCreateSystemWide();
+
+    [DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
+    static extern IntPtr objc_getClass(string name);
+
+    [DllImport("/usr/lib/libobjc.dylib")]
+    static extern IntPtr sel_registerName(string name);
+
+    [DllImport("/usr/lib/libobjc.dylib")]
+    static extern void objc_msgSend(IntPtr receiver, IntPtr selector, int value);
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct CGRect
+    {
+        public CGPoint origin;
+        public CGSize size;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct CGPoint { public double x, y; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct CGSize { public double width, height; }
+
 }

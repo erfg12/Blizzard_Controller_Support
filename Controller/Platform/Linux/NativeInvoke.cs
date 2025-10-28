@@ -95,4 +95,10 @@ public static class NativeInvoke
         IntPtr display,
         string atom_name,
         bool only_if_exists);
+
+    [DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
+    static extern int SDL_SetWindowAlwaysOnTop(IntPtr window, bool onTop);
+
+    [DllImport("SDL2")]
+    static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
 }

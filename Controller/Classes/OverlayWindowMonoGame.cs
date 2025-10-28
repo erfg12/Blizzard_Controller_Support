@@ -275,10 +275,6 @@ public class OverlayWindowMonoGame : Game
             check = 0;
         }
 
-        // Handle controller input processes each update
-        //ControllerInputs.processButtons();
-        //ControllerInputs.processJoysticks();
-
         base.Update(gameTime);
     }
 
@@ -394,19 +390,34 @@ public class OverlayWindowMonoGame : Game
     // Window positioning/resizing helpers (Win32)
     void SetWindowPositionAndSize(int x, int y, int width, int height)
     {
-        if (hWnd == IntPtr.Zero) hWnd = WindowHandle();
+#if WINDOWS
+        if (hWnd == IntPtr.Zero) hWnd = GetActiveWindow();
         if (hWnd == IntPtr.Zero) return;
-
-        // set client size via MoveWindow
         MoveWindow(hWnd, x, y, width, height, true);
 
         SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
-    }
+#elif MACOS
+        var nsWindow = Window.WindowHandle; // MonoGame NSWindow*
 
-    // Try to obtain Window handle by calling GetActiveWindow as fallback
-    IntPtr WindowHandle()
-    {
-        return GetActiveWindow();
+        var setFrame = sel_registerName("setFrame:");
+        var frame = new CGRect
+        {
+            origin = new CGPoint { x = 100, y = 100 },
+            size = new CGSize { width = 800, height = 600 }
+        };
+
+        objc_msgSend(nsWindow, setFrame, ref frame);
+
+        var nsWindow = Window.WindowHandle;
+        var setLevel = sel_registerName("setLevel:");
+        int NSStatusWindowLevel = 25; // roughly “always on top” level
+        objc_msgSend(nsWindow, setLevel, NSStatusWindowLevel);
+#elif LINUX
+        SDL_SetWindowPosition(Window.Handle, 100, 100);
+
+        var sdlWindow = Window.Handle; // MonoGame exposes SDL_Window* on Linux
+        SDL_SetWindowAlwaysOnTop(sdlWindow, true);
+#endif
     }
 
     const uint COLOR_KEY = 0x00000000; // magenta in 0x00BBGGRR
