@@ -23,6 +23,7 @@ namespace Blizzard_Controller.Input
     private static bool holdingRJoyDirDown = false;
     private static bool holdingRJoyDirLeft = false;
     private static bool holdingRJoyDirRight = false;
+        private static bool movingCursor = false;
 
         public static async Task CheckGameProc()
         {
@@ -317,6 +318,7 @@ namespace Blizzard_Controller.Input
                 int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
                 bool variableCursorSpeed = AppSettings.Instance.VariableCursorSpeed;
                 double faster = 0.7, slower = 0.3;
+
                 var holdingRT = _lastButtonState.GetValueOrDefault("RT");
                 // Left stick controls mouse movement
                 double lx = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.LeftX);
@@ -324,6 +326,7 @@ namespace Blizzard_Controller.Input
 
                 if (Math.Abs(lx) > currentDeadzone || Math.Abs(ly) > currentDeadzone)
                 {
+                    movingCursor = true;
                     if (variableCursorSpeed)
                     {
                         // left/right slower
@@ -331,46 +334,48 @@ namespace Blizzard_Controller.Input
                             cursorPos.X += currentCursorSpeed / 2;
                         if (lx < -currentDeadzone && lx < -faster)
                             cursorPos.X -= currentCursorSpeed / 2;
-                            // up/down slower (MonoGame: up is +Y, down is -Y)
-                            if (ly > currentDeadzone && ly > faster)
-                                cursorPos.Y -= currentCursorSpeed / 2;
-                            if (ly < -currentDeadzone && ly < -faster)
-                                cursorPos.Y += currentCursorSpeed / 2;
+                        // up/down slower (MonoGame: up is +Y, down is -Y)
+                        if (ly > currentDeadzone && ly > faster)
+                            cursorPos.Y -= currentCursorSpeed / 2;
+                        if (ly < -currentDeadzone && ly < -faster)
+                            cursorPos.Y += currentCursorSpeed / 2;
                         // left/right normal
                         if (lx > currentDeadzone && lx < faster)
                             cursorPos.X += currentCursorSpeed;
                         if (lx < -currentDeadzone && lx > -faster)
                             cursorPos.X -= currentCursorSpeed;
-                            // up/down normal
-                            if (ly > currentDeadzone && ly < faster)
-                                cursorPos.Y -= currentCursorSpeed;
-                            if (ly < -currentDeadzone && ly > -faster)
-                                cursorPos.Y += currentCursorSpeed;
+                        // up/down normal
+                        if (ly > currentDeadzone && ly < faster)
+                            cursorPos.Y -= currentCursorSpeed;
+                        if (ly < -currentDeadzone && ly > -faster)
+                            cursorPos.Y += currentCursorSpeed;
                         // left/right faster
                         if (lx > currentDeadzone && lx > faster)
                             cursorPos.X += currentCursorSpeed * 2;
                         if (lx < -currentDeadzone && lx < -faster)
                             cursorPos.X -= currentCursorSpeed * 2;
-                            // up/down faster
-                            if (ly > currentDeadzone && ly > faster)
-                                cursorPos.Y -= currentCursorSpeed * 2;
-                            if (ly < -currentDeadzone && ly < -faster)
-                                cursorPos.Y += currentCursorSpeed * 2;
+                        // up/down faster
+                        if (ly > currentDeadzone && ly > faster)
+                            cursorPos.Y -= currentCursorSpeed * 2;
+                        if (ly < -currentDeadzone && ly < -faster)
+                            cursorPos.Y += currentCursorSpeed * 2;
                     }
                     else
                     {
                         // left/right
                         if (lx > currentDeadzone) cursorPos.X += currentCursorSpeed;
                         if (lx < -currentDeadzone) cursorPos.X -= currentCursorSpeed;
-                            // up/down (MonoGame: up is +Y, down is -Y)
-                            if (ly > currentDeadzone) cursorPos.Y -= currentCursorSpeed;
-                            if (ly < -currentDeadzone) cursorPos.Y += currentCursorSpeed;
+                        // up/down (MonoGame: up is +Y, down is -Y)
+                        if (ly > currentDeadzone) cursorPos.Y -= currentCursorSpeed;
+                        if (ly < -currentDeadzone) cursorPos.Y += currentCursorSpeed;
                     }
                     // Move the cursor
                     InputSimulator.SimulateMouseMovement(cursorPos);
                 }
+                else
+                    movingCursor = false;
 
-                // Right stick controls camera (arrow keys)
+                    // Right stick controls camera (arrow keys)
                 double rx = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.RightX);
                 double ry = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.RightY);
 
@@ -454,7 +459,8 @@ namespace Blizzard_Controller.Input
                         holdingRJoyDirLeft = false;
                     }
                 }
-                Thread.Sleep(10);
+                if (!movingCursor)
+                    Thread.Sleep(10);
             }
             catch { }
         }
