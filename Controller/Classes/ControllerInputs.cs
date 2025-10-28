@@ -11,11 +11,18 @@ namespace Blizzard_Controller.Input
 {
     public static class ControllerInputs
     {
-        // Backwards-compatible public static fields
-        public static double deadzone = 0.1;
-        public static int mouseDistance = 20;
-        public static int mouseDistanceDefault = 20;
-        public static bool shuttingDown = false;
+    // Backwards-compatible public static fields
+    public static double deadzone = 0.1;
+    public static int mouseDistance = 20;
+    public static int mouseDistanceDefault = 20;
+    public static bool shuttingDown = false;
+
+    // Joystick/cursor state
+    private static System.Drawing.Point cursorPos = new System.Drawing.Point(0, 0);
+    private static bool holdingRJoyDirUp = false;
+    private static bool holdingRJoyDirDown = false;
+    private static bool holdingRJoyDirLeft = false;
+    private static bool holdingRJoyDirRight = false;
 
         public static async Task CheckGameProc()
         {
@@ -305,7 +312,149 @@ namespace Blizzard_Controller.Input
             int player = 0;
             try
             {
-                // To-Do: program this
+                // Use the shared settings for deadzone (with fallback to static variable for compatibility)
+                double currentDeadzone = AppSettings.Instance.Deadzone;
+                int currentCursorSpeed = AppSettings.Instance.CursorSpeed;
+                bool variableCursorSpeed = AppSettings.Instance.VariableCursorSpeed;
+                double faster = 0.7, slower = 0.3;
+                var holdingRT = _lastButtonState.GetValueOrDefault("RT");
+                // Left stick controls mouse movement
+                double lx = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.LeftX);
+                double ly = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.LeftY);
+
+                if (Math.Abs(lx) > currentDeadzone || Math.Abs(ly) > currentDeadzone)
+                {
+                    if (variableCursorSpeed)
+                    {
+                        // left/right slower
+                        if (lx > currentDeadzone && lx > faster)
+                            cursorPos.X += currentCursorSpeed / 2;
+                        if (lx < -currentDeadzone && lx < -faster)
+                            cursorPos.X -= currentCursorSpeed / 2;
+                            // up/down slower (MonoGame: up is +Y, down is -Y)
+                            if (ly > currentDeadzone && ly > faster)
+                                cursorPos.Y -= currentCursorSpeed / 2;
+                            if (ly < -currentDeadzone && ly < -faster)
+                                cursorPos.Y += currentCursorSpeed / 2;
+                        // left/right normal
+                        if (lx > currentDeadzone && lx < faster)
+                            cursorPos.X += currentCursorSpeed;
+                        if (lx < -currentDeadzone && lx > -faster)
+                            cursorPos.X -= currentCursorSpeed;
+                            // up/down normal
+                            if (ly > currentDeadzone && ly < faster)
+                                cursorPos.Y -= currentCursorSpeed;
+                            if (ly < -currentDeadzone && ly > -faster)
+                                cursorPos.Y += currentCursorSpeed;
+                        // left/right faster
+                        if (lx > currentDeadzone && lx > faster)
+                            cursorPos.X += currentCursorSpeed * 2;
+                        if (lx < -currentDeadzone && lx < -faster)
+                            cursorPos.X -= currentCursorSpeed * 2;
+                            // up/down faster
+                            if (ly > currentDeadzone && ly > faster)
+                                cursorPos.Y -= currentCursorSpeed * 2;
+                            if (ly < -currentDeadzone && ly < -faster)
+                                cursorPos.Y += currentCursorSpeed * 2;
+                    }
+                    else
+                    {
+                        // left/right
+                        if (lx > currentDeadzone) cursorPos.X += currentCursorSpeed;
+                        if (lx < -currentDeadzone) cursorPos.X -= currentCursorSpeed;
+                            // up/down (MonoGame: up is +Y, down is -Y)
+                            if (ly > currentDeadzone) cursorPos.Y -= currentCursorSpeed;
+                            if (ly < -currentDeadzone) cursorPos.Y += currentCursorSpeed;
+                    }
+                    // Move the cursor
+                    InputSimulator.SimulateMouseMovement(cursorPos);
+                }
+
+                // Right stick controls camera (arrow keys)
+                double rx = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.RightX);
+                double ry = ControllerState.GetGamepadAxisMovement(player, GamepadAxis.RightY);
+
+                // Up
+                if (ry < -currentDeadzone && ry != 0.0 && !holdingRT)
+                {
+                    holdingRJoyDirUp = true;
+                    if (holdingRT)
+                    {
+                        InputSimulator.SimulateKeyPress(KeyCode.VcPageUp);
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcPageUp);
+                    }
+                    else
+                    {
+                        InputSimulator.SimulateKeyPress(KeyCode.VcUp);
+                        if (holdingRJoyDirDown)
+                        {
+                            InputSimulator.SimulateKeyRelease(KeyCode.VcDown);
+                            holdingRJoyDirDown = false;
+                        }
+                    }
+                }
+                // Down
+                else if (ry > currentDeadzone && ry != 0.0 && !holdingRT)
+                {
+                    holdingRJoyDirDown = true;
+                    if (holdingRT)
+                    {
+                        InputSimulator.SimulateKeyPress(KeyCode.VcPageDown);
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcPageDown);
+                    }
+                    else
+                    {
+                        if (holdingRJoyDirUp)
+                        {
+                            InputSimulator.SimulateKeyRelease(KeyCode.VcUp);
+                            holdingRJoyDirUp = false;
+                        }
+                        InputSimulator.SimulateKeyPress(KeyCode.VcDown);
+                    }
+                }
+                else
+                {
+                    if (holdingRJoyDirUp || holdingRJoyDirDown)
+                    {
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcUp);
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcDown);
+                        holdingRJoyDirUp = false;
+                        holdingRJoyDirDown = false;
+                    }
+                }
+                // Right
+                if (rx > currentDeadzone && !holdingRT)
+                {
+                    if (holdingRJoyDirLeft)
+                    {
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcLeft);
+                        holdingRJoyDirLeft = false;
+                    }
+                    InputSimulator.SimulateKeyPress(KeyCode.VcRight);
+                    holdingRJoyDirRight = true;
+                }
+                // Left
+                else if (rx < -currentDeadzone && !holdingRT)
+                {
+                    InputSimulator.SimulateKeyPress(KeyCode.VcLeft);
+                    if (holdingRJoyDirRight)
+                    {
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcRight);
+                        holdingRJoyDirRight = false;
+                    }
+                    holdingRJoyDirLeft = true;
+                }
+                else
+                {
+                    if (holdingRJoyDirRight || holdingRJoyDirLeft)
+                    {
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcLeft);
+                        InputSimulator.SimulateKeyRelease(KeyCode.VcRight);
+                        holdingRJoyDirRight = false;
+                        holdingRJoyDirLeft = false;
+                    }
+                }
+                Thread.Sleep(10);
             }
             catch { }
         }

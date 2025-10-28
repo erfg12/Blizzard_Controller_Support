@@ -24,15 +24,12 @@
 		<DefineConstants>$(DefineConstants);LINUX</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
-		<ProjectReference Include="..\Controller.Windows\Controller.Windows.csproj" />
-	</ItemGroup>
-
 	<ItemGroup Condition="!$([MSBuild]::IsOSPlatform('Windows'))">
 		<PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4" />
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
 		<PackageReference Include="SharpHook" Version="6.2.0" />
 		<PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.7" />
 		<PackageReference Include="System.Resources.Extensions" Version="9.0.7" />
