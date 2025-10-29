@@ -22,6 +22,7 @@ public static class NativeInvoke
     public const uint SWP_NOMOVE = 0x0002;
     public const uint SWP_NOSIZE = 0x0001;
     public const uint SWP_SHOWWINDOW = 0x0040;
+    public const uint SWP_NOACTIVATE = 0x0010;
 
     [DllImport("User32.Dll")]
     public static extern long SetCursorPos(int x, int y);

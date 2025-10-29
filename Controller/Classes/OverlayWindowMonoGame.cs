@@ -280,7 +280,7 @@ public class OverlayWindowMonoGame : Game
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(new Microsoft.Xna.Framework.Color(0,0,0));
+        GraphicsDevice.Clear(new Microsoft.Xna.Framework.Color(0, 0, 0));
 
         // If no game found, skip drawing
         if ((SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null) ||
@@ -301,7 +301,7 @@ public class OverlayWindowMonoGame : Game
             Microsoft.Xna.Framework.Color tint = Microsoft.Xna.Framework.Color.White * alpha;
 
             if (spriteBatch != null)
-            spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.AlphaBlend);
+                spriteBatch.Begin(samplerState: SamplerState.PointClamp, blendState: BlendState.AlphaBlend);
 
             // Top row
             var btnList = new Texture2D?[] { aBtnImg, xBtnImg, yBtnImg, bBtnImg, backBtnImg };
@@ -391,11 +391,14 @@ public class OverlayWindowMonoGame : Game
     void SetWindowPositionAndSize(int x, int y, int width, int height)
     {
 #if WINDOWS
-        if (hWnd == IntPtr.Zero) hWnd = GetActiveWindow();
+        if (hWnd == IntPtr.Zero) hWnd = this.Window.Handle;
         if (hWnd == IntPtr.Zero) return;
         MoveWindow(hWnd, x, y, width, height, true);
 
-        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_SHOWWINDOW);
+        SetWindowLong(hWnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT);
+
+
+        SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 #elif MACOS
         var nsWindow = Window.WindowHandle; // MonoGame NSWindow*
 
