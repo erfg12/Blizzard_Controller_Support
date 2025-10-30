@@ -9,6 +9,10 @@ using Blizzard_Controller.Input;
 using Controller_v2.ViewModels;
 using Controller_v2.Views;
 
+#if MACOS
+using static Blizzard_Controller.Platform.MacOS.NativeInvoke;
+#endif
+
 namespace Controller_v2;
 
 public partial class App : Application
@@ -36,21 +40,24 @@ public partial class App : Application
             if (!Design.IsDesignMode)
             {
 #if MACOS
-                Invoke.AXUIElementCreateSystemWide();
-                if (!Invoke.AXIsProcessTrusted())
+                AXUIElementCreateSystemWide();
+                if (!AXIsProcessTrusted())
                     Process.Start("open", "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility");
 #endif
-                Task.Run(async () => {
+                Task.Run(async () =>
+                {
                     await Task.WhenAll(
                         ControllerInputs.CheckGameProc(),
-                        Task.Run(async () => {
+                        Task.Run(async () =>
+                        {
                             while (!ControllerInputs.shuttingDown)
                             {
                                 ControllerState.IsGamepadConnected();
                                 await Task.Delay(1000); // Check every second
                             }
                         }),
-                        Task.Run(async () => {
+                        Task.Run(async () =>
+                        {
                             while (!ControllerInputs.shuttingDown)
                             {
                                 // Process input at a higher frequency for responsiveness

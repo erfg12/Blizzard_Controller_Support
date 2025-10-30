@@ -9,7 +9,13 @@ using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 using Blizzard_Controller.Configuration;
 using Color = Microsoft.Xna.Framework.Color;
 
+#if WINDOWS
 using static Blizzard_Controller.Platform.Windows.NativeInvoke;
+#elif MACOS
+using static Blizzard_Controller.Platform.MacOS.NativeInvoke;
+#elif LINUX
+using static Blizzard_Controller.Platform.Linux.NativeInvoke;
+#endif
 
 namespace Blizzard_Controller;
 public class OverlayWindowMonoGame : Game
@@ -69,6 +75,7 @@ public class OverlayWindowMonoGame : Game
 
     private void MakeBorderless(IntPtr hwnd)
     {
+        #if WINDOWS
         if (IntPtr.Size == 8)
         {
             var style = GetWindowLongPtr64(hwnd, GWL_STYLE).ToInt64();
@@ -80,10 +87,12 @@ public class OverlayWindowMonoGame : Game
             var style = GetWindowLong32(hwnd, GWL_STYLE);
             SetWindowLong32(hwnd, GWL_STYLE, unchecked((int)WS_POPUP));
         }
+        #endif
     }
 
     private IntPtr SetWindowExStyle(IntPtr hwnd, uint addFlags)
     {
+        #if WINDOWS
         if (IntPtr.Size == 8)
         {
             var cur = GetWindowLongPtr64(hwnd, GWL_EXSTYLE);
@@ -95,6 +104,9 @@ public class OverlayWindowMonoGame : Game
             int cur = GetWindowLong32(hwnd, GWL_EXSTYLE);
             return new IntPtr(SetWindowLong32(hwnd, GWL_EXSTYLE, cur | (int)addFlags));
         }
+        #else
+        return IntPtr.Zero;
+        #endif
     }
 
     protected override void LoadContent()
@@ -107,12 +119,14 @@ public class OverlayWindowMonoGame : Game
 
         var hwnd = Window.Handle;
 
+#if WINDOWS
         SetWindowExStyle(hwnd, WS_EX_LAYERED | WS_EX_TRANSPARENT);
 
         MakeBorderless(hwnd);
 
         // set magenta as transparent color key
         SetLayeredWindowAttributes(hwnd, COLOR_KEY, 0, LWA_COLORKEY);
+        #endif
 
         // Create 1x1 white pixel
         pixel = new Texture2D(GraphicsDevice, 1, 1);
@@ -382,9 +396,13 @@ public class OverlayWindowMonoGame : Game
     // Uses your existing Platform.Windows.NativeInvoke.GetWindowRect
     public Platform.PlatformInvoke.RECT GetWindowSize(Process gameProc)
     {
+#if WINDOWS
         Platform.PlatformInvoke.RECT gameWindowSize = new Platform.PlatformInvoke.RECT();
         Platform.Windows.NativeInvoke.GetWindowRect(gameProc.MainWindowHandle, out gameWindowSize);
         return gameWindowSize;
+#else
+        return new Platform.PlatformInvoke.RECT();
+#endif
     }
 
     // Window positioning/resizing helpers (Win32)
@@ -394,27 +412,24 @@ public class OverlayWindowMonoGame : Game
         if (hWnd == IntPtr.Zero) hWnd = this.Window.Handle;
         if (hWnd == IntPtr.Zero) return;
         MoveWindow(hWnd, x, y, width, height, true);
-
         SetWindowLong(hWnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT);
-
-
         SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
 #elif MACOS
-        var nsWindow = Window.WindowHandle; // MonoGame NSWindow*
+        // var nsWindow = this.Window.Handle; // MonoGame NSWindow*
 
-        var setFrame = sel_registerName("setFrame:");
-        var frame = new CGRect
-        {
-            origin = new CGPoint { x = 100, y = 100 },
-            size = new CGSize { width = 800, height = 600 }
-        };
+        // var setFrame = sel_registerName("setFrame:");
+        // var frame = new CGRect
+        // {
+        //     origin = new CGPoint { x = 100, y = 100 },
+        //     size = new CGSize { width = 800, height = 600 }
+        // };
 
-        objc_msgSend(nsWindow, setFrame, ref frame);
+        // IntPtr setFrameSel = sel_registerName("setFrame:display:");
+        // objc_msgSend(nsWindow, setFrameSel, frame, true);
 
-        var nsWindow = Window.WindowHandle;
-        var setLevel = sel_registerName("setLevel:");
-        int NSStatusWindowLevel = 25; // roughly “always on top” level
-        objc_msgSend(nsWindow, setLevel, NSStatusWindowLevel);
+        // var setLevel = sel_registerName("setLevel:");
+        // int NSStatusWindowLevel = 25; // roughly “always on top” level
+        // objc_msgSend(nsWindow, setLevel, NSStatusWindowLevel);
 #elif LINUX
         SDL_SetWindowPosition(Window.Handle, 100, 100);
 

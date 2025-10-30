@@ -45,25 +45,31 @@ public static class NativeInvoke
     public static extern IntPtr AXUIElementCreateSystemWide();
 
     [DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
-    static extern IntPtr objc_getClass(string name);
+    public static extern IntPtr objc_getClass(string name);
 
     [DllImport("/usr/lib/libobjc.dylib")]
-    static extern IntPtr sel_registerName(string name);
+    public static extern IntPtr sel_registerName(string name);
 
     [DllImport("/usr/lib/libobjc.dylib")]
-    static extern void objc_msgSend(IntPtr receiver, IntPtr selector, int value);
+    public static extern void objc_msgSend(IntPtr receiver, IntPtr selector, int value);
 
     [StructLayout(LayoutKind.Sequential)]
-    struct CGRect
+    public struct CGRect
     {
         public CGPoint origin;
         public CGSize size;
     }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct CGPoint { public double x, y; }
+    public struct CGPoint { public double x, y; }
 
     [StructLayout(LayoutKind.Sequential)]
-    struct CGSize { public double width, height; }
+    public struct CGSize { public double width, height; }
+
+    [DllImport("/System/Library/Frameworks/AppKit.framework/AppKit")]
+    public static extern void NSWindow_setFrame(IntPtr window, CGRect frame, bool display);
+
+    [DllImport("/usr/lib/libobjc.A.dylib", EntryPoint = "objc_msgSend")]
+    public static extern void objc_msgSend(IntPtr receiver, IntPtr selector, CGRect frame, bool display);
 
 }
