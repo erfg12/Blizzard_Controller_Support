@@ -5,6 +5,7 @@
     <LangVersion>latest</LangVersion>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
 	<EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  <AssemblyName>Controller_v2</AssemblyName> 
 	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
 	<BaseOutputPath>../bin</BaseOutputPath>
   </PropertyGroup>

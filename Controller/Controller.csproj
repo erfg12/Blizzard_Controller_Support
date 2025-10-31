@@ -2,13 +2,14 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
-		<OutputType>WinExe</OutputType>
+		<OutputType>Library</OutputType>
 		<RootNamespace>Blizzard_Controller</RootNamespace>
 		<AssemblyName>Controller</AssemblyName>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<BaseOutputPath>../bin</BaseOutputPath>
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<IsPublishable>false</IsPublishable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
