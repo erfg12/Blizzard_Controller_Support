@@ -8,6 +8,8 @@ using Texture2D = Microsoft.Xna.Framework.Graphics.Texture2D;
 
 using Blizzard_Controller.Configuration;
 using Color = Microsoft.Xna.Framework.Color;
+using System.Reflection;
+using static Blizzard_Controller.Platform.PlatformInvoke;
 
 #if WINDOWS
 using static Blizzard_Controller.Platform.Windows.NativeInvoke;
@@ -18,10 +20,16 @@ using static Blizzard_Controller.Platform.Linux.NativeInvoke;
 #endif
 
 namespace Blizzard_Controller;
+
 public class OverlayWindowMonoGame : Game
 {
     GraphicsDeviceManager graphics;
     SpriteBatch? spriteBatch;
+    bool anyTrigger = false;
+    int posX = 0;
+    int posY = 0;
+    int targetWidth = 0;
+    int targetHeight = 0;
 
     // Processes
     Process? SC2Proc, SC1Proc, WC3Proc, WC1Proc, WC2Proc;
@@ -50,7 +58,6 @@ public class OverlayWindowMonoGame : Game
     // overlay mode
     string overlayBtns = "xbox";
 
-    // Win32 handle
     IntPtr hWnd;
 
     public OverlayWindowMonoGame()
@@ -58,55 +65,21 @@ public class OverlayWindowMonoGame : Game
         graphics = new GraphicsDeviceManager(this)
         {
             PreferMultiSampling = false,
-            SynchronizeWithVerticalRetrace = true
+            SynchronizeWithVerticalRetrace = true,
+            PreferredBackBufferWidth = 1,
+            PreferredBackBufferHeight = 1
         };
+        graphics.ApplyChanges();
         IsMouseVisible = false;
 
         // create tiny window first; we'll resize/position later
         graphics.PreferredBackBufferWidth = 1;
         graphics.PreferredBackBufferHeight = 1;
-        Window.ClientSizeChanged += (s, e) => { /* no-op */ };
 
         Window.AllowUserResizing = false;
         Window.IsBorderless = true;
 
         Content.RootDirectory = "Content";
-    }
-
-    private void MakeBorderless(IntPtr hwnd)
-    {
-        #if WINDOWS
-        if (IntPtr.Size == 8)
-        {
-            var style = GetWindowLongPtr64(hwnd, GWL_STYLE).ToInt64();
-            // clear existing style and set WS_POPUP
-            SetWindowLongPtr64(hwnd, GWL_STYLE, new IntPtr(WS_POPUP));
-        }
-        else
-        {
-            var style = GetWindowLong32(hwnd, GWL_STYLE);
-            SetWindowLong32(hwnd, GWL_STYLE, unchecked((int)WS_POPUP));
-        }
-        #endif
-    }
-
-    private IntPtr SetWindowExStyle(IntPtr hwnd, uint addFlags)
-    {
-        #if WINDOWS
-        if (IntPtr.Size == 8)
-        {
-            var cur = GetWindowLongPtr64(hwnd, GWL_EXSTYLE);
-            var newv = new IntPtr(cur.ToInt64() | addFlags);
-            return SetWindowLongPtr64(hwnd, GWL_EXSTYLE, newv);
-        }
-        else
-        {
-            int cur = GetWindowLong32(hwnd, GWL_EXSTYLE);
-            return new IntPtr(SetWindowLong32(hwnd, GWL_EXSTYLE, cur | (int)addFlags));
-        }
-        #else
-        return IntPtr.Zero;
-        #endif
     }
 
     protected override void LoadContent()
@@ -121,12 +94,14 @@ public class OverlayWindowMonoGame : Game
 
 #if WINDOWS
         SetWindowExStyle(hwnd, WS_EX_LAYERED | WS_EX_TRANSPARENT);
-
         MakeBorderless(hwnd);
-
-        // set magenta as transparent color key
         SetLayeredWindowAttributes(hwnd, COLOR_KEY, 0, LWA_COLORKEY);
-        #endif
+#elif MACOS
+        IntPtr window = SDL.SDL_GL_GetCurrentWindow();
+        SDL.SDL_SetWindowBordered(window, false);
+        SDL.SDL_SetWindowAlwaysOnTop(window, true);
+        SDL.SDL_SetWindowOpacity(window, 0.5f); // fully opaque for rendering
+#endif
 
         // Create 1x1 white pixel
         pixel = new Texture2D(GraphicsDevice, 1, 1);
@@ -180,11 +155,8 @@ public class OverlayWindowMonoGame : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-            Exit();
-
-        // Poll every ~100 frames ticks (approx matches original check >= 100)
-        if (check++ >= 100)
+        // Poll every ~60 frames ticks (approx matches original check >= 60)
+        if (check++ >= 60)
         {
             // detect game processes (use your GameSettings.* names)
             SC2Proc = GetProcess(GameSettings.ProcessNames.SC2ProcName);
@@ -247,14 +219,13 @@ public class OverlayWindowMonoGame : Game
                 float scaleX = gameWidth / 1280f;
                 float scaleY = gameHeight / 720f;
 
+                //Console.WriteLine("Overlay w:" + _overlayWidth + " Game window size: " + gameWidth + "x" + gameHeight + ", scale: " + scaleX + "x" + scaleY);
+
                 overlayWidth = (int)(_overlayWidth * scaleX);
                 overlayHeight = (int)(_overlayHeight * scaleY);
 
                 cellWidth = Math.Max(1, overlayWidth / Math.Max(1, _cellColumns));
                 cellHeight = Math.Max(1, overlayHeight / 4);
-
-                // resize textures by recreating scaled versions: MonoGame can't set width/height on Texture2D directly.
-                // Simpler: draw them scaled during Draw using dest rectangles computed from cellWidth/cellHeight.
 
                 // WC3 special aspect offsets
                 if (WC3Proc != null)
@@ -265,11 +236,8 @@ public class OverlayWindowMonoGame : Game
                     else if (test == 1.5) _sideOffset = Convert.ToInt32(0.080 * gameWidth);
                 }
 
-                int targetWidth = overlayWidth;
-                int targetHeight = overlayHeight;
-
-                int posX;
-                int posY;
+                targetWidth = overlayWidth;
+                targetHeight = overlayHeight;
 
                 if (WC1Proc != null || WC2Proc != null) // left side
                 {
@@ -281,13 +249,11 @@ public class OverlayWindowMonoGame : Game
                     posX = gameWindowSize.Right - targetWidth - _sideOffset;
                     posY = gameWindowSize.Bottom - targetHeight - _bottomOffset;
                 }
-
-                // Apply window size & position
-                SetWindowPositionAndSize(posX, posY, targetWidth, targetHeight);
             }
-
             check = 0;
         }
+        
+        SetWindowPositionAndSize(posX, posY, anyTrigger ? targetWidth : 1, anyTrigger ? targetHeight : 1);
 
         base.Update(gameTime);
     }
@@ -295,6 +261,7 @@ public class OverlayWindowMonoGame : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(new Microsoft.Xna.Framework.Color(0, 0, 0));
+        //GraphicsDevice.Clear(Color.Transparent);
 
         // If no game found, skip drawing
         if ((SC2Proc == null && SC1Proc == null && WC3Proc == null && WC1Proc == null && WC2Proc == null) ||
@@ -306,7 +273,7 @@ public class OverlayWindowMonoGame : Game
 
         bool leftSide = WC1Proc != null || WC2Proc != null;
         var pad = GamePad.GetState(PlayerIndex.One);
-        bool anyTrigger = pad.Triggers.Left > 0.5f || pad.IsButtonDown(Buttons.RightShoulder) || pad.IsButtonDown(Buttons.LeftShoulder);
+        anyTrigger = pad.Triggers.Left > 0.5f || pad.IsButtonDown(Buttons.RightShoulder) || pad.IsButtonDown(Buttons.LeftShoulder);
 
         if (anyTrigger)
         {
@@ -324,11 +291,20 @@ public class OverlayWindowMonoGame : Game
             int c = _cellColumns - (leftSide ? 0 : 1);
             for (int i = 0; i < _cellColumns - 1; i++)
             {
+                //Console.WriteLine("Overlay button " + i + " overlayWidth:" + overlayWidth + ", cellWidth:" + cellWidth);
                 int dstX = overlayWidth - cellWidth * c--;
                 int dstY = 0;
                 var srcTex = overlayBtns.Equals("Playstation") ? psList[i] : btnList[i];
                 if (srcTex != null)
+                {
+                    //spriteBatch.Draw(srcTex, new Microsoft.Xna.Framework.Rectangle(dstX, dstY, cellWidth, cellHeight), null, tint);
                     spriteBatch.Draw(srcTex, new Microsoft.Xna.Framework.Rectangle(dstX, dstY, cellWidth, cellHeight), tint);
+                    //Console.WriteLine("Drew button index " + i + " at " + dstX + "," + dstY);
+                }
+                else
+                {
+                    Console.WriteLine("Missing texture for button index " + i);
+                }
             }
 
             // side buttons
@@ -363,7 +339,15 @@ public class OverlayWindowMonoGame : Game
 
     Texture2D LoadTexture(string path)
     {
-        if (!File.Exists(path)) return null;
+        if (!File.Exists(path))
+        {
+            Console.WriteLine("Texture file not found: " + path);
+            return null;
+        }
+        else
+        {
+            Console.WriteLine("Loading texture: " + path);
+        }
         using var fs = File.OpenRead(path);
         return Texture2D.FromStream(GraphicsDevice, fs);
     }
@@ -400,12 +384,58 @@ public class OverlayWindowMonoGame : Game
         Platform.PlatformInvoke.RECT gameWindowSize = new Platform.PlatformInvoke.RECT();
         Platform.Windows.NativeInvoke.GetWindowRect(gameProc.MainWindowHandle, out gameWindowSize);
         return gameWindowSize;
+#elif MACOS
+        int processId = gameProc.Id;
+        IntPtr array = Platform.MacOS.NativeInvoke.CGWindowListCopyWindowInfo(1, 0);
+        if (array == IntPtr.Zero) return default;
+        long count = Platform.MacOS.NativeInvoke.CFArrayGetCount(array);
+        IntPtr pidKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowOwnerPID", 0x0600);
+        IntPtr boundsKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowBounds", 0x0600);
+        IntPtr layerKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "kCGWindowLayer", 0x0600);
+
+        Platform.PlatformInvoke.RECT rect = default;
+        for (long i = 0; i < count; i++)
+        {
+            IntPtr dict = Platform.MacOS.NativeInvoke.CFArrayGetValueAtIndex(array, i);
+            if (Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(dict, pidKey, out IntPtr pidValue) != 0)
+            {
+                Platform.MacOS.NativeInvoke.CFNumberGetValue(pidValue, 9, out int pid);
+                if (pid == processId)
+                {
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(dict, layerKey, out IntPtr layerVal);
+                    Platform.MacOS.NativeInvoke.CFNumberGetValue(layerVal, 9, out int layer);
+                    if (layer != 0) continue;
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(dict, boundsKey, out IntPtr boundsDict);
+                    IntPtr xKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "X", 0x0600);
+                    IntPtr yKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "Y", 0x0600);
+                    IntPtr wKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "Width", 0x0600);
+                    IntPtr hKey = Platform.MacOS.NativeInvoke.CFStringCreateWithCString(IntPtr.Zero, "Height", 0x0600);
+
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(boundsDict, xKey, out IntPtr xVal);
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(boundsDict, yKey, out IntPtr yVal);
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(boundsDict, wKey, out IntPtr wVal);
+                    Platform.MacOS.NativeInvoke.CFDictionaryGetValueIfPresent(boundsDict, hKey, out IntPtr hVal);
+
+                    Platform.MacOS.NativeInvoke.CFNumberGetValue(xVal, 9, out int x);
+                    Platform.MacOS.NativeInvoke.CFNumberGetValue(yVal, 9, out int y);
+                    Platform.MacOS.NativeInvoke.CFNumberGetValue(wVal, 9, out int w);
+                    Platform.MacOS.NativeInvoke.CFNumberGetValue(hVal, 9, out int h);
+
+                    rect.Left = x;
+                    rect.Top = y;
+                    rect.Right = x + w;
+                    rect.Bottom = y + h;
+                    break;
+                }
+            }
+        }
+        Platform.MacOS.NativeInvoke.CFRelease(array);
+        return rect;
 #else
-        return new Platform.PlatformInvoke.RECT();
+        return default;
 #endif
     }
 
-    // Window positioning/resizing helpers (Win32)
     void SetWindowPositionAndSize(int x, int y, int width, int height)
     {
 #if WINDOWS
@@ -414,28 +444,12 @@ public class OverlayWindowMonoGame : Game
         MoveWindow(hWnd, x, y, width, height, true);
         SetWindowLong(hWnd, GWL_EXSTYLE, WS_EX_LAYERED | WS_EX_TOPMOST | WS_EX_TRANSPARENT);
         SetWindowPos(hWnd, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE | SWP_SHOWWINDOW);
-#elif MACOS
-        // var nsWindow = this.Window.Handle; // MonoGame NSWindow*
-
-        // var setFrame = sel_registerName("setFrame:");
-        // var frame = new CGRect
-        // {
-        //     origin = new CGPoint { x = 100, y = 100 },
-        //     size = new CGSize { width = 800, height = 600 }
-        // };
-
-        // IntPtr setFrameSel = sel_registerName("setFrame:display:");
-        // objc_msgSend(nsWindow, setFrameSel, frame, true);
-
-        // var setLevel = sel_registerName("setLevel:");
-        // int NSStatusWindowLevel = 25; // roughly “always on top” level
-        // objc_msgSend(nsWindow, setLevel, NSStatusWindowLevel);
-#elif LINUX
-        SDL_SetWindowPosition(Window.Handle, 100, 100);
-
-        var sdlWindow = Window.Handle; // MonoGame exposes SDL_Window* on Linux
-        SDL_SetWindowAlwaysOnTop(sdlWindow, true);
+#else
+        IntPtr window = SDL.SDL_GL_GetCurrentWindow();
+        SDL_SetWindowPosition(window, x, y);
+        SDL_SetWindowSize(window, width, height);
 #endif
+        //Console.WriteLine("SetWindowPositionAndSize macOS: " + x + "," + y + " " + width + "x" + height);
     }
 
     const uint COLOR_KEY = 0x00000000; // magenta in 0x00BBGGRR
