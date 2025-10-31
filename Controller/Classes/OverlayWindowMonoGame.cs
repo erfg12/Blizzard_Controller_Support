@@ -128,6 +128,42 @@ public class OverlayWindowMonoGame : Game
         ps_r1Btn = LoadTexture("UI/Resources/ButtonImages/ps_r1_btn.png");
     }
 
+    private void MakeBorderless(IntPtr hwnd)
+    {
+#if WINDOWS
+        if (IntPtr.Size == 8)
+        {
+            var style = GetWindowLongPtr64(hwnd, GWL_STYLE).ToInt64();
+            // clear existing style and set WS_POPUP
+            SetWindowLongPtr64(hwnd, GWL_STYLE, new IntPtr(WS_POPUP));
+        }
+        else
+        {
+            var style = GetWindowLong32(hwnd, GWL_STYLE);
+            SetWindowLong32(hwnd, GWL_STYLE, unchecked((int)WS_POPUP));
+        }
+#endif
+    }
+
+    private IntPtr SetWindowExStyle(IntPtr hwnd, uint addFlags)
+    {
+#if WINDOWS
+        if (IntPtr.Size == 8)
+        {
+            var cur = GetWindowLongPtr64(hwnd, GWL_EXSTYLE);
+            var newv = new IntPtr(cur.ToInt64() | addFlags);
+            return SetWindowLongPtr64(hwnd, GWL_EXSTYLE, newv);
+        }
+        else
+        {
+            int cur = GetWindowLong32(hwnd, GWL_EXSTYLE);
+            return new IntPtr(SetWindowLong32(hwnd, GWL_EXSTYLE, cur | (int)addFlags));
+        }
+#else
+        return IntPtr.Zero;
+#endif
+    }
+
     protected override void UnloadContent()
     {
         pixel?.Dispose();
@@ -250,10 +286,15 @@ public class OverlayWindowMonoGame : Game
                     posY = gameWindowSize.Bottom - targetHeight - _bottomOffset;
                 }
             }
+#if WINDOWS
+            SetWindowPositionAndSize(posX, posY, targetWidth, targetHeight);
+#endif
             check = 0;
         }
-        
+
+#if !WINDOWS
         SetWindowPositionAndSize(posX, posY, anyTrigger ? targetWidth : 1, anyTrigger ? targetHeight : 1);
+#endif
 
         base.Update(gameTime);
     }
