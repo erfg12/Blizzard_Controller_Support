@@ -108,24 +108,31 @@ public class OverlayWindowMonoGame : Game
         if (pixel != null)
             pixel.SetData(new[] { Color.White });
 
-        // Load textures from UI/Resources/ButtonImages folder (png)
-        aBtnImg = LoadTexture("UI/Resources/ButtonImages/a_btn.png");
-        xBtnImg = LoadTexture("UI/Resources/ButtonImages/x_btn.png");
-        yBtnImg = LoadTexture("UI/Resources/ButtonImages/y_btn.png");
-        bBtnImg = LoadTexture("UI/Resources/ButtonImages/b_btn.png");
-        backBtnImg = LoadTexture("UI/Resources/ButtonImages/back_btn.png");
-        lBtnImg = LoadTexture("UI/Resources/ButtonImages/lb_btn.png");
-        ltBtnImg = LoadTexture("UI/Resources/ButtonImages/lt_btn.png");
-        rBtnImg = LoadTexture("UI/Resources/ButtonImages/rb_btn.png");
+        // For MacOS app bundle support, check both paths
+        string path = Path.Combine(AppContext.BaseDirectory, "../Resources/ui/resources/buttonimages/");
+        if (!Directory.Exists(path))
+        {
+            path = Path.Combine(AppContext.BaseDirectory, "UI/Resources/ButtonImages/");
+        }
 
-        ps_xBtn = LoadTexture("UI/Resources/ButtonImages/ps_x_btn.png");
-        ps_squareBtn = LoadTexture("UI/Resources/ButtonImages/ps_square_btn.png");
-        ps_triangleBtn = LoadTexture("UI/Resources/ButtonImages/ps_triangle_btn.png");
-        ps_circleBtn = LoadTexture("UI/Resources/ButtonImages/ps_circle_btn.png");
-        ps_shareBtn = LoadTexture("UI/Resources/ButtonImages/ps_share_btn.png");
-        ps_l1Btn = LoadTexture("UI/Resources/ButtonImages/ps_l1_btn.png");
-        ps_l2Btn = LoadTexture("UI/Resources/ButtonImages/ps_l2_btn.png");
-        ps_r1Btn = LoadTexture("UI/Resources/ButtonImages/ps_r1_btn.png");
+        // Load textures from UI/Resources/ButtonImages folder (png)
+        aBtnImg = LoadTexture(Path.Combine(path, "a_btn.png"));
+        xBtnImg = LoadTexture(Path.Combine(path, "x_btn.png"));
+        yBtnImg = LoadTexture(Path.Combine(path, "y_btn.png"));
+        bBtnImg = LoadTexture(Path.Combine(path, "b_btn.png"));
+        backBtnImg = LoadTexture(Path.Combine(path, "back_btn.png"));
+        lBtnImg = LoadTexture(Path.Combine(path, "lb_btn.png"));
+        ltBtnImg = LoadTexture(Path.Combine(path, "lt_btn.png"));
+        rBtnImg = LoadTexture(Path.Combine(path, "rb_btn.png"));
+
+        ps_xBtn = LoadTexture(Path.Combine(path, "ps_x_btn.png"));
+        ps_squareBtn = LoadTexture(Path.Combine(path, "ps_square_btn.png"));
+        ps_triangleBtn = LoadTexture(Path.Combine(path, "ps_triangle_btn.png"));
+        ps_circleBtn = LoadTexture(Path.Combine(path, "ps_circle_btn.png"));
+        ps_shareBtn = LoadTexture(Path.Combine(path, "ps_share_btn.png"));
+        ps_l1Btn = LoadTexture(Path.Combine(path, "ps_l1_btn.png"));
+        ps_l2Btn = LoadTexture(Path.Combine(path, "ps_l2_btn.png"));
+        ps_r1Btn = LoadTexture(Path.Combine(path, "ps_r1_btn.png"));
     }
 
     private void MakeBorderless(IntPtr hwnd)
