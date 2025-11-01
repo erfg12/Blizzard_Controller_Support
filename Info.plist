@@ -16,11 +16,11 @@
   <key>CFBundlePackageType</key>
   <string>APPL</string>
   <key>CFBundleExecutable</key>
-  <string>Controller_v2.Desktop</string>
+  <string>ControllerDesktop</string>
   <key>LSMinimumSystemVersion</key>
   <string>10.13</string>
   <key>CFBundleIconFile</key>
-  <string>Controller_v2</string>
+  <string>AppIcon</string>
 
   <!-- Required for global input monitoring -->
   <key>NSMicrophoneUsageDescription</key>
