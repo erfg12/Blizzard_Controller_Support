@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blizzard Controller Support - Play Battle.NET Games with Any Controller</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            padding: 2rem 0;
+            text-align: center;
+            background: rgba(15, 32, 39, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        h1 {
+            font-size: 3rem;
+            background: linear-gradient(90deg, #00d4ff, #0099cc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #a0d4e8;
+            margin-bottom: 1rem;
+        }
+
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 8px 32px rgba(0, 212, 255, 0.2);
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            color: #00d4ff;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            color: #c0e0f0;
+        }
+
+        .download-btn {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: linear-gradient(135deg, #00d4ff, #0099cc);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.4);
+            border: 2px solid transparent;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.6);
+            border: 2px solid #00ffff;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            padding: 3rem 0;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.3);
+        }
+
+        .feature-card h3 {
+            color: #00d4ff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .games-section {
+            padding: 3rem 0;
+            text-align: center;
+        }
+
+        .games-section h2 {
+            font-size: 2.5rem;
+            color: #00d4ff;
+            margin-bottom: 2rem;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .game-badge {
+            background: rgba(0, 212, 255, 0.1);
+            border: 2px solid #00d4ff;
+            border-radius: 10px;
+            padding: 1.5rem;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .game-badge:hover {
+            background: rgba(0, 212, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .requirements {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 3rem 0;
+        }
+
+        .requirements h2 {
+            color: #00d4ff;
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+        }
+
+        .requirements ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .requirements li {
+            padding: 0.75rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .requirements li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(0, 212, 255, 0.3);
+            background: rgba(15, 32, 39, 0.8);
+        }
+
+        .github-link {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .github-link:hover {
+            color: #00ffff;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.8);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .hero h2 {
+                font-size: 1.5rem;
+            }
+
+            .hero-content {
+                padding: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <header>
+        <div class="container">
+            <h1>🎮 Blizzard Controller Support</h1>
+            <p class="tagline">Play Battle.NET Games with Any Game Controller</p>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="hero">
+            <div class="hero-content">
+                <h2>Experience Classic Blizzard Games Like Never Before</h2>
+                <p>Bring full gamepad controller support to your favorite Battle.NET strategy games. Play StarCraft, WarCraft, and more with Xbox, PlayStation, or any compatible controller!</p>
+                <a href="https://github.com/erfg12/Blizzard_Controller_Support/releases" class="download-btn">Download Now</a>
+            </div>
+        </section>
+
+        <section class="games-section">
+            <h2>Supported Games</h2>
+            <div class="games-grid">
+                <div class="game-badge">⚔️ StarCraft</div>
+                <div class="game-badge">🚀 StarCraft II</div>
+                <div class="game-badge">🏰 WarCraft II: Remastered</div>
+                <div class="game-badge">🗡️ WarCraft III</div>
+            </div>
+        </section>
+
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Universal Support</h3>
+                <p>Works with Xbox, PlayStation, and any compatible game controller</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3>Cross-Platform</h3>
+                <p>Available for Windows 10+, macOS, and Linux</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Easy Setup</h3>
+                <p>Download, install, and start playing in minutes</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔓</div>
+                <h3>Open Source</h3>
+                <p>Free and open source software you can trust</p>
+            </div>
+        </section>
+
+        <section class="requirements">
+            <h2>Requirements</h2>
+            <ul>
+                <li>.NET 8.0 Runtime (automatically installed or download from Microsoft)</li>
+                <li>Windows 10 or later, macOS, or Linux</li>
+                <li>Compatible game controller (Xbox, PlayStation, etc.)</li>
+                <li>StarCraft, StarCraft II, WarCraft II: Remastered, or WarCraft III installed</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>Created by erfg12</p>
+            <p>
+                <a href="https://github.com/erfg12/Blizzard_Controller_Support" class="github-link">
+                    View on GitHub →
+                </a>
+            </p>
+            <p style="margin-top: 1rem; color: #7a99a8;">Open source project - Free to use and modify</p>
+        </div>
+    </footer>
+
+    <script>
+        // Create animated stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+    </script>
+</body>
+</html>
