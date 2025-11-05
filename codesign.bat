@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x86\signtool.exe" sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ed78bd57a6dcb27c6f9921fde7a1a87a9214e85e .\Installer\Release\Installer.msi

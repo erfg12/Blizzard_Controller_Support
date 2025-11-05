@@ -63,6 +63,10 @@
     </Compile>
   </ItemGroup>
 
+  <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('Windows'))">
+		<RuntimeIdentifier>win-x86</RuntimeIdentifier>
+	</PropertyGroup>
+
   <ItemGroup>
     <EmbeddedResource Update="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -76,4 +80,8 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(Configuration)' == 'Release'">
+    <Exec Command="&quot;C:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0\x86\signtool.exe&quot; sign /fd sha256 /tr http://ts.ssl.com /td sha256 /sha1 ed78bd57a6dcb27c6f9921fde7a1a87a9214e85e &quot;$(TargetDir)Controller_v2.dll&quot;" />
+  </Target>
 </Project>
