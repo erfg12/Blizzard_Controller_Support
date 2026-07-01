@@ -25,7 +25,7 @@ jobs:
             ext: dmg
           - os: windows-latest
             rid: win-x64
-            ext: zip
+            ext: msi
 
     steps:
       - uses: actions/checkout@v4
@@ -38,18 +38,16 @@ jobs:
       # ---------------- RESTORE ----------------
       - name: Restore (Windows)
         if: runner.os == 'Windows'
-        run: dotnet restore Controller_v2.Desktop/Controller_v2.Desktop.csproj
+        run: dotnet restore Controller.sln
 
       - name: Restore (Linux/macOS)
         if: runner.os != 'Windows'
         run: dotnet restore Controller.sln
 
-      # ---------------- PUBLISH ----------------
-      - name: Publish (Windows)
+      # ---------------- BUILD & PUBLISH ----------------
+      - name: Build (Windows)
         if: runner.os == 'Windows'
-        run: |
-          Remove-Item -Recurse -Force bin\PublishOutputs\win-x64\Controller_v2.Desktop -ErrorAction SilentlyContinue
-          dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o bin\PublishOutputs\win-x64\Controller_v2.Desktop
+        run: dotnet build Controller.sln -c Release
 
       - name: Azure login (Windows)
         if: runner.os == 'Windows'
@@ -59,16 +57,38 @@ jobs:
           tenant-id: '62458d29-be67-4398-a671-f4f08e173649'
           allow-no-subscriptions: true
 
-      - name: Sign Main App (Windows)
+      - name: Sign Binaries (Windows)
         if: runner.os == 'Windows'
         uses: azure/artifact-signing-action@v2
         with:
           endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT || 'https://eus.codesigning.azure.net/' }}
           signing-account-name: 'CodeSignCert'
           certificate-profile-name: 'CodeCert'
-          files-folder: '${{ github.workspace }}\bin\PublishOutputs'
+          files-folder: '${{ github.workspace }}\bin'
           files-folder-filter: 'exe,dll'
           files-folder-recurse: true
+          file-digest: 'SHA256'
+          timestamp-rfc3161: 'http://timestamp.acs.microsoft.com'
+          timestamp-digest: 'SHA256'
+
+      - name: Build Installer (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
+          $devenv = Join-Path $vsPath "Common7\IDE\devenv.com"
+          & $devenv Controller.sln /build "Release" /project Installer\Installer.vdproj
+
+      - name: Sign Installer MSI (Windows)
+        if: runner.os == 'Windows'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT || 'https://eus.codesigning.azure.net/' }}
+          signing-account-name: 'CodeSignCert'
+          certificate-profile-name: 'CodeCert'
+          files-folder: '${{ github.workspace }}\Installer\Release'
+          files-folder-filter: 'msi'
+          files-folder-recurse: false
           file-digest: 'SHA256'
           timestamp-rfc3161: 'http://timestamp.acs.microsoft.com'
           timestamp-digest: 'SHA256'
@@ -84,15 +104,7 @@ jobs:
         run: |
           $tag = "${GITHUB_REF#refs/tags/}"
           if (-not $tag) { $tag = "manual-$(Get-Date -Format yyyyMMddHHmmss)" }
-      
-          $outDir = "bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop"
-          Set-Location $outDir
-      
-          if ("${{ matrix.ext }}" -eq "zip") {
-            Compress-Archive -Path * -DestinationPath ../../../../Blizzard_Controller_Support-$tag-${{ matrix.rid }}.zip
-          } else {
-            tar -czf ../../../../Blizzard_Controller_Support-$tag-${{ matrix.rid }}.tar.gz *
-          }
+          Copy-Item -Path "Installer\Release\Installer.msi" -Destination "Blizzard_Controller_Support-$tag-${{ matrix.rid }}.msi"
 
       - name: Package (Linux)
         if: runner.os == 'Linux'
