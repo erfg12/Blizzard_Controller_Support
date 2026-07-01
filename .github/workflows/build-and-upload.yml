@@ -98,6 +98,14 @@ jobs:
           Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "Controller_v2\obj\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "Controller\obj\Release\net8.0-windows\win-x86\" -Force
 
+          Write-Host "=== VERIFY SIGNATURES BEFORE MSI BUILD ==="
+          Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe"
+          Get-AuthenticodeSignature "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\apphost.exe"
+          Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
+          Get-AuthenticodeSignature "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
+          Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\Controller_v2.dll"
+          Get-AuthenticodeSignature "Controller_v2\obj\Release\net8.0-windows\win-x86\Controller_v2.dll"
+
       - name: Build Installer (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
@@ -105,6 +113,15 @@ jobs:
           $vsPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -property installationPath
           $devenv = Join-Path $vsPath "Common7\IDE\devenv.com"
           & $devenv Controller.sln /build "Release" /project Installer\Installer.vdproj
+
+      - name: Verify Packaged Signatures (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "temp_check"
+          Start-Process msiexec.exe -ArgumentList "/a `"${{ github.workspace }}\Installer\Release\Installer.msi`" /qb TARGETDIR=`"${{ github.workspace }}\temp_check`"" -Wait
+          Write-Host "=== VERIFY PACKAGED SIGNATURES ==="
+          Get-ChildItem -Recurse "temp_check" -Include "*.exe", "*.dll" | Get-AuthenticodeSignature
 
       - name: Sign Installer MSI (Windows)
         if: runner.os == 'Windows'
