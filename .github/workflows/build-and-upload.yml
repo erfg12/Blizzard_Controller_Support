@@ -57,6 +57,15 @@ jobs:
           tenant-id: '62458d29-be67-4398-a671-f4f08e173649'
           allow-no-subscriptions: true
 
+      - name: Prep binaries for signing (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "bin\ToSign"
+          Copy-Item -Path "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe" -Destination "bin\ToSign\"
+          Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller_v2.dll" -Destination "bin\ToSign\"
+          Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller.dll" -Destination "bin\ToSign\"
+
       - name: Sign Binaries (Windows)
         if: runner.os == 'Windows'
         uses: azure/artifact-signing-action@v2
@@ -64,12 +73,20 @@ jobs:
           endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT || 'https://eus.codesigning.azure.net/' }}
           signing-account-name: 'CodeSignCert'
           certificate-profile-name: 'CodeCert'
-          files-folder: '${{ github.workspace }}\bin'
+          files-folder: '${{ github.workspace }}\bin\ToSign'
           files-folder-filter: 'exe,dll'
-          files-folder-recurse: true
+          files-folder-recurse: false
           file-digest: 'SHA256'
           timestamp-rfc3161: 'http://timestamp.acs.microsoft.com'
           timestamp-digest: 'SHA256'
+
+      - name: Restore signed binaries (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Copy-Item -Path "bin\ToSign\ControllerDesktop.exe" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
 
       - name: Build Installer (Windows)
         if: runner.os == 'Windows'
