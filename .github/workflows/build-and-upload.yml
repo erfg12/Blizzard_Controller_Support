@@ -66,7 +66,6 @@ jobs:
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\ControllerDesktop.dll" -Destination "bin\ToSign\"
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller_v2.dll" -Destination "bin\ToSign\"
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller.dll" -Destination "bin\ToSign\"
-          Copy-Item -Path "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\apphost.exe" -Destination "bin\ToSign\"
 
       - name: Sign Binaries (Windows)
         if: runner.os == 'Windows'
@@ -93,14 +92,12 @@ jobs:
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
 
           # Restore to obj folders to ensure MSI installer packages signed binaries
-          Copy-Item -Path "bin\ToSign\apphost.exe" -Destination "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\ControllerDesktop.dll" -Destination "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "Controller_v2\obj\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "Controller\obj\Release\net8.0-windows\win-x86\" -Force
 
           Write-Host "=== VERIFY SIGNATURES BEFORE MSI BUILD ==="
           Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe"
-          Get-AuthenticodeSignature "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\apphost.exe"
           Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
           Get-AuthenticodeSignature "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
           Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\Controller_v2.dll"
