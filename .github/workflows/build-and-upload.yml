@@ -178,7 +178,7 @@ jobs:
           security default-keychain -s "${{ steps.install_certs.outputs.keychain-name }}"
           
           echo "Signing binaries, native dylibs, DLLs, and libraries inside the bundle..."
-          find "$APP_PATH/Contents/MacOS" -type f \( -name "*.dylib" -o -name "*.so" -o -name "*.dll" -o -not -name "*.*" \) -print0 | while IFS= read -r -d '' file; do
+          find "$APP_PATH/Contents/MacOS" \( -name "*.dylib" -o -name "*.so" -o -name "*.dll" -o \( -type f -not -name "*.*" \) \) -print0 | while IFS= read -r -d '' file; do
             echo "Signing $file"
             codesign --force --options runtime --entitlements "$ENTITLEMENTS" --sign "9ELVK5QPKF" "$file"
           done
