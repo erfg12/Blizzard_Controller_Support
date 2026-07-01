@@ -63,8 +63,10 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path "bin\ToSign"
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe" -Destination "bin\ToSign\"
+          Copy-Item -Path "bin\Release\net8.0-windows\win-x86\ControllerDesktop.dll" -Destination "bin\ToSign\"
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller_v2.dll" -Destination "bin\ToSign\"
           Copy-Item -Path "bin\Release\net8.0-windows\win-x86\Controller.dll" -Destination "bin\ToSign\"
+          Copy-Item -Path "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\apphost.exe" -Destination "bin\ToSign\"
 
       - name: Sign Binaries (Windows)
         if: runner.os == 'Windows'
@@ -84,9 +86,17 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
+          # Restore to bin output
           Copy-Item -Path "bin\ToSign\ControllerDesktop.exe" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\ControllerDesktop.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
+
+          # Restore to obj folders to ensure MSI installer packages signed binaries
+          Copy-Item -Path "bin\ToSign\apphost.exe" -Destination "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\ControllerDesktop.dll" -Destination "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "Controller_v2\obj\Release\net8.0-windows\win-x86\" -Force
+          Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "Controller\obj\Release\net8.0-windows\win-x86\" -Force
 
       - name: Build Installer (Windows)
         if: runner.os == 'Windows'
