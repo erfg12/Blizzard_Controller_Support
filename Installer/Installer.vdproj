@@ -150,7 +150,7 @@
             }
             "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_CONTROLLERDESKTOP_EXE"
             {
-            "SourcePath" = "8:..\\bin\\Release\\net8.0-windows\\win-x86\\ControllerDesktop.exe"
+            "SourcePath" = "8:..\\bin\\Release\\net8.0-windows\\win-x86\\ControllerDesktop.exe.deploy"
             "TargetName" = "8:ControllerDesktop.exe"
             "Tag" = "8:"
             "Folder" = "8:_06B614FBD251469A8D0CD765EE33E363"

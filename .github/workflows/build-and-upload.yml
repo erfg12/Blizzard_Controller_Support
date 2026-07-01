@@ -87,6 +87,7 @@ jobs:
         run: |
           # Restore to bin output
           Copy-Item -Path "bin\ToSign\ControllerDesktop.exe" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
+          Rename-Item -Path "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe" -NewName "ControllerDesktop.exe.deploy"
           Copy-Item -Path "bin\ToSign\ControllerDesktop.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller_v2.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "bin\Release\net8.0-windows\win-x86\" -Force
@@ -97,7 +98,7 @@ jobs:
           Copy-Item -Path "bin\ToSign\Controller.dll" -Destination "Controller\obj\Release\net8.0-windows\win-x86\" -Force
 
           Write-Host "=== VERIFY SIGNATURES BEFORE MSI BUILD ==="
-          Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe"
+          Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.exe.deploy"
           Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
           Get-AuthenticodeSignature "Controller_v2.Desktop\obj\Release\net8.0-windows\win-x86\ControllerDesktop.dll"
           Get-AuthenticodeSignature "bin\Release\net8.0-windows\win-x86\Controller_v2.dll"
