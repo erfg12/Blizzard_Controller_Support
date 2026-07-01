@@ -8,6 +8,7 @@
   <AssemblyName>Controller_v2</AssemblyName> 
 	<CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)Generated</CompilerGeneratedFilesOutputPath>
 	<BaseOutputPath>../bin</BaseOutputPath>
+	<Platforms>AnyCPU;x86</Platforms>
   </PropertyGroup>
 
 <PropertyGroup Condition="$([MSBuild]::IsOSPlatform('OSX'))">
