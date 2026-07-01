@@ -6,6 +6,10 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+  id-token: write
+
 jobs:
   build:
     name: Build ${{ matrix.os }}
@@ -18,7 +22,7 @@ jobs:
             ext: tar.gz
           - os: macos-latest
             rid: osx-arm64
-            ext: tar.gz
+            ext: dmg
           - os: windows-latest
             rid: win-x64
             ext: zip
@@ -47,12 +51,34 @@ jobs:
           Remove-Item -Recurse -Force bin\PublishOutputs\win-x64\Controller_v2.Desktop -ErrorAction SilentlyContinue
           dotnet publish Controller_v2.Desktop\Controller_v2.Desktop.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o bin\PublishOutputs\win-x64\Controller_v2.Desktop
 
+      - name: Azure login (Windows)
+        if: runner.os == 'Windows'
+        uses: azure/login@v2
+        with:
+          client-id: '7ff2d667-5b6e-473c-a899-cfd5b3571e94'
+          tenant-id: '62458d29-be67-4398-a671-f4f08e173649'
+          allow-no-subscriptions: true
+
+      - name: Sign Main App (Windows)
+        if: runner.os == 'Windows'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ secrets.AZURE_SIGNING_ENDPOINT || 'https://eus.codesigning.azure.net/' }}
+          signing-account-name: 'CodeSignCert'
+          certificate-profile-name: 'CodeCert'
+          files-folder: '${{ github.workspace }}\bin\PublishOutputs'
+          files-folder-filter: 'exe,dll'
+          files-folder-recurse: true
+          file-digest: 'SHA256'
+          timestamp-rfc3161: 'http://timestamp.acs.microsoft.com'
+          timestamp-digest: 'SHA256'
+
       - name: Publish (Linux/macOS)
         if: runner.os != 'Windows'
         run: dotnet publish Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release -r ${{ matrix.rid }} --self-contained true -p:PublishSingleFile=true -o bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
 
       # ---------------- PACKAGE ----------------
-      - name: Package
+      - name: Package (Windows)
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
@@ -67,8 +93,9 @@ jobs:
           } else {
             tar -czf ../../../../Blizzard_Controller_Support-$tag-${{ matrix.rid }}.tar.gz *
           }
-      - name: Package
-        if: runner.os != 'Windows'
+
+      - name: Package (Linux)
+        if: runner.os == 'Linux'
         run: |
           tag=${GITHUB_REF##*/}
           if [ -z "$tag" ]; then
@@ -77,11 +104,110 @@ jobs:
 
           OUT_DIR=bin/PublishOutputs/${{ matrix.rid }}/Controller_v2.Desktop
           cd $OUT_DIR
-          if [ "${{ matrix.ext }}" = "zip" ]; then
-            zip -r ../../../../Blizzard_Controller_Support-${tag}-${{ matrix.rid }}.zip *
-          else
-            tar -czf ../../../../Blizzard_Controller_Support-${tag}-${{ matrix.rid }}.tar.gz *
+          tar -czf ../../../../Blizzard_Controller_Support-${tag}-${{ matrix.rid }}.tar.gz *
+
+      # ---------------- MACOS BUNDLING, CODESIGN & NOTARIZATION ----------------
+      - name: Create .app bundle (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          APP="bin/Controller_v2.Desktop.app"
+          mkdir -p "$APP/Contents/MacOS"
+          mkdir -p "$APP/Contents/Resources"
+
+          cp -r bin/PublishOutputs/osx-arm64/Controller_v2.Desktop/* "$APP/Contents/MacOS/"
+          chmod +x "$APP/Contents/MacOS/ControllerDesktop"
+
+          # CLEANUP: Purge loose metadata formats
+          rm -f "$APP/Contents/MacOS"/*.pdb
+          rm -f "$APP/Contents/MacOS"/*.deps.json
+          rm -f "$APP/Contents/MacOS"/*.runtimeconfig.json
+          rm -f "$APP/Contents/MacOS"/*.xml
+          rm -f "$APP/Contents/MacOS"/*.config
+
+          # CLEANUP: Remove non-macOS cross-platform library cruft that fails code validation
+          rm -f "$APP/Contents/MacOS"/Avalonia.FreeDesktop*
+          rm -f "$APP/Contents/MacOS"/Avalonia.X11*
+          rm -f "$APP/Contents/MacOS"/Avalonia.Win32*
+
+          # Copy Info.plist
+          cp Info.plist "$APP/Contents/Info.plist"
+
+          # Convert .ico to .icns for app icon
+          ICO_PATH="media/frozen-game-controller.ico"
+          ICNS_PATH="$APP/Contents/Resources/AppIcon.icns"
+          if [ -f "$ICO_PATH" ]; then
+              echo "Converting icon from .ico to .icns..."
+              ICON_TEMP_DIR="icon_temp"
+              mkdir -p "$ICON_TEMP_DIR"
+              sips -s format png "$ICO_PATH" --out "$ICON_TEMP_DIR/icon.png" > /dev/null 2>&1
+              mkdir -p "$ICON_TEMP_DIR/AppIcon.iconset"
+              sips -z 16 16     "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_16x16.png" > /dev/null 2>&1
+              sips -z 32 32     "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_16x16@2x.png" > /dev/null 2>&1
+              sips -z 32 32     "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_32x32.png" > /dev/null 2>&1
+              sips -z 64 64     "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_32x32@2x.png" > /dev/null 2>&1
+              sips -z 128 128   "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_128x128.png" > /dev/null 2>&1
+              sips -z 256 256   "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_128x128@2x.png" > /dev/null 2>&1
+              sips -z 256 256   "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_256x256.png" > /dev/null 2>&1
+              sips -z 512 512   "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_256x256@2x.png" > /dev/null 2>&1
+              sips -z 512 512   "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_512x512.png" > /dev/null 2>&1
+              sips -z 1024 1024 "$ICON_TEMP_DIR/icon.png" --out "$ICON_TEMP_DIR/AppIcon.iconset/icon_512x512@2x.png" > /dev/null 2>&1
+              iconutil -c icns "$ICON_TEMP_DIR/AppIcon.iconset" -o "$ICNS_PATH"
+              rm -rf "$ICON_TEMP_DIR"
           fi
+
+      - name: Install Apple Certificate (macOS)
+        if: runner.os == 'macOS'
+        id: install_certs
+        uses: apple-actions/import-codesign-certs@v3
+        with:
+          p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
+          p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
+
+      - name: Code Sign App Bundle (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          APP_PATH="bin/Controller_v2.Desktop.app"
+          ENTITLEMENTS="entitlements.plist"
+          
+          security default-keychain -s "${{ steps.install_certs.outputs.keychain-name }}"
+          
+          echo "Signing binaries, native dylibs, DLLs, and libraries inside the bundle..."
+          find "$APP_PATH/Contents/MacOS" -type f \( -name "*.dylib" -o -name "*.so" -o -name "*.dll" -o -not -name "*.*" \) -print0 | while IFS= read -r -d '' file; do
+            echo "Signing $file"
+            codesign --force --options runtime --entitlements "$ENTITLEMENTS" --sign "9ELVK5QPKF" "$file"
+          done
+
+          echo "Performing a deep verification and signature on the main app bundle..."
+          codesign --force --deep --options runtime --entitlements "$ENTITLEMENTS" --sign "9ELVK5QPKF" "$APP_PATH"
+
+      - name: Create .dmg (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          tag=${GITHUB_REF##*/}
+          if [ -z "$tag" ]; then tag=manual-$(date +%Y%m%d%H%M%S); fi
+
+          hdiutil create \
+            -volname "Blizzard Controller Support" \
+            -srcfolder bin/Controller_v2.Desktop.app \
+            -ov -format UDZO \
+            Blizzard_Controller_Support-${tag}-osx-arm64.dmg
+
+      - name: Notarize DMG (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          tag=${GITHUB_REF##*/}
+          if [ -z "$tag" ]; then tag=manual-$(date +%Y%m%d%H%M%S); fi
+          DMG_NAME="Blizzard_Controller_Support-${tag}-osx-arm64.dmg"
+
+          echo "Submitting $DMG_NAME to Apple Notarization Service..."
+          xcrun notarytool submit "$DMG_NAME" \
+            --apple-id "${{ secrets.APPLE_ID }}" \
+            --password "${{ secrets.APPLE_PASSWORD }}" \
+            --team-id "9ELVK5QPKF" \
+            --wait
+
+          echo "Stapling notarization ticket to DMG..."
+          xcrun stapler staple "$DMG_NAME"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
