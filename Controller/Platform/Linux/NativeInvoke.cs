@@ -99,6 +99,9 @@ public static class NativeInvoke
     [DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
     static extern int SDL_SetWindowAlwaysOnTop(IntPtr window, bool onTop);
 
-    [DllImport("SDL2")]
-    static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
+    [DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SDL_SetWindowPosition(IntPtr window, int x, int y);
+
+    [DllImport("SDL2", CallingConvention = CallingConvention.Cdecl)]
+    public static extern void SDL_SetWindowSize(IntPtr window, int w, int h);
 }
