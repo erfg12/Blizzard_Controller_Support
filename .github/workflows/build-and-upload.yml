@@ -47,7 +47,7 @@ jobs:
       # ---------------- BUILD & PUBLISH ----------------
       - name: Build (Windows)
         if: runner.os == 'Windows'
-        run: dotnet build Controller.sln -c Release
+        run: dotnet build Controller_v2.Desktop/Controller_v2.Desktop.csproj -c Release
 
       - name: Azure login (Windows)
         if: runner.os == 'Windows'
