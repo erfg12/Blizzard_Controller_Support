@@ -117,6 +117,12 @@ jobs:
           cp -r bin/PublishOutputs/osx-arm64/Controller_v2.Desktop/* "$APP/Contents/MacOS/"
           chmod +x "$APP/Contents/MacOS/ControllerDesktop"
 
+          # Move UI folder to Resources if it exists
+          if [ -d "$APP/Contents/MacOS/UI" ]; then
+              echo "Moving UI folder to Resources..."
+              mv "$APP/Contents/MacOS/UI" "$APP/Contents/Resources/"
+          fi
+
           # CLEANUP: Purge loose metadata formats
           rm -f "$APP/Contents/MacOS"/*.pdb
           rm -f "$APP/Contents/MacOS"/*.deps.json
